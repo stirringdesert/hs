@@ -294,14 +294,17 @@ main {
   z-index: 20;
 }
 .clock b { font-weight: var(--weight-bold); margin-left: 4px; }
-.contact-list .short { display: none; }
+/* Contact links read E-MAIL / TELEGRAM / INSTAGRAM at every width, like the Framer site */
+.contact-list { text-transform: uppercase; }
+.contact-list .long { display: none; }
+.contact main > .label { font-weight: var(--weight-regular); }
 
 /* ---------- Desktop layout ---------- */
 
 @media (min-width: 1200px) {
-  .site-header { gap: 24px; }
+  .site-header { gap: 50px; }
   .menu-toggle, .menu { display: none; }
-  .header-nav { display: flex; gap: 24px; }
+  .header-nav { display: flex; gap: 50px; }
   .header-nav a {
     font-size: var(--type-nav);
     line-height: var(--type-nav);
@@ -330,7 +333,7 @@ main {
     text-align: right;
   }
   .voice .label + .page-title { margin-top: 0; }
-  .voice .player { width: calc(50% - var(--col-gap) / 2); margin-top: 48px; }
+  .voice .player { width: calc(50% - var(--col-gap) / 2); margin-top: 38px; }
   .voice .works-title { margin-top: 117px; }
   .works { grid-template-columns: repeat(4, 1fr); gap: 68px 26px; }
   .audiobooks { margin-top: 48px; }
@@ -348,11 +351,8 @@ main {
   .contact main > .label {
     font-size: 67px;
     line-height: 67px;
-    font-weight: var(--weight-regular);
   }
-  .contact-list { margin-top: 0; gap: 10px; align-items: flex-end; text-align: right; text-transform: uppercase; }
-  .contact-list .long { display: none; }
-  .contact-list .short { display: inline; }
+  .contact-list { margin-top: 0; gap: 0; align-items: flex-end; text-align: right; }
 
   /* play text */
   .play main { padding-top: 120px; }
@@ -377,5 +377,4 @@ main {
 @media (max-width: 640px) {
   .home .site-footer { margin-top: 0; }
   .works { grid-template-columns: 1fr; }
-  .site-footer { justify-content: flex-start; }
 }

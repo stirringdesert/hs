@@ -96,7 +96,6 @@
 /* Phone */
 @media (max-width: 640px) {
   :root {
-    --gutter: 16px;
     --type-display: 44px;
     --type-display-lh: 46px;
     --type-display-nav-lh: 44px;
