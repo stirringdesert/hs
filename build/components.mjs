@@ -86,9 +86,9 @@ export function bgVideo(src) {
 export function workList(items, currentSlug) {
   const li = items.map((it) => {
     if (it.slug !== currentSlug) return `  <li><a href="${attr(it.url)}">${esc(it.title)}</a></li>`;
-    const summary = it.summaryHtml.length
-      ? `\n    <div class="summary">\n${it.summaryHtml.map((p) => `      <p>${p}</p>`).join('\n')}\n    </div>\n  `
-      : '';
+    const lines = it.summaryHtml.map((p) => `      <p>${p}</p>`);
+    if (it.linksHtml) lines.push(`      <p class="work-links">${it.linksHtml}</p>`);
+    const summary = lines.length ? `\n    <div class="summary">\n${lines.join('\n')}\n    </div>\n  ` : '';
     return `  <li class="current"><a href="${attr(it.url)}" aria-current="page">${esc(it.title)}</a>${summary}</li>`;
   });
   return `<ul class="nav-list">\n${li.join('\n')}\n</ul>`;
