@@ -175,11 +175,8 @@ for (const f of fs.readdirSync(path.join(CONTENT, 'pages')).filter((f) => f.ends
   let body = raw;
   let bodyClass = data.body_class || 'page';
   if (data.pdf) {
-    // Play pages: download button next to the last line of the play (desktop)
     needAsset(data.pdf, `content/pages/${f}`);
     const label = data.pdf_label || 'Download PDF';
-    const last = body.lastIndexOf('</div>');
-    body = body.slice(0, last) + '  ' + C.playDownload(data.pdf, label, { end: true }) + '\n' + body.slice(last);
     if (data.play) {
       // On top: the play's playwriting section in the page's language, with the
       // read links replaced by the download button
