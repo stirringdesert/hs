@@ -1,0 +1,28 @@
+{
+  "name": "Igor Sergeev",
+  "url": "https://harrysergeev.com",
+  "description": "Тот самый русский голос Леона Кеннеди в Resident Evil 4 Remake и Джона Сноу в «Игре престолов» и ещё более 100 озвученных проектов: фильмы, сериалы, аудиокниги.",
+  "nav": [
+    { "label": "bio", "url": "/bio/" },
+    { "label": "voice acting", "url": "/voice/" },
+    { "label": "theater", "url": "/theater/" },
+    { "label": "playwriting", "url": "/playwriting/open-relationship/" },
+    { "label": "contact", "url": "/contact/" }
+  ],
+  "footer": [
+    { "label": "Impressum", "url": "/impressum/" },
+    { "label": "Datenschutzerklärung", "url": "/datenschutzerklaerung/" }
+  ],
+  "sections": {
+    "theater": { "title": "Director", "page_title": "Theater", "has_index": true },
+    "playwriting": { "title": "Author", "page_title": "Playwriting", "has_index": false }
+  },
+  "contact": {
+    "label": "for voiceover bookings and inquiries, please contact:",
+    "links": [
+      { "label": "sergeevvoice@gmail.com", "short": "E-mail", "url": "mailto:sergeevvoice@gmail.com" },
+      { "label": "Telegram", "url": "https://t.me/harrysergeev" },
+      { "label": "Instagram", "url": "https://www.instagram.com/harrysergeev/" }
+    ]
+  }
+}

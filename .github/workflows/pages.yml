@@ -1,0 +1,71 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Decrypt fonts
+        env:
+          FONT_KEY: ${{ secrets.FONT_KEY }}
+        run: |
+          if [ -z "$FONT_KEY" ]; then
+            echo "::error::The FONT_KEY secret is missing. Add it under Settings > Secrets and variables > Actions."
+            exit 1
+          fi
+          for f in assets/fonts/*.woff2.enc; do
+            openssl enc -d -aes-256-cbc -pbkdf2 -iter 200000 -in "$f" -out "${f%.enc}" -pass env:FONT_KEY
+          done
+
+      - name: Build pages
+        run: node build/build.mjs
+
+      - id: pages
+        uses: actions/configure-pages@v5
+
+      - name: Assemble site
+        env:
+          BASE: ${{ steps.pages.outputs.base_path }}
+        run: |
+          mkdir _site
+          tar cf - --exclude=./.git --exclude=./.github --exclude=./_site \
+            --exclude=./build --exclude=./content --exclude=./tools \
+            --exclude=./README.md --exclude=./.gitignore --exclude='*.enc' . | tar xf - -C _site
+          # Before the custom domain is connected, the site lives under
+          # /<repo>/, so root links get that prefix. With the domain, BASE is empty.
+          if [ -n "$BASE" ]; then
+            find _site -name '*.html' -print0 | xargs -0 perl -pi -e 's#\b(href|src|data-src|poster)="/(?!/)#$1="'"$BASE"'/#g'
+          fi
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

@@ -1,0 +1,18 @@
+/* Styles for the /styleguide/ page only. */
+.sg main { display: flex; flex-direction: column; gap: 96px; }
+.sg-intro { max-width: var(--content-max); display: flex; flex-direction: column; gap: 16px; }
+.sg-intro p { color: var(--color-muted); }
+.sg-section { display: flex; flex-direction: column; gap: 32px; }
+.sg-section > h2.label { color: var(--color-muted); border-bottom: 1px solid #333; padding-bottom: 12px; }
+.sg-swatches { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 24px; }
+.sg-swatch i { display: block; height: 96px; border: 1px solid #333; margin-bottom: 12px; }
+.sg-swatch code, .sg-row code { font-size: var(--type-small); line-height: var(--type-small-lh); color: var(--color-muted); display: block; }
+.sg-row { display: grid; grid-template-columns: 220px 1fr; gap: 24px; align-items: baseline; }
+.sg-row > div { min-width: 0; overflow-wrap: anywhere; }
+.sg-demo { border: 1px dashed #333; padding: 24px; position: relative; }
+.sg-demo .site-header, .sg-demo .site-footer { padding-left: 0; padding-right: 0; }
+.sg-demo .site-header { height: auto; flex-wrap: wrap; padding-top: 0; }
+.sg-demo .menu { flex-basis: 100%; position: static; opacity: 1; visibility: visible; padding: 16px 0 0; background: none; }
+@media (max-width: 640px) {
+  .sg-row { grid-template-columns: 1fr; gap: 4px; }
+}

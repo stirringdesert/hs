@@ -1,0 +1,4 @@
+# The licensed font files stay out of the public repo. Only the encrypted
+# copies (*.woff2.enc) are committed; the deploy workflow decrypts them.
+assets/fonts/*.woff2
+_site/

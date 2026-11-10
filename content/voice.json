@@ -1,0 +1,78 @@
+{
+  "cta": "for voiceover bookings and inquiries, please [contact](/contact/)",
+  "demo": {
+    "title": "Demo",
+    "file": "/assets/media/demo.wav"
+  },
+  "works_title": "Works",
+  "works_label": "Officail russian dubs",
+  "roles": [
+    {
+      "character": "Leon Kennedy",
+      "title": "Resident Evil 4 Remake",
+      "image": "/assets/img/voice/leon-kennedy.jpg"
+    },
+    {
+      "character": "Jon Snow",
+      "title": "Game of Thrones",
+      "image": "/assets/img/voice/jon-snow.jpg"
+    },
+    {
+      "character": "Theon Greyjoy",
+      "title": "Game of Thrones",
+      "image": "/assets/img/voice/theon-greyjoy.jpg"
+    },
+    {
+      "character": "D. L. Tanus",
+      "title": "Queens Gambit",
+      "image": "/assets/img/voice/dl-tanus.jpg"
+    },
+    {
+      "character": "Teddy Flud",
+      "title": "Westworld",
+      "image": "/assets/img/voice/teddy-flud.jpg"
+    },
+    {
+      "character": "Igor Straussman",
+      "title": "Viktor Frankenshtein",
+      "image": "/assets/img/voice/igor-straussman.jpg"
+    },
+    {
+      "character": "Pi Patel",
+      "title": "Life of Pi",
+      "image": "/assets/img/voice/pi-patel.jpg"
+    },
+    {
+      "character": "Jimmy Tree",
+      "title": "Youth",
+      "image": "/assets/img/voice/jimmy-tree.jpg"
+    },
+    {
+      "character": "Louis",
+      "title": "It's Only the End of the World",
+      "image": "/assets/img/voice/louis.jpg"
+    },
+    {
+      "character": "Lawrence Durrell",
+      "title": "The Durrells",
+      "image": "/assets/img/voice/lawrence-durrell.jpg"
+    },
+    {
+      "character": "Willow",
+      "title": "Willow",
+      "image": "/assets/img/voice/willow.jpg"
+    },
+    {
+      "character": "Steve O'Connor Després",
+      "title": "Mommy",
+      "image": "/assets/img/voice/steve-oconnor-despres.jpg"
+    }
+  ],
+  "audiobooks": {
+    "label": "Audiobooks",
+    "text": [
+      "Narrated over 126 audiobooks available on the [LitRes platform](https://www.litres.ru/author/igor-sergeev-2/). His portfolio spans a wide range of genres — from classical literature (William Faulkner’s The Sound and the Fury, Jack London’s The Sea-Wolf) and philosophy (Erich Fromm’s To Have or to Be?, Perry Anderson’s The Origins of Postmodernity) to contemporary fiction, thrillers, and non-fiction. Featured authors include Paulo Coelho, Michael Roach, Tatiana Ustinova, Amor Towles, David Grann, Viktor Tsoi, Egor Letov, and others.",
+      "Listen to the books on [LitRes](https://www.litres.ru/author/igor-sergeev-2/)"
+    ]
+  }
+}

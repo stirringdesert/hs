@@ -1,0 +1,114 @@
+/* harrysergeev.com — design tokens
+   Every color, font size and key spacing on the site comes from here.
+   Change a value once and it updates on every page. See /styleguide/ for a live preview. */
+
+@font-face {
+  font-family: "TT Firs Neue";
+  src: url("../fonts/tt-firs-neue-regular.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "TT Firs Neue";
+  src: url("../fonts/tt-firs-neue-demibold.woff2") format("woff2");
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  /* ---- Color ---- */
+  --color-bg: #000;            /* page background */
+  --color-fg: #fff;            /* main text */
+  --color-muted: #a3a3a3;      /* secondary text, hover state */
+  --color-link: #0099ff;       /* links inside text */
+  --color-accent: #4d8bdb;     /* call-to-action links (voice page) */
+  --color-placeholder: #111;   /* shown while an image loads */
+
+  /* ---- Font ---- */
+  --font: "TT Firs Neue", Arial, sans-serif;
+  --weight-regular: 400;
+  --weight-bold: 600;
+
+  /* ---- Type scale (size / line height) ---- */
+  --type-display: 100px;       /* home page name and menu */
+  --type-display-lh: 100px;
+  --type-display-nav-lh: 90px;
+  --type-display-tracking: -1px;
+  --type-title: 66px;          /* page titles: DIRECTOR, WORKS, DEMO */
+  --type-title-lh: 66px;
+  --type-contact: 66px;        /* contact page links */
+  --type-contact-lh: 72px;
+  --type-time: 40px;           /* audio player time */
+  --type-time-lh: 52px;
+  --type-heading: 28px;        /* role names, section headings */
+  --type-heading-lh: 36px;
+  --type-card-lh: 42px;
+  --type-list: 28px;           /* production list on theater pages */
+  --type-list-lh: 36px;
+  --type-nav: 26px;            /* name in the header, menu links */
+  --type-nav-lh: 36px;
+  --type-nav-tracking: -0.2px;
+  --type-body: 20px;           /* running text */
+  --type-body-lh: 24px;
+  --type-label: 20px;          /* small bold uppercase labels */
+  --type-label-lh: 20px;
+  --type-caption: 17px;        /* DOWNLOAD link */
+  --type-small: 14px;          /* footer */
+  --type-small-lh: 19px;
+
+  /* ---- Layout ---- */
+  --gutter: 24px;              /* space at the left/right edge of the page */
+  --col-gap: 24px;             /* gap between the two columns */
+  --content-max: 813px;        /* max width of long text */
+  --header-height: 54px;
+
+  /* ---- Motion ---- */
+  --ease: ease;
+  --fast: .25s;
+  --bg-video-opacity: .5;
+  --bg-video-fade: 3s;
+}
+
+/* Desktop (the Framer site's desktop layout) */
+@media (min-width: 1200px) {
+  :root {
+    --type-title: 82px;
+    --type-title-lh: 82px;
+    --type-contact: 82px;
+    --type-contact-lh: 92px;
+    --type-small-lh: 13px;
+  }
+}
+
+/* Tablet and small laptop */
+@media (max-width: 900px) {
+  :root {
+    --type-display: 64px;
+    --type-display-lh: 64px;
+    --type-display-nav-lh: 60px;
+    --type-title: 48px;
+    --type-title-lh: 50px;
+  }
+}
+
+/* Phone */
+@media (max-width: 640px) {
+  :root {
+    --type-display: 44px;
+    --type-display-lh: 46px;
+    --type-display-nav-lh: 44px;
+    --type-display-tracking: -.5px;
+    --type-title: 40px;
+    --type-title-lh: 42px;
+    --type-contact: 40px;
+    --type-contact-lh: 46px;
+    --type-list: 24px;
+    --type-list-lh: 32px;
+    --type-body: 17px;
+    --type-body-lh: 22px;
+    --type-label: 16px;
+    --type-label-lh: 18px;
+  }
+}
