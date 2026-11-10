@@ -294,6 +294,17 @@ main {
 .play-title h2 { font-size: var(--type-heading); line-height: var(--type-heading-lh); text-transform: uppercase; }
 .play-note { margin-bottom: 40px; }
 
+/* Download PDF button on play pages: above the text on phones and tablets */
+.play-dl-btn {
+  display: inline-block;
+  font-size: var(--type-label);
+  line-height: var(--type-label-lh);
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.play-dl-btn:hover { color: var(--color-muted); }
+.play-dl-end { display: none; }
+
 /* ---------- Contact ---------- */
 
 .contact-list { display: flex; flex-direction: column; gap: 8px; margin-top: 40px; }
@@ -389,6 +400,14 @@ main {
   .play-scene p { line-height: 24px; text-align: justify; }
   .play-title h2 { font-size: 20px; line-height: 20px; }
   .play-note { text-align: center; }
+
+  /* Download button in the right margin: sticks while the first chapter scrolls,
+     leaves with its last line, and comes back next to the last line of the play */
+  .play-body { position: relative; }
+  .play-dl { position: absolute; top: 0; bottom: 0; left: calc(100% + 32px); }
+  .play-dl-btn { position: sticky; top: 120px; }
+  .play-dl-end { display: block; top: auto; }
+  .play-dl-end .play-dl-btn { position: static; }
 }
 
 /* ---------- Responsive layout (font sizes change in tokens.css) ---------- */

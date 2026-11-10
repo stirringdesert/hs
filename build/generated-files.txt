@@ -3,6 +3,8 @@ contact/index.html
 datenschutzerklaerung/index.html
 impressum/index.html
 index.html
+open-relationship-de/index.html
+open-relationship-en/index.html
 open-relationship-ru/index.html
 playwriting/open-relationship/index.html
 styleguide/index.html

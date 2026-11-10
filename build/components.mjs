@@ -148,3 +148,10 @@ export function copyEmail(address, { label, extraClass = '' } = {}) {
     ? `<button type="button" class="${cls}" data-e="${enc}" title="Copy email address">${esc(label)}</button>`
     : `<button type="button" class="${cls}" data-e="${enc}" data-show title="Copy email address">${fallback}</button>`;
 }
+
+// "Download PDF" button on a play reading page. The top one sits to the right of the
+// first chapter on desktop (sticky until the chapter's last line) and above the text
+// on phones; the end one sits next to the last line of the play (desktop only).
+export function playDownload(url, label, { end = false } = {}) {
+  return `<div class="play-dl${end ? ' play-dl-end' : ''}"><a class="play-dl-btn" href="${attr(url)}" download>${esc(label)}</a></div>`;
+}

@@ -168,7 +168,16 @@ ${site.contact.links.map((l) => {
 // ---------- Free-form HTML pages (legal pages, play text) ----------
 for (const f of fs.readdirSync(path.join(CONTENT, 'pages')).filter((f) => f.endsWith('.html'))) {
   const slug = f.replace(/\.html$/, '');
-  const { data, body } = parseFrontMatter(readText(`pages/${f}`), `content/pages/${f}`);
+  const { data, body: raw } = parseFrontMatter(readText(`pages/${f}`), `content/pages/${f}`);
+  let body = raw;
+  if (data.pdf) {
+    // Play pages: download button next to the first chapter and next to the last line
+    needAsset(data.pdf, `content/pages/${f}`);
+    const label = data.pdf_label || 'Download PDF';
+    body = body.replace('<div class="play-body">\n', (m) => m + '  ' + C.playDownload(data.pdf, label) + '\n');
+    const last = body.lastIndexOf('</div>');
+    body = body.slice(0, last) + '  ' + C.playDownload(data.pdf, label, { end: true }) + '\n' + body.slice(last);
+  }
   emit(`/${slug}/`, C.layout(site, {
     path: `/${slug}/`, title: data.title, lang: data.lang || 'en', bodyClass: data.body_class || 'page',
     description: data.description,
