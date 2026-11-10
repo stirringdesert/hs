@@ -54,3 +54,31 @@
   tick();
   setInterval(tick, 15000);
 })();
+
+// Email buttons: the address is stored reversed + base64 (see copyEmail in
+// build/components.mjs). A click copies it and briefly shows "Copied".
+(function () {
+  function copy(text) {
+    if (navigator.clipboard && window.isSecureContext) return navigator.clipboard.writeText(text);
+    return new Promise(function (resolve, reject) {
+      var t = document.createElement('textarea');
+      t.value = text; t.setAttribute('readonly', ''); t.style.position = 'fixed'; t.style.opacity = '0';
+      document.body.appendChild(t); t.select();
+      var ok = false; try { ok = document.execCommand('copy'); } catch (e) {}
+      document.body.removeChild(t);
+      ok ? resolve() : reject();
+    });
+  }
+  document.querySelectorAll('.copy-email[data-e]').forEach(function (btn) {
+    var addr = atob(btn.getAttribute('data-e')).split('').reverse().join('');
+    if (btn.hasAttribute('data-show')) btn.textContent = addr;
+    var label = btn.textContent, timer;
+    btn.addEventListener('click', function () {
+      copy(addr).then(function () {
+        btn.textContent = 'Copied';
+        clearTimeout(timer);
+        timer = setTimeout(function () { btn.textContent = label; }, 1500);
+      }, function () { window.prompt('Email address:', addr); });
+    });
+  });
+})();

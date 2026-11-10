@@ -135,3 +135,16 @@ export function indent(s, n) {
   const pad = ' '.repeat(n);
   return s.split('\n').map((l) => (l ? pad + l : l)).join('\n');
 }
+
+// Email address that copies itself to the clipboard on click (filled in by main.js).
+// The address is stored reversed and base64-encoded, so it isn't a plain mailto link
+// that spam bots can pick up. With `label`, the button shows that text; without it,
+// it shows the address itself. <noscript> keeps a readable fallback.
+export function copyEmail(address, { label, extraClass = '' } = {}) {
+  const enc = Buffer.from([...address].reverse().join('')).toString('base64');
+  const fallback = esc(address.replace('@', ' [at] '));
+  const cls = 'copy-email' + (extraClass ? ' ' + extraClass : '');
+  return label
+    ? `<button type="button" class="${cls}" data-e="${enc}" title="Copy email address">${esc(label)}</button>`
+    : `<button type="button" class="${cls}" data-e="${enc}" data-show title="Copy email address">${fallback}</button>`;
+}
