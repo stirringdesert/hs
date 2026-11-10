@@ -68,7 +68,8 @@ export function inline(md, { linkClass = 'link' } = {}) {
   s = s.replace(/\[([^\]]+)\]\(([^)\s]+)\)/g, (_, text, url) => {
     const ext = /^https?:\/\//.test(url);
     const cls = linkClass ? ` class="${linkClass}"` : '';
-    return `<a${cls} href="${escapeAttr(url.replace(/&amp;/g, '&'))}"${ext ? ' target="_blank" rel="noopener"' : ''}>${text}</a>`;
+    const dl = /^\/assets\/.*\.pdf$/i.test(url) ? ' download' : ''; // local PDFs download instead of opening
+    return `<a${cls} href="${escapeAttr(url.replace(/&amp;/g, '&'))}"${ext ? ' target="_blank" rel="noopener"' : ''}${dl}>${text}</a>`;
   });
   s = s.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
   s = s.replace(/(^|[^*])\*([^*\s][^*]*?)\*/g, '$1<em>$2</em>');
