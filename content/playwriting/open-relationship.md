@@ -14,3 +14,5 @@ A documentary queer drama about finding oneself in a space where the boundaries 
 Staged reading, Reforum Space Budva, Montenegro (February 2025)
 
 Staged reading, Munich (October 2025, directed by: Alexander Löwen, translation: David Drevs)
+
+Staged reading, Echo Lubimovka, Los Angeles (November 2026, directed by: Dima Barch, translation: Rostislav Godlevsky)

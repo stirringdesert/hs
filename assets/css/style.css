@@ -274,6 +274,8 @@ main {
   font-size: var(--type-body);
   line-height: var(--type-body-lh);
   text-transform: uppercase;
+  text-decoration: underline;
+  text-underline-offset: 3px;
 }
 .nav-list .work-links a:hover { color: var(--color-muted); }
 /* Reading pages: the play text starts below the playwriting section */
