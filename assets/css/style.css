@@ -8,6 +8,7 @@ html { -webkit-text-size-adjust: 100%; }
 body {
   margin: 0;
   min-height: 100vh;
+  min-height: 100svh;
   display: flex;
   flex-direction: column;
   background: var(--color-bg);
@@ -25,6 +26,20 @@ h1, h2, h3 { margin: 0; font-weight: var(--weight-regular); }
 img, video { display: block; max-width: 100%; }
 
 /* ---------- Text styles ---------- */
+
+/* Copy-to-clipboard email button looks like plain text or a link */
+.copy-email {
+  font: inherit;
+  color: inherit;
+  text-transform: inherit;
+  letter-spacing: inherit;
+  text-align: inherit;
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+}
+.copy-email.link { color: var(--color-link); }
 
 .link { color: var(--color-link); }
 .link:hover { text-decoration: underline; }
@@ -54,6 +69,8 @@ img, video { display: block; max-width: 100%; }
   height: var(--header-height);
 }
 .site-header .name {
+  position: relative;
+  z-index: 11;
   font-size: var(--type-nav);
   line-height: var(--type-nav);
   letter-spacing: var(--type-nav-tracking);
@@ -61,6 +78,7 @@ img, video { display: block; max-width: 100%; }
 }
 .menu-toggle {
   position: relative;
+  z-index: 11;               /* stays above the open menu, so it works as the close button */
   width: 27px;
   height: 27px;
   padding: 0;
@@ -126,6 +144,9 @@ main {
 
 /* ---------- Home ---------- */
 
+/* The home page fits one screen: name at the top, menu at the bottom. */
+.home main { min-height: 0; }
+
 .home main {
   display: flex;
   flex-direction: column;
@@ -138,10 +159,16 @@ main {
   letter-spacing: var(--type-display-tracking);
 }
 .home .home-name { line-height: var(--type-display-lh); width: fit-content; }
-.home .home-nav { display: flex; flex-direction: column; padding-top: 120px; }
+.home .home-nav { display: flex; flex-direction: column; padding-top: 40px; }
 .home .home-nav a { line-height: var(--type-display-nav-lh); width: fit-content; }
 .home .home-nav a:hover { color: var(--color-muted); }
-.home .site-footer { padding-top: 0; margin-top: -40px; }
+.home main { padding-bottom: 24px; }   /* room for the descenders of the last menu line */
+.home .site-footer { padding-top: 0; }
+@media (min-width: 641px) {
+  /* footer sits in the bottom-right corner next to the menu instead of adding height */
+  body.home { position: relative; }
+  .home .site-footer { position: absolute; right: 0; bottom: 0; }
+}
 
 /* ---------- Bio ---------- */
 
@@ -270,8 +297,8 @@ main {
 /* ---------- Contact ---------- */
 
 .contact-list { display: flex; flex-direction: column; gap: 8px; margin-top: 40px; }
-.contact-list a { font-size: var(--type-contact); line-height: var(--type-contact-lh); width: fit-content; }
-.contact-list a:hover { color: var(--color-muted); }
+.contact-list > * { font-size: var(--type-contact); line-height: var(--type-contact-lh); width: fit-content; }
+.contact-list > *:hover { color: var(--color-muted); }
 
 /* ---------- Legal ---------- */
 

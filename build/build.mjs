@@ -155,6 +155,7 @@ emit('/contact/', C.layout(site, {
   main: `${C.label(esc(site.contact.label), { tag: 'h1' })}
 <div class="contact-list">
 ${site.contact.links.map((l) => {
+    if (l.copy) return '  ' + C.copyEmail(l.copy, { label: l.short || 'E-mail' });
     const ext = /^https?:/.test(l.url);
     const text = l.short
       ? `<span class="long">${esc(l.label)}</span><span class="short">${esc(l.short)}</span>`
@@ -170,7 +171,9 @@ for (const f of fs.readdirSync(path.join(CONTENT, 'pages')).filter((f) => f.ends
   const { data, body } = parseFrontMatter(readText(`pages/${f}`), `content/pages/${f}`);
   emit(`/${slug}/`, C.layout(site, {
     path: `/${slug}/`, title: data.title, lang: data.lang || 'en', bodyClass: data.body_class || 'page',
-    description: data.description, main: body.replace(/\s+$/, ''),
+    description: data.description,
+    // mailto links become copy-to-clipboard buttons (keeps the address away from spam bots)
+    main: body.replace(/\s+$/, '').replace(/<a [^>]*href="mailto:([^"]+)"[^>]*>[^<]*<\/a>/g, (_, a) => C.copyEmail(a, { extraClass: 'link' })),
   }));
 }
 
