@@ -3,6 +3,7 @@ title: Open Relationship
 order: 1
 summary:
   - First part completed: July 2024
+links:
   - [RUSSIAN](/open-relationship-ru/)
   - [ENGLISH](/open-relationship-en/)
   - [GERMAN](/open-relationship-de/)

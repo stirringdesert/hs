@@ -86,9 +86,9 @@ export function bgVideo(src) {
 export function workList(items, currentSlug) {
   const li = items.map((it) => {
     if (it.slug !== currentSlug) return `  <li><a href="${attr(it.url)}">${esc(it.title)}</a></li>`;
-    const summary = it.summaryHtml.length
-      ? `\n    <div class="summary">\n${it.summaryHtml.map((p) => `      <p>${p}</p>`).join('\n')}\n    </div>\n  `
-      : '';
+    const lines = it.summaryHtml.map((p) => `      <p>${p}</p>`);
+    if (it.linksHtml) lines.push(`      <p class="work-links">${it.linksHtml}</p>`);
+    const summary = lines.length ? `\n    <div class="summary">\n${lines.join('\n')}\n    </div>\n  ` : '';
     return `  <li class="current"><a href="${attr(it.url)}" aria-current="page">${esc(it.title)}</a>${summary}</li>`;
   });
   return `<ul class="nav-list">\n${li.join('\n')}\n</ul>`;
@@ -147,11 +147,4 @@ export function copyEmail(address, { label, extraClass = '' } = {}) {
   return label
     ? `<button type="button" class="${cls}" data-e="${enc}" title="Copy email address">${esc(label)}</button>`
     : `<button type="button" class="${cls}" data-e="${enc}" data-show title="Copy email address">${fallback}</button>`;
-}
-
-// "Download PDF" button on a play reading page. The top one sits to the right of the
-// first chapter on desktop (sticky until the chapter's last line) and above the text
-// on phones; the end one sits next to the last line of the play (desktop only).
-export function playDownload(url, label, { end = false } = {}) {
-  return `<div class="play-dl${end ? ' play-dl-end' : ''}"><a class="play-dl-btn" href="${attr(url)}" download>${esc(label)}</a></div>`;
 }

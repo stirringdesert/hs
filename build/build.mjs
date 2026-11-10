@@ -109,7 +109,7 @@ ${v.audiobooks.text.map((t) => `    <p>${inline(t, { linkClass: 'accent' })}</p>
 function loadSection(dir) {
   const folder = path.join(CONTENT, dir);
   return fs.readdirSync(folder)
-    .filter((f) => f.endsWith('.md') && !f.startsWith('_'))
+    .filter((f) => f.endsWith('.md') && !f.startsWith('_') && !/\.[a-z]{2}\.md$/.test(f)) // x.ru.md = translation
     .map((f) => {
       const slug = f.replace(/\.md$/, '');
       const where = `content/${dir}/${f}`;
@@ -125,6 +125,7 @@ function loadSection(dir) {
         order: data.order ?? 999,
         video: data.video,
         summaryHtml: (data.summary || []).map((s) => inline(String(s))),
+        linksHtml: (data.links || []).map((s) => inline(String(s), { linkClass: '' })).join(''),
         bodyHtml: markdown(body),
       };
     })
@@ -132,8 +133,10 @@ function loadSection(dir) {
     .sort((a, b) => a.order - b.order || a.title.localeCompare(b.title));
 }
 
+const sectionItems = {};
 for (const [dir, cfg] of Object.entries(site.sections)) {
   const items = loadSection(dir);
+  sectionItems[dir] = items;
   if (cfg.has_index) {
     emit(`/${dir}/`, C.layout(site, {
       path: `/${dir}/`, title: cfg.page_title, bodyClass: 'theater',
@@ -170,16 +173,38 @@ for (const f of fs.readdirSync(path.join(CONTENT, 'pages')).filter((f) => f.ends
   const slug = f.replace(/\.html$/, '');
   const { data, body: raw } = parseFrontMatter(readText(`pages/${f}`), `content/pages/${f}`);
   let body = raw;
+  let bodyClass = data.body_class || 'page';
   if (data.pdf) {
-    // Play pages: download button next to the first chapter and next to the last line
     needAsset(data.pdf, `content/pages/${f}`);
     const label = data.pdf_label || 'Download PDF';
-    body = body.replace('<div class="play-body">\n', (m) => m + '  ' + C.playDownload(data.pdf, label) + '\n');
-    const last = body.lastIndexOf('</div>');
-    body = body.slice(0, last) + '  ' + C.playDownload(data.pdf, label, { end: true }) + '\n' + body.slice(last);
+    if (data.play) {
+      // On top: the play's playwriting section in the page's language, with the
+      // read links replaced by the download button
+      const [dir, playSlug] = data.play.split('/');
+      const cfg = site.sections[dir];
+      const lang = data.lang || 'en';
+      const tFile = path.join(CONTENT, dir, `${playSlug}.${lang}.md`);
+      const t = fs.existsSync(tFile) ? parseFrontMatter(fs.readFileSync(tFile, 'utf8'), tFile) : null;
+      const items = (sectionItems[dir] || []).map((it) => {
+        if (it.slug !== playSlug) return it;
+        const tr = t ? {
+          title: t.data.title || it.title,
+          summaryHtml: (t.data.summary || []).map((x) => inline(String(x))),
+          bodyHtml: markdown(t.body),
+        } : {};
+        return { ...it, ...tr, url: `/${slug}/`, linksHtml: `<a class="play-dl-btn" href="${attr(data.pdf)}" download>${esc(label)}</a>` };
+      });
+      const cur = items.find((it) => it.slug === playSlug);
+      if (!cur) problems.push(`content/pages/${f}: play "${data.play}" not found`);
+      else {
+        const pageTitle = (t && t.data.page_title) || cfg.title;
+        body = `${C.pageTitle(pageTitle)}\n${C.split(C.workList(items, playSlug), C.detail(cur.bodyHtml))}\n${body}`;
+        bodyClass = 'theater reading';
+      }
+    }
   }
   emit(`/${slug}/`, C.layout(site, {
-    path: `/${slug}/`, title: data.title, lang: data.lang || 'en', bodyClass: data.body_class || 'page',
+    path: `/${slug}/`, title: data.title, lang: data.lang || 'en', bodyClass,
     description: data.description,
     // mailto links become copy-to-clipboard buttons (keeps the address away from spam bots)
     main: body.replace(/\s+$/, '').replace(/<a [^>]*href="mailto:([^"]+)"[^>]*>[^<]*<\/a>/g, (_, a) => C.copyEmail(a, { extraClass: 'link' })),
