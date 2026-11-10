@@ -11,3 +11,5 @@ Ein dokumentarisches queeres Drama über die Suche nach sich selbst in einem Rau
 Szenische Lesung, Reforum Space, Budva, Montenegro (Februar 2025)
 
 Szenische Lesung, München (Oktober 2025, Regie: Alexander Löwen, Übersetzung: David Drevs)
+
+Szenische Lesung, Echo Lubimovka, Los Angeles (November 2026, Regie: Dima Barch, Übersetzung: Rostislav Godlevsky)

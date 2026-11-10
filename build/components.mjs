@@ -1,7 +1,19 @@
 // Reusable page pieces. Every page on the site is assembled from these, and the
 // style guide page (/styleguide/) shows each one, so a change here shows up everywhere.
 
+import fs from 'node:fs';
+import crypto from 'node:crypto';
 import { escapeHtml as esc, escapeAttr as attr } from './lib.mjs';
+
+// Adds ?v=<content hash> to a CSS/JS URL, so browsers load the new file right
+// after a change instead of a cached old copy.
+const ROOT = new URL('..', import.meta.url);
+function v(url) {
+  try {
+    const hash = crypto.createHash('sha1').update(fs.readFileSync(new URL('.' + url, ROOT))).digest('hex').slice(0, 8);
+    return `${url}?v=${hash}`;
+  } catch { return url; }
+}
 
 const PLAY_ICON = 'M5.379 1.292C4.968 1.033 4.449 1.017 4.023 1.251 3.598 1.486 3.334 1.933 3.333 2.419V13.581C3.334 14.067 3.598 14.514 4.023 14.749 4.449 14.983 4.968 14.967 5.379 14.708L14.215 9.127C14.602 8.883 14.836 8.457 14.836 8 14.836 7.543 14.602 7.117 14.215 6.873Z';
 
@@ -27,9 +39,9 @@ export function layout(site, { path, title, bodyClass, lang = 'en', description,
   <link rel="canonical" href="${attr(url)}">
   <link rel="icon" href="/assets/img/favicon-light.png" media="(prefers-color-scheme: light)">
   <link rel="icon" href="/assets/img/favicon-dark.png" media="(prefers-color-scheme: dark)">
-  <link rel="stylesheet" href="/assets/css/tokens.css">
-  <link rel="stylesheet" href="/assets/css/style.css">${extraCss.map((h) => `\n  <link rel="stylesheet" href="${h}">`).join('')}
-  <script src="/assets/js/main.js" defer></script>
+  <link rel="stylesheet" href="${v('/assets/css/tokens.css')}">
+  <link rel="stylesheet" href="${v('/assets/css/style.css')}">${extraCss.map((h) => `\n  <link rel="stylesheet" href="${v(h)}">`).join('')}
+  <script src="${v('/assets/js/main.js')}" defer></script>
 </head>
 <body class="${bodyClass}">
 ${before ? before + '\n' : ''}${chrome ? header(site) + '\n' : ''}  <main>
