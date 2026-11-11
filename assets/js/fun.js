@@ -97,7 +97,7 @@
   // chapter number is as far from the top of the screen as from its first paragraph.
   // At that point a "turn lights on" button appears in the bottom-right corner. It
   // goes away when the second chapter begins and comes back when scrolling up. Light mode only lives
-  // on this page: nothing is remembered, so every other page (and the menu) is black.
+  // on the reading pages: the choice is remembered for them, every other page (and the menu) stays black.
   (function () {
     var first = document.querySelector('.play-scene h2');
     if (!first) return;
@@ -113,8 +113,9 @@
     var btn = sw.firstChild;
     function label() { btn.textContent = root.getAttribute('data-theme') === 'light' ? (T.toDark || 'turn lights off') : (T.toLight || 'turn lights on'); }
     btn.addEventListener('click', function () {
-      if (root.getAttribute('data-theme') === 'light') root.removeAttribute('data-theme');
-      else root.setAttribute('data-theme', 'light');
+      var on = root.getAttribute('data-theme') !== 'light';
+      if (on) root.setAttribute('data-theme', 'light'); else root.removeAttribute('data-theme');
+      try { localStorage.setItem('hs-reading-lights', on ? 'on' : 'off'); } catch (e) {}
       label();
     });
     label();
@@ -144,28 +145,19 @@
 
   if (reduce || !finePointer) return;   // the spotlight only makes sense with a mouse
 
-  // ---- Spotlight: the mouse is a soft pool of light on the dark stage ----
-  // It replaces the arrow. Over anything clickable the pool narrows into a ray that
-  // falls from above, its point exactly where the click lands.
+  // ---- Spotlight: a soft pool of light follows the mouse across the dark stage ----
+  // The normal arrow stays, so aiming at links works as usual.
   var light = document.createElement('div');
   light.className = 'spotlight';
   light.setAttribute('aria-hidden', 'true');
-  light.innerHTML = '<span class="pool"></span><span class="ray"><i></i></span>';
   document.body.appendChild(light);
-  var CLICKABLE = 'a, button, input, select, textarea, label, summary, [role="slider"], [tabindex]:not([tabindex="-1"])';
   var x = 0, y = 0, queued = false;
   function draw() { queued = false; light.style.transform = 'translate3d(' + x + 'px,' + y + 'px,0)'; }
   document.addEventListener('pointermove', function (e) {
     if (e.pointerType !== 'mouse') return;
     x = e.clientX; y = e.clientY;
     light.classList.add('on');
-    root.classList.add('lit');                 // hides the arrow (fun.css)
     if (!queued) { queued = true; requestAnimationFrame(draw); }
   }, { passive: true });
-  document.addEventListener('pointerover', function (e) {
-    light.classList.toggle('aim', !!(e.target.closest && e.target.closest(CLICKABLE)));
-  }, { passive: true });
-  root.addEventListener('mouseleave', function () { light.classList.remove('on'); });
-  // a touch or pen brings the normal pointer back
-  document.addEventListener('pointerdown', function (e) { if (e.pointerType !== 'mouse') { root.classList.remove('lit'); light.classList.remove('on'); } }, { passive: true });
+  document.documentElement.addEventListener('mouseleave', function () { light.classList.remove('on'); });
 })();

@@ -211,6 +211,9 @@ export function detail(blocks) {
 
 // Audio player: play/pause, seek bar (click or drag), time, volume and download.
 // Every control has a click area of at least 44 px. Wired up in main.js.
+// Reading pages: turn the lights on before the page is drawn if the reader left them on.
+export const READ_LIGHT_BOOT = `<script>try{if(localStorage.getItem('hs-reading-lights')==='on')document.documentElement.setAttribute('data-theme','light')}catch(e){}</script>`;
+
 // The demo's title with its download link on the same line, on the right.
 export function demoHead(title, src, ui = {}) {
   return `<div class="demo-head">

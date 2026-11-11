@@ -342,9 +342,12 @@ main {
 
 /* ---------- Voice page ---------- */
 
-.voice .label + .demo-head { margin-top: 50px; }
 .voice .works-title { margin-top: 64px; }   /* its own section, but close to the demo */
 .voice .works-title + .label { margin-top: 24px; }
+/* The demo title is as far from the player as "works" is from "official russian dubs".
+   The player's 44 px click areas reach above the visible line, hence the smaller margin. */
+.voice .demo-head + .player { margin-top: 2px; }
+.voice .bookings { margin-top: 40px; }   /* phones: right after the player */
 .audiobooks { margin-top: 46px; }
 .audiobooks .text { max-width: 827px; margin-top: 34px; display: flex; flex-direction: column; gap: 20px; }
 .voice .bottom-cta { margin-top: 100px; }
@@ -488,17 +491,14 @@ main {
   .bio-text { max-width: calc(50% - var(--col-gap) / 2); }
 
   /* voice */
-  .voice main { position: relative; }
-  .voice main > .label:first-child {
-    position: absolute;
-    top: 44px;
-    right: var(--gutter);
-    width: calc(50% - var(--gutter));
-    text-align: right;
+  /* the bookings line sits in the right half, on the same line as the volume slider */
+  .voice .demo { display: grid; grid-template-columns: 1fr 1fr; column-gap: var(--col-gap); }
+  .voice .demo > .demo-head, .voice .demo > .player { grid-column: 1; }
+  .voice .demo-head + .player { margin-top: 8px; }
+  .voice .demo > .bookings {
+    grid-column: 2; grid-row: 1 / span 2; align-self: end; text-align: right;
+    margin: 0 0 calc((var(--type-time-lh) - 1.05em) / 2 + 3px);   /* centred on the time row */
   }
-  .voice .label + .demo-head { margin-top: 0; }
-  .voice .demo-head { width: calc(50% - var(--col-gap) / 2); }
-  .voice .player { width: calc(50% - var(--col-gap) / 2); margin-top: 38px; }
   .voice .works-title { margin-top: 88px; }
   .works { grid-template-columns: repeat(4, 1fr); gap: 68px 26px; }
   .audiobooks { margin-top: 48px; }

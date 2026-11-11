@@ -83,65 +83,34 @@ body { transition: background-color .4s var(--ease), color .4s var(--ease); }
 .trailer-open .bg-video { opacity: 0 !important; }
 
 /* ---------- Spotlight (mouse only) ----------
-   The mouse is a soft pool of light, like a follow spot on a dark stage; there is no arrow.
-   Over anything clickable it narrows into a ray falling from above, its point exactly
-   where the click lands. It sits above everything but only brightens ("screen"), so
-   white text stays as it is and pictures light up under it. */
-.lit, .lit * { cursor: none !important; }
+   A soft pool of light that follows the mouse, like a follow spot on a dark stage.
+   It sits behind the text and never covers it; the normal arrow stays. */
 .spotlight {
   position: fixed;
   top: 0;
   left: 0;
-  z-index: 70;
+  z-index: -1;
   width: 0;
   height: 0;
   pointer-events: none;
-  mix-blend-mode: screen;
   opacity: 0;
   transition: opacity .6s var(--ease);
 }
-.spotlight.on { opacity: 1; }
-.spotlight .pool {
+.spotlight::before {
+  content: "";
   position: absolute;
   left: -280px;
   top: -280px;
   width: 560px;
   height: 560px;
   border-radius: 50%;
-  background:
-    radial-gradient(circle at center, rgba(255, 255, 255, .55), rgba(255, 255, 255, .16) 9px, transparent 26px),   /* hot centre to aim with */
-    radial-gradient(closest-side, rgba(255, 255, 255, .2), rgba(255, 255, 255, .08) 55%, transparent);
-  transition: transform .45s cubic-bezier(.2, .7, .2, 1), opacity .3s var(--ease);
+  background: radial-gradient(closest-side, rgba(255, 255, 255, .12), rgba(255, 255, 255, .05) 55%, transparent);
 }
-/* The ray: a narrow cone from far above that ends in a point under the mouse.
-   The outer span softens its edges; the inner one has the shape. */
-.spotlight .ray {
-  position: absolute;
-  left: -60px;
-  bottom: -2px;
-  width: 120px;
-  height: 460px;
-  filter: blur(5px);
-  opacity: 0;
-  transform: scaleY(.2);
-  transform-origin: 50% 100%;
-  transition: transform .45s cubic-bezier(.2, .7, .2, 1), opacity .3s var(--ease);
-}
-.spotlight .ray i {
-  position: absolute;
-  inset: 0;
-  clip-path: polygon(50% 100%, 100% 0, 0 0);
-  background: linear-gradient(to top, rgba(255, 255, 255, .6), rgba(255, 255, 255, .18) 45%, transparent);
-}
-.spotlight.aim .pool { transform: scale(.25); opacity: 0; }
-.spotlight.aim .ray { opacity: 1; transform: none; }
-/* The light-mode reading page: the light becomes a soft shadow instead */
-:root[data-theme="light"] .spotlight { mix-blend-mode: multiply; }
-:root[data-theme="light"] .spotlight .pool { background: radial-gradient(circle at center, rgba(0, 0, 0, .45), rgba(0, 0, 0, .1) 9px, transparent 26px), radial-gradient(closest-side, rgba(0, 0, 0, .07), rgba(0, 0, 0, .03) 55%, transparent); }
-:root[data-theme="light"] .spotlight .ray i { background: linear-gradient(to top, rgba(0, 0, 0, .4), rgba(0, 0, 0, .1) 45%, transparent); }
-.trailer-open .spotlight { opacity: 0; }
-.lit .trailer-open, .lit .trailer-open * { cursor: auto !important; }   /* the normal arrow over the trailer */
-.lit .trailer-open .trailer-close { cursor: pointer !important; }
+.spotlight.on { opacity: 1; }
+/* The open menu covers the page with black, so the light moves on top of it there.
+   "screen" only brightens, so the white menu words stay as they are. */
+.menu-open .spotlight { z-index: 70; mix-blend-mode: screen; }
+:root[data-theme="light"] .spotlight::before { background: radial-gradient(closest-side, rgba(0, 0, 0, .05), rgba(0, 0, 0, .02) 55%, transparent); }
 
 /* ---------- Links that leave the site: white, underlined, with a small arrow ----------
    The same pattern marks the email button (copy icon) and downloads (arrow down). */
@@ -298,6 +267,10 @@ a[download] {
   .detail, .trailer img { transition: none; }
   .spotlight { display: none; }
 }
+
+/* The play's other languages (en, de, ru next to the title) dim on hover like other links */
+.nav-list .work-aside a { transition: color var(--fast) var(--ease); }
+.nav-list .work-aside a:hover { color: var(--color-muted); }
 
 /* The description moved into the list on phones keeps body-text links, not list-size ones */
 .nav-list .detail a { display: inline; font-size: inherit; line-height: inherit; }

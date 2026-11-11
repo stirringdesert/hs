@@ -208,9 +208,11 @@ ${markdown(body).map((b) => '  ' + b).join('\n')}
     });
     const cta = inline(v.cta, { linkClass: 'accent' });
     const parts = [
-      C.label(cta),
-      C.demoHead(v.demo.title, v.demo.file, ui),
-      C.player(v.demo.file, ui),
+      `<section class="demo">
+${C.demoHead(v.demo.title, v.demo.file, ui)}
+${C.player(v.demo.file, ui)}
+  ${C.label(cta, { extraClass: 'bookings' })}
+</section>`,
       '',
       C.pageTitle(v.works_title, 'works-title'),
       C.label(esc(v.works_label)),
@@ -330,6 +332,8 @@ for (const { f, slug, data, body: raw } of freePages) {
     // Pages in one language only (legal pages): the menu's languages lead to the home pages
     menuAlternates: alternates?.length > 1 ? null : alternatesOf('/'),
     description: data.description,
+    // Reading pages remember "lights on" before anything is drawn, so the page doesn't flash black
+    head: bodyClass === 'theater reading' ? C.READ_LIGHT_BOOT : '',
     // mailto links become copy-to-clipboard buttons (keeps the address away from spam bots)
     main: body.replace(/\s+$/, '').replace(/<a [^>]*href="mailto:([^"]+)"[^>]*>[^<]*<\/a>/g, (_, a) => C.copyEmail(a, { extraClass: 'link', ui: s.ui })),
   }));
