@@ -67,7 +67,7 @@
     "links": [
       {
         "label": "sergeevvoice@gmail.com",
-        "short": "E-mail",
+        "short": "e-mail",
         "copy": "sergeevvoice@gmail.com"
       },
       {
@@ -85,7 +85,7 @@
     "main_menu": "Main",
     "menu": "Menu",
     "language": "Language",
-    "time_in_munich": "Time in Munich",
+    "time_in_munich": "time in Munich",
     "titles": {
       "bio": "Bio",
       "voice": "Voice acting",

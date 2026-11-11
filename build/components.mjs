@@ -100,7 +100,7 @@ ${site.nav.map((n) => `  <a href="${attr(n.url)}">${esc(n.label)}</a>`).join('\n
 </nav>`;
 }
 
-// Top right corner: language switch, then the "Time in Munich" clock (desktop only).
+// Top right corner: language switch, then the "time in Munich" clock (desktop only).
 export function topRight(site, alternates = null) {
   return `<div class="top-right">${alternates?.length > 1 ? langSwitch(site, alternates) : ''}${clock(site)}</div>`;
 }
@@ -134,9 +134,9 @@ export function langPicker(alternates) {
 </div>`;
 }
 
-// "Time in Munich" clock shown at the top right on wide screens (filled in by main.js).
+// "time in Munich" clock shown at the top right on wide screens (filled in by main.js).
 export function clock(site = {}) {
-  return `<p class="clock" aria-hidden="true">${esc(site.ui?.time_in_munich || 'Time in Munich')} <b data-clock>--:--</b></p>`;
+  return `<p class="clock" aria-hidden="true">${esc(site.ui?.time_in_munich || 'time in Munich')} <b data-clock>--:--</b></p>`;
 }
 
 export function footer(site) {
