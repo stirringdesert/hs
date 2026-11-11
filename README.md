@@ -45,7 +45,7 @@ Paragraph of description. Blank lines separate paragraphs.
 Cast: ...
 ```
 
-- `order` sets the position in the list. `video` is optional (the background video). Add `hidden: true` to take a production off the site without deleting it.
+- `order` sets the position in the list. `video` is optional (the background video). Add `sound: true` only if the video file has an audio track: a "Sound" button then appears so visitors can unmute it. Instead of a video, a page can have a background photo: `image: /assets/img/...` (plus `image_alt:`), shown in the same dimmed full-screen style with a slow drift. Add `hidden: true` to take a production off the site without deleting it.
 - Text supports `[link text](url)`, `**bold**`, `*italic*`. A single line break inside a paragraph becomes a line break.
 - Deleting a content file removes its page on the next build.
 
@@ -62,6 +62,10 @@ Put the image in `assets/img/voice/` and add an entry to `roles` in `content/voi
 - **Tokens** (`assets/css/tokens.css`): every color, font size, line height, gutter and animation value. Phone and tablet sizes are set there too, in two media blocks at the bottom. Components use only `var(--...)` tokens for colors and type.
 - **Components** (`build/components.mjs`): `layout`, `header`, `footer`, `pageTitle`, `label`, `workList` (production list with summary), `split` + `detail` (two-column layout), `bgVideo`, `player`, `workCard` / `workGrid`. Each page is assembled from these.
 - **Style guide** (`/styleguide/`, built from `build/styleguide.mjs`): shows all of the above live, so design changes can be checked on one page.
+
+## Playful layer and light mode
+
+`assets/css/fun.css` and `assets/js/fun.js` add the interactive extras: a dot cursor that grows over links, floating video/photo previews when hovering menu items and productions (the map is built from the content files), letters that jump on the big titles, tilting voice cards, contact links that drift toward the cursor, the background-video sound button and a test light mode (round button bottom-left, or `?theme=light` / `?theme=dark` in any URL; remembered per browser). Everything respects the system "reduce motion" setting, and the cursor/previews only run with a mouse. Removing the two files turns all of it off.
 
 ## Publishing
 

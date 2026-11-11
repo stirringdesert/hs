@@ -40,17 +40,38 @@ export function layout(site, { path, title, bodyClass, lang = 'en', description,
   <link rel="icon" href="/assets/img/favicon-light.png" media="(prefers-color-scheme: light)">
   <link rel="icon" href="/assets/img/favicon-dark.png" media="(prefers-color-scheme: dark)">
   <link rel="stylesheet" href="${v('/assets/css/tokens.css')}">
-  <link rel="stylesheet" href="${v('/assets/css/style.css')}">${extraCss.map((h) => `\n  <link rel="stylesheet" href="${v(h)}">`).join('')}
+  <link rel="stylesheet" href="${v('/assets/css/style.css')}">
+  <link rel="stylesheet" href="${v('/assets/css/fun.css')}">${extraCss.map((h) => `\n  <link rel="stylesheet" href="${v(h)}">`).join('')}
+  <script>${THEME_BOOT}</script>
   <script src="${v('/assets/js/main.js')}" defer></script>
+  <script src="${v('/assets/js/fun.js')}" defer></script>
 </head>
 <body class="${bodyClass}">
 ${before ? before + '\n' : ''}${chrome ? header(site) + '\n' : ''}  <main>
 ${indent(main, 4)}
   </main>
 ${footer(site)}
+${themeToggle()}${previewData(site)}
 </body>
 </html>
 `;
+}
+
+// Light mode is a test: the site stays dark unless a visitor picks light with the
+// round button (remembered in the browser) or opens a page with ?theme=light.
+// This runs before the page paints, so there is no dark/light flash.
+const THEME_BOOT = `(function(){try{var q=location.search.match(/[?&]theme=(light|dark)/);if(q)localStorage.setItem('theme',q[1]);if(localStorage.getItem('theme')==='light')document.documentElement.setAttribute('data-theme','light')}catch(e){}})()`;
+
+// Round light/dark switch in the bottom-left corner (wired up in fun.js).
+export function themeToggle() {
+  return `  <button type="button" class="theme-toggle" aria-label="Switch to light mode" title="Light / dark"><i></i></button>`;
+}
+
+// Link -> picture/video map for the floating previews that follow the cursor when
+// you hover a menu item or a production (fun.js). Built from the content files.
+function previewData(site) {
+  if (!site.previews || !Object.keys(site.previews).length) return '';
+  return `\n  <script type="application/json" id="hover-previews">${JSON.stringify(site.previews).replace(/</g, '\\u003c')}</script>`;
 }
 
 export function header(site) {
@@ -88,9 +109,20 @@ export function label(html, { tag = 'h2', extraClass = '' } = {}) {
   return `<${tag} class="label${extraClass ? ' ' + extraClass : ''}">${html}</${tag}>`;
 }
 
-// Fixed full-screen looping video behind a production page.
-export function bgVideo(src) {
-  return `  <div class="bg-video" aria-hidden="true"><video src="${attr(src)}" autoplay muted loop playsinline preload="auto"></video></div>`;
+// Fixed full-screen looping video behind a production page. It always starts muted
+// (browsers block autoplay with sound). With `sound: true` a button lets visitors
+// turn the sound on; only use it for videos that have an audio track.
+export function bgVideo(src, { sound = false } = {}) {
+  const video = `  <div class="bg-video" aria-hidden="true"><video src="${attr(src)}" autoplay muted loop playsinline preload="auto"></video></div>`;
+  if (!sound) return video;
+  return `${video}
+  <button type="button" class="sound-toggle" aria-pressed="false" aria-label="Turn sound on"><span class="eq" aria-hidden="true"><i></i><i></i><i></i><i></i></span><span class="sound-label">Sound</span></button>`;
+}
+
+// Fixed full-screen photo behind a page, styled like the background videos
+// (same dimming and fade-in, plus a slow drift so it feels alive).
+export function bgImage(src, alt = '') {
+  return `  <div class="bg-video bg-image"><img src="${attr(src)}" alt="${attr(alt)}"></div>`;
 }
 
 // List of productions on the left of theater/playwriting pages. The current one opens

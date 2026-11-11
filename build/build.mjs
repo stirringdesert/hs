@@ -43,6 +43,30 @@ function emit(urlPath, html) {
 
 const site = readJson('site.json');
 
+// Productions and plays are loaded up front, so every page can use them (the hover
+// previews in the menu need their videos and photos).
+const sectionItems = {};
+for (const dir of Object.keys(site.sections)) sectionItems[dir] = loadSection(dir);
+
+// Hover previews: which picture or video floats next to the cursor for each link.
+site.previews = {};
+{
+  const media = (it) => it.video || it.image;
+  for (const [dir, items] of Object.entries(sectionItems)) {
+    for (const it of items) if (media(it)) site.previews[it.url] = media(it);
+    const first = items.find(media);
+    if (first) site.previews[`/${dir}/`] = media(first);
+  }
+  try {
+    const bio = parseFrontMatter(readText('bio.md'), 'content/bio.md').data;
+    if (bio.photo) site.previews['/bio/'] = bio.photo;
+  } catch {}
+  try {
+    const roles = readJson('voice.json').roles || [];
+    if (roles[0]) site.previews['/voice/'] = roles[0].image;
+  } catch {}
+}
+
 // ---------- Home ----------
 emit('/', C.layout(site, {
   path: '/',
@@ -117,6 +141,7 @@ function loadSection(dir) {
       const { data, body } = parseFrontMatter(fs.readFileSync(path.join(folder, f), 'utf8'), where);
       need(data.title, 'title', where);
       needAsset(data.video, where);
+      needAsset(data.image, where);
       if (data.hidden) return null;
       return {
         slug,
@@ -124,6 +149,9 @@ function loadSection(dir) {
         title: data.title,
         order: data.order ?? 999,
         video: data.video,
+        sound: data.sound === true || data.sound === 'true',
+        image: data.image,
+        imageAlt: data.image_alt || '',
         summaryHtml: (data.summary || []).map((s) => inline(String(s))),
         linksHtml: (data.links || []).map((s) => inline(String(s), { linkClass: '' })).join(''),
         bodyHtml: markdown(body),
@@ -133,10 +161,8 @@ function loadSection(dir) {
     .sort((a, b) => a.order - b.order || a.title.localeCompare(b.title));
 }
 
-const sectionItems = {};
 for (const [dir, cfg] of Object.entries(site.sections)) {
-  const items = loadSection(dir);
-  sectionItems[dir] = items;
+  const items = sectionItems[dir];
   if (cfg.has_index) {
     emit(`/${dir}/`, C.layout(site, {
       path: `/${dir}/`, title: cfg.page_title, bodyClass: 'theater',
@@ -146,7 +172,7 @@ for (const [dir, cfg] of Object.entries(site.sections)) {
   for (const it of items) {
     emit(it.url, C.layout(site, {
       path: it.url, title: it.title, bodyClass: 'theater',
-      before: it.video ? C.bgVideo(it.video) : '',
+      before: it.video ? C.bgVideo(it.video, { sound: it.sound }) : it.image ? C.bgImage(it.image, it.imageAlt) : '',
       main: `${C.pageTitle(cfg.title)}\n${C.split(C.workList(items, it.slug), C.detail(it.bodyHtml))}`,
     }));
   }
