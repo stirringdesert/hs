@@ -1,7 +1,8 @@
 {
   "name": "Igor Sergeev",
+  "title": "Igor Sergeev: voice actor, director, playwright",
+  "description": "The Russian voice of Leon Kennedy in Resident Evil 4 Remake and Jon Snow in Game of Thrones. Over 100 dubbed films, series and games, 126 audiobooks. Theater director and playwright based in Munich.",
   "url": "https://harrysergeev.com",
-  "description": "Тот самый русский голос Леона Кеннеди в Resident Evil 4 Remake и Джона Сноу в «Игре престолов» и ещё более 100 озвученных проектов: фильмы, сериалы, аудиокниги.",
   "languages": [
     {
       "code": "en",
@@ -65,7 +66,7 @@
     "links": [
       {
         "label": "sergeevvoice@gmail.com",
-        "short": "E-mail",
+        "short": "e-mail",
         "copy": "sergeevvoice@gmail.com"
       },
       {
@@ -83,7 +84,7 @@
     "main_menu": "Main",
     "menu": "Menu", "close": "Close",
     "language": "Language",
-    "time_in_munich": "Time in Munich",
+    "time_in_munich": "time in Munich",
     "titles": {
       "bio": "Bio",
       "voice": "Voice acting",
