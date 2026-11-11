@@ -5,35 +5,56 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Igor Sergeev</title>
-  <meta name="description" content="Тот самый русский голос Леона Кеннеди в Resident Evil 4 Remake и Джона Сноу в «Игре престолов» и ещё более 100 озвученных проектов: фильмы, сериалы, аудиокниги.">
+  <meta name="description" content="The Russian voice of Leon Kennedy in Resident Evil 4 Remake and Jon Snow in Game of Thrones. Over 100 dubbed films, series and games, 126 audiobooks. Theater director and playwright based in Munich.">
   <meta property="og:type" content="website">
   <meta property="og:title" content="Igor Sergeev">
-  <meta property="og:description" content="Тот самый русский голос Леона Кеннеди в Resident Evil 4 Remake и Джона Сноу в «Игре престолов» и ещё более 100 озвученных проектов: фильмы, сериалы, аудиокниги.">
+  <meta property="og:description" content="The Russian voice of Leon Kennedy in Resident Evil 4 Remake and Jon Snow in Game of Thrones. Over 100 dubbed films, series and games, 126 audiobooks. Theater director and playwright based in Munich.">
   <meta property="og:url" content="https://harrysergeev.com/">
   <meta name="twitter:card" content="summary_large_image">
   <link rel="canonical" href="https://harrysergeev.com/">
+  <link rel="alternate" hreflang="en" href="https://harrysergeev.com/">
+  <link rel="alternate" hreflang="de" href="https://harrysergeev.com/de/">
+  <link rel="alternate" hreflang="ru" href="https://harrysergeev.com/ru/">
+  <link rel="alternate" hreflang="x-default" href="https://harrysergeev.com/">
   <link rel="icon" href="/assets/img/favicon-light.png" media="(prefers-color-scheme: light)">
   <link rel="icon" href="/assets/img/favicon-dark.png" media="(prefers-color-scheme: dark)">
-  <link rel="stylesheet" href="/assets/css/tokens.css?v=a5669fc7">
-  <link rel="stylesheet" href="/assets/css/style.css?v=fa6cb37b">
+  <link rel="stylesheet" href="/assets/css/tokens.css?v=48a5253b">
+  <link rel="stylesheet" href="/assets/css/style.css?v=e3f085b0">
+  <link rel="stylesheet" href="/assets/css/fun.css?v=603790aa">
   <link rel="stylesheet" href="/assets/css/type.css?v=4dfba4ad">
-  <script src="/assets/js/main.js?v=20273128" defer></script>
+  <script>(function(){try{var q=location.search.match(/[?&]theme=(light|dark)/);if(q)localStorage.setItem('theme',q[1]);if(localStorage.getItem('theme')==='light')document.documentElement.setAttribute('data-theme','light')}catch(e){}})()</script>
+  <script src="/assets/js/main.js?v=5293f725" defer></script>
+  <script src="/assets/js/fun.js?v=efc9e357" defer></script>
+  <script>
+  (function () {
+    try {
+      var l = localStorage.getItem('lang'), m = {"en":"/","de":"/de/","ru":"/ru/"};
+      if (!l) document.documentElement.classList.add('choose-lang');
+      else if (m[l] && m[l] !== location.pathname) location.replace(m[l]);
+    } catch (e) {}
+  })();
+  </script>
 </head>
 <body class="home">
-  <p class="clock" aria-hidden="true">time in Munich <b data-clock>--:--</b></p>
-  <main>
+<div class="lang-picker" role="dialog" aria-modal="true" aria-label="Language / Sprache / Язык">
+  <nav><a href="/" hreflang="en" lang="en" data-lang="en">en</a><a href="/de/" hreflang="de" lang="de" data-lang="de">de</a><a href="/ru/" hreflang="ru" lang="ru" data-lang="ru">ru</a></nav>
+</div>
+  <main class="home-main">
     <a class="home-name" href="/">Igor Sergeev</a>
-    <nav class="home-nav" aria-label="Main">
-      <a href="/bio/">bio</a>
-      <a href="/voice/">voice acting</a>
-      <a href="/theater/">theater</a>
-      <a href="/playwriting/open-relationship/">playwriting</a>
-      <a href="/contact/">contact</a>
-    </nav>
+    <div class="home-bottom">
+      <nav class="home-nav" aria-label="Main">
+        <a href="/bio/">bio</a>
+        <a href="/voice/">voice acting</a>
+        <a href="/theater/">theater</a>
+        <a href="/open-relationship-en/">playwriting</a>
+        <a href="/contact/">contact</a>
+      </nav>
+      <div class="meta-row"><p class="clock" aria-hidden="true">Time in Munich <b data-clock>--:--</b></p><nav class="lang-switch" aria-label="Language"><a href="/" hreflang="en" lang="en" data-lang="en" aria-current="true">EN</a><a href="/de/" hreflang="de" lang="de" data-lang="de">DE</a><a href="/ru/" hreflang="ru" lang="ru" data-lang="ru">RU</a></nav></div>
+    </div>
   </main>
   <footer class="site-footer">
     <a href="/impressum/">Impressum</a>
-    <a href="/datenschutzerklaerung/">Datenschutzerklärung</a>
+    <a href="/datenschutzerklaerung/">Datenschutz</a>
   </footer>
 </body>
 </html>
