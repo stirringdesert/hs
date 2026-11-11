@@ -45,16 +45,15 @@ img, video { display: block; max-width: 100%; }
 .link:hover { text-decoration: underline; }
 .accent { color: var(--color-accent); }
 
+/* Letter case for these (and every other text) is set in type.css */
 .page-title {
   font-size: var(--type-title);
   line-height: var(--type-title-lh);
-  text-transform: uppercase;
 }
 .label {
   font-weight: var(--weight-bold);
   font-size: var(--type-label);
   line-height: var(--type-label-lh);
-  text-transform: uppercase;
 }
 
 /* ---------- Header ---------- */
@@ -215,7 +214,7 @@ main {
 
 /* ---------- Bio ---------- */
 
-.bio main { position: relative; padding-top: 44px; }
+.bio main { position: relative; }
 .bio-text {
   position: relative;
   z-index: 1;
@@ -299,7 +298,8 @@ main {
 }
 .player .bar:hover .track i::after, .player .bar.dragging .track i::after, .player .bar:focus-visible .track i::after { transform: scale(1); }
 .player-meta {
-  display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;
+  display: flex; justify-content: space-between; align-items: center;
+  flex-wrap: nowrap;   /* time on the left, volume on the right, always one line */
   padding-left: 36px; gap: 8px 24px;
 }
 .player .time { font-size: var(--type-time); line-height: var(--type-time-lh); font-variant-numeric: tabular-nums; }
@@ -326,14 +326,13 @@ main {
   font-size: var(--type-label); line-height: var(--type-label-lh);
   padding: 12px 0;            /* 44 px tall click area */
 }
-.player-meta { flex-wrap: nowrap; }   /* time on the left, volume on the right, always one line */
 
 /* ---------- Voice role cards ---------- */
 
 .works {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 26px 26px;
+  gap: 26px;
   margin-top: 34px;
 }
 .work img { width: 100%; height: 162px; object-fit: cover; background: var(--color-placeholder); }
@@ -379,7 +378,6 @@ main {
 .nav-list .work-links a {
   font-size: var(--type-body);
   line-height: var(--type-body-lh);
-  text-transform: uppercase;
   text-decoration: underline;
   text-underline-offset: 3px;
 }
@@ -409,7 +407,6 @@ main {
    When the next page shows the same picture, it stays lit instead (main.js adds .stage-lit). */
 @keyframes stage-in { from { opacity: 0; transform: scale(1.03); } }
 .stage-lit .bg-video, .stage-lit .bio-photo { animation: none; }
-@media (prefers-reduced-motion: reduce) { .bg-video { animation: none; } }
 .bg-video video { width: 100%; height: 100%; object-fit: cover; }
 
 /* ---------- Play text (open-relationship-ru) ---------- */
@@ -420,8 +417,8 @@ main {
 .play-scene h2 { font-size: 20px; line-height: 20px; text-align: center; margin-bottom: 8px; }
 .play-scene p { line-height: 1.35; }
 .play-title { padding: 300px 0; display: flex; flex-direction: column; gap: 20px; text-align: center; }
-.play-title h1 { font-size: var(--type-title); line-height: var(--type-title-lh); text-transform: uppercase; }
-.play-title h2 { font-size: var(--type-heading); line-height: var(--type-heading-lh); text-transform: uppercase; }
+.play-title h1 { font-size: var(--type-title); line-height: var(--type-title-lh); }
+.play-title h2 { font-size: var(--type-heading); line-height: var(--type-heading-lh); }
 .play-note { margin-bottom: 40px; }
 
 
@@ -461,9 +458,9 @@ main {
 }
 /* After the choice the black lifts while the words shrink into the small switch (main.js) */
 .lang-chosen .lang-picker { background-color: transparent; pointer-events: none; }
-.lang-picker a { transform-origin: 0 0; }
 .lang-picker nav { display: flex; gap: clamp(32px, 9vw, 140px); animation: lang-picker-in .8s var(--ease) both; }
 .lang-picker a {
+  transform-origin: 0 0;
   font-size: var(--type-display);
   line-height: var(--type-display-lh);
   letter-spacing: var(--type-display-tracking);
@@ -473,10 +470,8 @@ main {
 @keyframes lang-picker-in { from { opacity: 0; } }
 @media (prefers-reduced-motion: reduce) { .lang-picker nav { animation: none; } }
 
-/* Contact links read E-MAIL / TELEGRAM / INSTAGRAM at every width, like the Framer site */
-.contact-list { text-transform: uppercase; }
+/* Contact links show their short label (e-mail, telegram, instagram) at every width */
 .contact-list .long { display: none; }
-.contact main > .label { font-weight: var(--weight-regular); }
 
 /* ---------- Desktop layout ---------- */
 
@@ -513,15 +508,10 @@ main {
     align-items: start;
     padding-top: 195px;
   }
-  .contact main > .label {
-    font-size: 67px;
-    line-height: 67px;
-  }
   .contact-list { margin-top: 0; gap: 0; align-items: flex-end; text-align: right; }
 
   /* play text */
   .play main { padding-top: 120px; }
-  .play-body { width: 696px; margin: 0 auto; gap: 40px; }
   .play-scene { gap: 20px; }
   .play-scene h2 { margin-bottom: 20px; }
   .play-scene p { line-height: 24px; text-align: justify; }
@@ -552,7 +542,6 @@ main {
     mask-composite: intersect;
   }
   .bio-text { padding-top: calc(var(--u) * 62); }
-  .play-body { width: 100%; }
   .play-title { padding: 160px 0; }
   .play-title h1 { font-size: 40px; line-height: 44px; }
 }
@@ -578,7 +567,6 @@ main {
 .menu-open .menu .home-name { view-transition-name: site-name; }
 .menu-open .bg-video, .menu-open .bio-photo,
 .vt-contract .bg-video, .vt-contract .bio-photo { view-transition-name: none; }
-.cursor { view-transition-name: site-cursor; }
 .bg-video, .bio-photo { view-transition-name: stage; }
 
 ::view-transition-group(*) { animation-duration: var(--page-in); animation-timing-function: var(--ease-out); }
@@ -592,8 +580,6 @@ main {
 /* Big-to-small name: keep the sharp old picture until late, then swap */
 ::view-transition-old(site-name) { animation: name-out var(--page-in) var(--ease) both; }
 ::view-transition-new(site-name) { animation: name-in var(--page-in) var(--ease) both; }
-/* The custom cursor hides while the page changes instead of freezing in place */
-::view-transition-group(site-cursor) { display: none; }
 
 /* From the home page or the open menu: the old view shrinks into the corner on top of
    the new page, which is already in place underneath */
@@ -610,7 +596,6 @@ main {
 @keyframes contract { from { --reveal: 180vmax; } to { --reveal: 0px; } }
 
 @keyframes fade-out { to { opacity: 0; } }
-@keyframes fade-in { from { opacity: 0; } }
 @keyframes rise-in { from { opacity: 0; transform: translateY(24px); } }
 /* the two pictures of the name overlap at full strength, so it never dims halfway */
 @keyframes name-out { 0%, 55% { opacity: 1; } 80%, 100% { opacity: 0; } }

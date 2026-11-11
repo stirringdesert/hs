@@ -34,6 +34,7 @@ export function layout(site, { path, title, bodyClass, lang = 'en', description,
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
   <title>${esc(fullTitle)}</title>
   <meta name="description" content="${attr(desc)}">${noindex ? '\n  <meta name="robots" content="noindex">' : ''}
   <meta property="og:type" content="website">
@@ -44,12 +45,14 @@ export function layout(site, { path, title, bodyClass, lang = 'en', description,
   <link rel="canonical" href="${attr(url)}">${hreflang}
   <link rel="icon" href="/assets/img/favicon-light.png" media="(prefers-color-scheme: light)">
   <link rel="icon" href="/assets/img/favicon-dark.png" media="(prefers-color-scheme: dark)">
+${FONT_PRELOADS}
   <link rel="stylesheet" href="${v('/assets/css/tokens.css')}">
   <link rel="stylesheet" href="${v('/assets/css/style.css')}">
   <link rel="stylesheet" href="${v('/assets/css/type.css')}">
   <link rel="stylesheet" href="${v('/assets/css/fun.css')}">${extraCss.map((h) => `\n  <link rel="stylesheet" href="${v(h)}">`).join('')}${stageBoot(before + main)}
   <script src="${v('/assets/js/main.js')}" defer></script>
-  <script src="${v('/assets/js/fun.js')}" defer></script>${head ? '\n' + indent(head, 2) : ''}
+  <script src="${v('/assets/js/fun.js')}" defer></script>
+  ${PREFETCH}${head ? '\n' + indent(head, 2) : ''}
 </head>
 <body class="${bodyClass}">
 ${before ? before + '\n' : ''}${chrome ? header(site, menuAlternates || alternates) + '\n' : ''}  <main${mainClass ? ` class="${mainClass}"` : ''}>
@@ -59,6 +62,15 @@ ${indent(main, 4)}
 </html>
 `;
 }
+
+// Fonts start downloading together with the HTML instead of after the CSS is read,
+// so text appears in the right font straight away (no flash of a fallback font).
+const FONT_PRELOADS = ['regular', 'demibold']
+  .map((w) => `  <link rel="preload" href="/assets/fonts/tt-firs-neue-${w}.woff2" as="font" type="font/woff2" crossorigin>`).join('\n');
+
+// Chrome and Edge fetch a page in the background while the pointer rests on its link,
+// so the click opens it at once. Files (PDFs, audio, video) are never fetched early.
+const PREFETCH = `<script type="speculationrules">{"prefetch":[{"where":{"and":[{"href_matches":"/*"},{"not":{"href_matches":"/assets/*"}}]},"eagerness":"moderate"}]}</script>`;
 
 // When the previous page showed the same background photo or video (e.g. switching
 // language), it stays lit instead of fading in again. Runs before the first paint.
@@ -149,12 +161,12 @@ ${site.footer.map((n) => `    <a href="${attr(n.url)}">${esc(n.label)}</a>`).joi
   </footer>`;
 }
 
-// Big uppercase heading, e.g. "Director", "Works".
+// Big page heading, e.g. "director", "works" (lowercase comes from type.css).
 export function pageTitle(text, extraClass = '') {
   return `<h1 class="page-title${extraClass ? ' ' + extraClass : ''}">${esc(text)}</h1>`;
 }
 
-// Small bold uppercase line. `html` is already-safe markup.
+// Small bold label line. `html` is already-safe markup.
 export function label(html, { tag = 'h2', extraClass = '' } = {}) {
   return `<${tag} class="label${extraClass ? ' ' + extraClass : ''}">${html}</${tag}>`;
 }
@@ -181,7 +193,7 @@ export function trailer({ embed, image, url, label = 'Trailer', duration = '' })
 // Fixed full-screen photo behind a page, styled like the background videos
 // (same dimming and fade-in, plus a slow drift so it feels alive).
 export function bgImage(src, alt = '') {
-  return `  <div class="bg-video bg-image"><img src="${attr(src)}" alt="${attr(alt)}"></div>`;
+  return `  <div class="bg-video bg-image"><img src="${attr(src)}" alt="${attr(alt)}" fetchpriority="high"></div>`;
 }
 
 // List of productions on the left of theater/playwriting pages. The current one opens
@@ -218,7 +230,7 @@ export const READ_LIGHT_BOOT = `<script>try{if(localStorage.getItem('hs-reading-
 export function demoHead(title, src, ui = {}) {
   return `<div class="demo-head">
   <h1 class="page-title">${esc(title)}</h1>
-  <a class="download" href="${attr(src)}" download>${esc(ui.download || 'DOWNLOAD')}</a>
+  <a class="download" href="${attr(src)}" download>${esc(ui.download || 'download')}</a>
 </div>`;
 }
 

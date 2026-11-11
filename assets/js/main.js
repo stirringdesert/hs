@@ -99,7 +99,7 @@ window.addEventListener('pagereveal', function (e) {
 })();
 
 // Background photo or video: remember it when leaving, so the next page can keep it
-// lit if it shows the same one (the check runs in <head>, see STAGE_BOOT in components.mjs).
+// lit if it shows the same one (the check runs in <head>, see stageBoot in components.mjs).
 (function () {
   var stage = document.querySelector('.bg-video video, .bg-video img, .bio-photo img');
   window.addEventListener('pagehide', function () {
