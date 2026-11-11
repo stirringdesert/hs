@@ -44,8 +44,8 @@ export function layout(site, { path, title, bodyClass, lang = 'en', description,
   <link rel="icon" href="/assets/img/favicon-dark.png" media="(prefers-color-scheme: dark)">
   <link rel="stylesheet" href="${v('/assets/css/tokens.css')}">
   <link rel="stylesheet" href="${v('/assets/css/style.css')}">
-  <link rel="stylesheet" href="${v('/assets/css/fun.css')}">
-  <link rel="stylesheet" href="${v('/assets/css/type.css')}">${extraCss.map((h) => `\n  <link rel="stylesheet" href="${v(h)}">`).join('')}
+  <link rel="stylesheet" href="${v('/assets/css/type.css')}">
+  <link rel="stylesheet" href="${v('/assets/css/fun.css')}">${extraCss.map((h) => `\n  <link rel="stylesheet" href="${v(h)}">`).join('')}
   <script>${THEME_BOOT}</script>${stageBoot(before + main)}
   <script src="${v('/assets/js/main.js')}" defer></script>
   <script src="${v('/assets/js/fun.js')}" defer></script>${head ? '\n' + indent(head, 2) : ''}

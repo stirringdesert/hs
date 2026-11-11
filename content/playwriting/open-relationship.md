@@ -1,6 +1,8 @@
 ---
 title: Open Relationship
 order: 1
+image: /assets/img/open-relationship.jpg
+image_alt: Igor Sergeev and Rostislav Godlevsky
 summary:
   - First part completed: July 2024
 links:
