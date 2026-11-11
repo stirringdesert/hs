@@ -147,36 +147,19 @@
 
   if (reduce || !finePointer) return;   // the spotlight only makes sense with a mouse
 
-  // ---- Spotlight: the mouse is a soft pool of light on the dark stage ----
-  // It replaces the arrow. Over anything clickable the light gets much brighter and a
-  // little larger, and the thing under it turns black (fun.css).
+  // ---- Spotlight: a soft pool of light follows the mouse across the dark stage ----
+  // The normal arrow stays, so aiming at links works as usual.
   var light = document.createElement('div');
   light.className = 'spotlight';
   light.setAttribute('aria-hidden', 'true');
   document.body.appendChild(light);
-  var CLICKABLE = 'a, button, input, select, label, summary, [role="slider"]';
   var x = 0, y = 0, queued = false;
   function draw() { queued = false; light.style.transform = 'translate3d(' + x + 'px,' + y + 'px,0)'; }
   document.addEventListener('pointermove', function (e) {
     if (e.pointerType !== 'mouse') return;
     x = e.clientX; y = e.clientY;
     light.classList.add('on');
-    root.classList.add('lit');                    // hides the arrow (fun.css)
     if (!queued) { queued = true; requestAnimationFrame(draw); }
   }, { passive: true });
-  document.addEventListener('pointerover', function (e) {
-    light.classList.toggle('aim', !!(e.target.closest && e.target.closest(CLICKABLE)));
-  }, { passive: true });
-  root.addEventListener('mouseleave', function () { light.classList.remove('on'); });
-  // a finger or pen brings the normal pointer back
-  document.addEventListener('pointerdown', function (e) { if (e.pointerType !== 'mouse') { root.classList.remove('lit'); light.classList.remove('on'); } }, { passive: true });
-  // The open menu has its own black background, so the light moves inside it (behind
-  // its words) while it is open, and back to the page when it closes.
-  var menu = document.querySelector('.menu');
-  if (menu && window.MutationObserver) {
-    new MutationObserver(function () {
-      var into = document.body.classList.contains('menu-open') ? menu : document.body;
-      if (light.parentNode !== into) into.appendChild(light);
-    }).observe(document.body, { attributes: true, attributeFilter: ['class'] });
-  }
+  document.documentElement.addEventListener('mouseleave', function () { light.classList.remove('on'); });
 })();
