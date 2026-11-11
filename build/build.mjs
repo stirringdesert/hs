@@ -211,7 +211,7 @@ ${markdown(body).map((b) => '  ' + b).join('\n')}
       `<section class="demo">
 ${C.demoHead(v.demo.title, v.demo.file, ui)}
 ${C.player(v.demo.file, ui)}
-  ${C.label(cta, { extraClass: 'bookings' })}
+  <p class="bookings">${cta}</p>
 </section>`,
       '',
       C.pageTitle(v.works_title, 'works-title'),
