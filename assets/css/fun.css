@@ -102,8 +102,10 @@ body { transition: background-color .4s var(--ease), color .4s var(--ease); }
 .trailer-open .bg-video { opacity: 0 !important; }
 
 /* ---------- Spotlight (mouse only) ----------
-   A soft pool of light that follows the mouse, like a follow spot on a dark stage.
-   It sits behind the text and never covers it; the normal arrow stays. */
+   The mouse is a soft pool of light, like a follow spot on a dark stage; there is no arrow.
+   It sits behind the text. Over anything clickable it gets much brighter and a little
+   larger, and the link under it turns black, lit up like an actor in the spot. */
+.lit, .lit * { cursor: none !important; }
 .spotlight {
   position: fixed;
   top: 0;
@@ -115,7 +117,8 @@ body { transition: background-color .4s var(--ease), color .4s var(--ease); }
   opacity: 0;
   transition: opacity .6s var(--ease);
 }
-.spotlight::before {
+.spotlight::before,
+.spotlight::after {
   content: "";
   position: absolute;
   left: -280px;
@@ -123,13 +126,36 @@ body { transition: background-color .4s var(--ease), color .4s var(--ease); }
   width: 560px;
   height: 560px;
   border-radius: 50%;
-  background: radial-gradient(closest-side, rgba(255, 255, 255, .12), rgba(255, 255, 255, .05) 55%, transparent);
+  transition: opacity .35s var(--ease), transform .45s cubic-bezier(.2, .7, .2, 1);
+}
+.spotlight::before { background: radial-gradient(closest-side, rgba(255, 255, 255, .12), rgba(255, 255, 255, .05) 55%, transparent); }
+/* the bright version, faded in over links */
+.spotlight::after {
+  background: radial-gradient(closest-side, rgba(255, 255, 255, .95), rgba(255, 255, 255, .8) 22%, rgba(255, 255, 255, .35) 50%, rgba(255, 255, 255, .08) 75%, transparent);
+  opacity: 0;
+  transform: scale(.9);
 }
 .spotlight.on { opacity: 1; }
-/* The open menu covers the page with black, so the light moves on top of it there.
-   "screen" only brightens, so the white menu words stay as they are. */
-.menu-open .spotlight { z-index: 70; mix-blend-mode: screen; }
+.spotlight.aim::after { opacity: 1; transform: scale(1.15); }
+.spotlight.aim::before { opacity: 0; }
+.menu > .spotlight { z-index: -1; }   /* inside the open menu: above its black, below its words */
+/* the hovered link turns to the page's background colour: black on the dark stage */
+.lit a:hover, .lit a:hover *, .lit button:hover, .lit [role="slider"]:hover, .lit label:hover, .lit summary:hover { color: var(--color-bg) !important; text-shadow: none !important; }
+.lit .player button:hover svg { fill: var(--color-bg); }
+/* Light mode (play page): the same, in negative */
 :root[data-theme="light"] .spotlight::before { background: radial-gradient(closest-side, rgba(0, 0, 0, .05), rgba(0, 0, 0, .02) 55%, transparent); }
+:root[data-theme="light"] .spotlight::after { background: radial-gradient(closest-side, rgba(0, 0, 0, .9), rgba(0, 0, 0, .75) 22%, rgba(0, 0, 0, .3) 50%, rgba(0, 0, 0, .06) 75%, transparent); }
+/* ...except where light mode keeps a dark stage (the top of the play page, the menu):
+   there the light stays white and hovered links go black, as in dark mode */
+:root[data-theme="light"] .menu > .spotlight::before { background: radial-gradient(closest-side, rgba(255, 255, 255, .12), rgba(255, 255, 255, .05) 55%, transparent); }
+:root[data-theme="light"] .menu > .spotlight::after { background: radial-gradient(closest-side, rgba(255, 255, 255, .95), rgba(255, 255, 255, .8) 22%, rgba(255, 255, 255, .35) 50%, rgba(255, 255, 255, .08) 75%, transparent); }
+:root[data-theme="light"].lit .reading .split a:hover,
+:root[data-theme="light"].lit .reading .split a:hover *,
+:root[data-theme="light"].lit:not(.scrolled) .reading .site-header a:hover { color: #fff !important; }
+/* The trailer popup keeps the normal arrow for the video's own controls */
+.trailer-open .spotlight { opacity: 0; }
+.lit .trailer-open, .lit .trailer-open * { cursor: auto !important; }
+.lit .trailer-open .trailer-close { cursor: pointer !important; }
 
 /* ---------- Links that leave the site: white, underlined, with a small arrow ----------
    The same pattern marks the email button (copy icon) and downloads (arrow down). */
