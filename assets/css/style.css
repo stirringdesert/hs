@@ -176,13 +176,23 @@ main {
   min-height: 100vh;
   min-height: 100svh;
 }
-.home-top { display: flex; flex-direction: column; align-items: flex-start; gap: 6px; }
+/* Phones: the time sits under the name. Wider screens: in the top-right corner. */
+.home-top { display: flex; flex-direction: column; align-items: flex-start; gap: 14px; }
+@media (min-width: 641px) {
+  .home-top { flex-direction: row; justify-content: space-between; gap: 24px; }
+  .home-top .clock { padding-top: calc(var(--type-display) * .3); }
+}
 .home-name,
 .home-nav a {
   font-size: var(--type-display);
   letter-spacing: var(--type-display-tracking);
 }
-.home-name { line-height: var(--type-display-lh); width: fit-content; transform-origin: 0 0; }
+.home-name { line-height: var(--type-display-lh); width: fit-content; transform-origin: 0 0; white-space: nowrap; }
+/* The big name in the menu always stays on one line with its arrow. «Игорь Сергеев» is
+   the longest: on narrow phones it gets just small enough to fit (about 7.95em wide). */
+.home-name .menu-arrow { width: .5em; height: .5em; }
+.home-name.menu-toggle { gap: .25em; }
+.menu .home-name:lang(ru) { font-size: min(var(--type-display), calc((100vw - 2 * var(--gutter)) / 7.95)); }
 .home-nav { display: flex; flex-direction: column; margin-top: auto; padding-top: 40px; }
 .home-nav a { line-height: var(--type-display-nav-lh); width: fit-content; }
 .home-nav a:hover { color: var(--color-muted); }
