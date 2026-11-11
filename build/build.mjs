@@ -129,6 +129,7 @@ function loadSection(dir, lang) {
       need(data.title, 'title', where);
       needAsset(data.video, where);
       needAsset(data.image, where);
+      if (data.trailer) { need(data.trailer_image, 'trailer_image', where); needAsset(data.trailer_image, where); }
       if (data.hidden) return null;
       return {
         slug,
@@ -139,6 +140,7 @@ function loadSection(dir, lang) {
         sound: data.sound === true || data.sound === 'true',
         image: data.image,
         imageAlt: data.image_alt || '',
+        trailer: data.trailer ? { embed: data.trailer, image: data.trailer_image, url: data.trailer_url, duration: data.trailer_duration } : null,
         summaryHtml: (data.summary || []).map((s) => inline(String(s))),
         linksHtml: (data.links || []).map((s) => inline(String(s), { linkClass: '' })).join(''),
         bodyHtml: markdown(body),
@@ -151,31 +153,6 @@ function loadSection(dir, lang) {
 for (const [dir, cfg] of Object.entries(site.sections)) {
   if (cfg.has_index) localRoutes.add(`/${dir}/`);
   for (const it of loadSection(dir, DEFAULT)) localRoutes.add(it.url);
-}
-
-// Hover previews: which picture or video floats next to the cursor for each link
-// (fun.js). Built from the English content; the same media is used in every language.
-site.previews = {};
-{
-  const media = (it) => it.video || it.image;
-  for (const dir of Object.keys(site.sections)) {
-    const items = loadSection(dir, DEFAULT);
-    for (const it of items) if (media(it)) site.previews[it.url] = media(it);
-    const first = items.find(media);
-    if (first) site.previews[`/${dir}/`] = media(first);
-  }
-  try {
-    const bio = parseFrontMatter(readText('bio.md'), 'content/bio.md').data;
-    if (bio.photo) site.previews['/bio/'] = bio.photo;
-  } catch {}
-  try {
-    const roles = readJson('voice.json').roles || [];
-    if (roles[0]) site.previews['/voice/'] = roles[0].image;
-  } catch {}
-  for (const l of LANGS) {
-    if (l.code === DEFAULT) continue;
-    for (const [u, m] of Object.entries(site.previews)) if (localRoutes.has(u)) site.previews[prefix(l.code) + u] = m;
-  }
 }
 
 const sectionItems = {};
@@ -265,7 +242,9 @@ ${v.audiobooks.text.map((t) => `    <p>${inline(t, { linkClass: 'accent' })}</p>
       page(`/${dir}/${it.slug}/`, {
         title: it.title, bodyClass: 'theater',
         before: it.video ? C.bgVideo(it.video, { sound: it.sound }) : it.image ? C.bgImage(it.image, it.imageAlt) : '',
-        main: `${C.pageTitle(cfg.title)}\n${C.split(C.workList(items, it.slug), C.detail(it.bodyHtml))}`,
+        main: `${C.pageTitle(cfg.title)}\n${C.split(C.workList(items, it.slug), C.detail(it.trailer
+          ? [C.trailer({ ...it.trailer, label: ui.trailer || 'Trailer' }), ...it.bodyHtml]
+          : it.bodyHtml))}`,
       });
     }
   }

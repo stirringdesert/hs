@@ -80,7 +80,7 @@
   --page-out: .25s;            /* old page leaving: always quicker than arriving */
   --menu-in: .55s;             /* menu links rising one after another */
   --stagger: .05s;             /* delay between items that arrive one after another */
-  --bg-video-opacity: .5;
+  --bg-video-opacity: .65;
   --bg-video-fade: 3s;
   --bio-photo-opacity: .8;
 }
