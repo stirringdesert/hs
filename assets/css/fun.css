@@ -141,19 +141,17 @@ body { transition: background-color .4s var(--ease), color .4s var(--ease); }
 .spotlight.aim::after { opacity: 1; transform: scale(1.15); }
 .spotlight.aim::before { opacity: 0; }
 .menu > .spotlight { z-index: -1; }   /* inside the open menu: above its black, below its words */
-/* the hovered link turns to the page's background colour: black on the dark stage */
-.lit a:hover, .lit a:hover *, .lit button:hover, .lit [role="slider"]:hover, .lit label:hover, .lit summary:hover { color: var(--color-bg) !important; text-shadow: none !important; }
-.lit .player button:hover svg { fill: var(--color-bg); }
+/* The hovered link turns black only where the light falls on it: white text in
+   "difference" mode shows dark over the bright pool and stays white on the dark stage,
+   so a long link never disappears at its edges. It works the same in light mode. */
+.lit a:hover, .lit button:hover, .lit [role="slider"]:hover, .lit label:hover, .lit summary:hover { color: #fff !important; text-shadow: none !important; mix-blend-mode: difference; }
+.lit a:hover *, .lit .player button:hover svg { color: #fff !important; fill: #fff; }
 /* Light mode (play page): the same, in negative */
 :root[data-theme="light"] .spotlight::before { background: radial-gradient(closest-side, rgba(0, 0, 0, .05), rgba(0, 0, 0, .02) 55%, transparent); }
 :root[data-theme="light"] .spotlight::after { background: radial-gradient(closest-side, rgba(0, 0, 0, .9), rgba(0, 0, 0, .75) 22%, rgba(0, 0, 0, .3) 50%, rgba(0, 0, 0, .06) 75%, transparent); }
-/* ...except where light mode keeps a dark stage (the top of the play page, the menu):
-   there the light stays white and hovered links go black, as in dark mode */
+/* ...except in the menu, which stays a dark stage in light mode too */
 :root[data-theme="light"] .menu > .spotlight::before { background: radial-gradient(closest-side, rgba(255, 255, 255, .12), rgba(255, 255, 255, .05) 55%, transparent); }
 :root[data-theme="light"] .menu > .spotlight::after { background: radial-gradient(closest-side, rgba(255, 255, 255, .95), rgba(255, 255, 255, .8) 22%, rgba(255, 255, 255, .35) 50%, rgba(255, 255, 255, .08) 75%, transparent); }
-:root[data-theme="light"].lit .reading .split a:hover,
-:root[data-theme="light"].lit .reading .split a:hover *,
-:root[data-theme="light"].lit:not(.scrolled) .reading .site-header a:hover { color: #fff !important; }
 /* The trailer popup keeps the normal arrow for the video's own controls */
 .trailer-open .spotlight { opacity: 0; }
 .lit .trailer-open, .lit .trailer-open * { cursor: auto !important; }
