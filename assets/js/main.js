@@ -9,8 +9,11 @@
       document.body.classList.toggle('menu-open', open);
       btn.setAttribute('aria-expanded', open ? 'true' : 'false');
     }
-    if (document.startViewTransition && !reduce.matches) document.startViewTransition(apply);
-    else apply();
+    if (!document.startViewTransition || reduce.matches) return apply();
+    var root = document.documentElement;
+    root.classList.add('vt-menu');   // menu cross-fade instead of a page change (style.css)
+    var vt = document.startViewTransition(apply);
+    vt.finished.finally(function () { root.classList.remove('vt-menu'); });
   }
   btn.addEventListener('click', function () { set(!document.body.classList.contains('menu-open')); });
   document.addEventListener('keydown', function (e) {
@@ -19,6 +22,15 @@
   // Coming back with the browser's Back button can restore the page with the menu still open
   window.addEventListener('pageshow', function (e) {
     if (e.persisted) { document.body.classList.remove('menu-open'); btn.setAttribute('aria-expanded', 'false'); }
+  });
+})();
+
+// Background photo or video: remember it when leaving, so the next page can keep it
+// lit if it shows the same one (the check runs in <head>, see STAGE_BOOT in components.mjs).
+(function () {
+  var stage = document.querySelector('.bg-video video, .bg-video img, .bio-photo img');
+  window.addEventListener('pagehide', function () {
+    try { var src = stage ? stage.getAttribute('src') : ''; sessionStorage.setItem('stage', src.slice(src.indexOf('assets/'))); } catch (e) {}
   });
 })();
 

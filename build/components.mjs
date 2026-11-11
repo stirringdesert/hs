@@ -44,8 +44,9 @@ export function layout(site, { path, title, bodyClass, lang = 'en', description,
   <link rel="icon" href="/assets/img/favicon-dark.png" media="(prefers-color-scheme: dark)">
   <link rel="stylesheet" href="${v('/assets/css/tokens.css')}">
   <link rel="stylesheet" href="${v('/assets/css/style.css')}">
+  <link rel="stylesheet" href="${v('/assets/css/type.css')}">
   <link rel="stylesheet" href="${v('/assets/css/fun.css')}">${extraCss.map((h) => `\n  <link rel="stylesheet" href="${v(h)}">`).join('')}
-  <script>${THEME_BOOT}</script>
+  <script>${THEME_BOOT}</script>${stageBoot(before + main)}
   <script src="${v('/assets/js/main.js')}" defer></script>
   <script src="${v('/assets/js/fun.js')}" defer></script>${head ? '\n' + indent(head, 2) : ''}
 </head>
@@ -57,6 +58,14 @@ ${footer(site)}
 </body>
 </html>
 `;
+}
+
+// When the previous page showed the same background photo or video (e.g. switching
+// language), it stays lit instead of fading in again. Runs before the first paint.
+function stageBoot(html) {
+  const m = html.match(/class="(?:bg-video[^"]*|bio-photo)"[^>]*>\s*<(?:video|img) src="([^"]+)"/);
+  if (!m) return '';
+  return `\n  <script>try{if(sessionStorage.getItem('stage')===${JSON.stringify(m[1].replace(/^\//, '')).replace(/</g, '\\u003c')})document.documentElement.classList.add('stage-lit')}catch(e){}</script>`;
 }
 
 // Light mode is a test: the site stays dark unless a visitor picks light with the
@@ -180,7 +189,9 @@ export function workList(items, currentSlug) {
     const lines = it.summaryHtml.map((p) => `      <p>${p}</p>`);
     if (it.linksHtml) lines.push(`      <p class="work-links">${it.linksHtml}</p>`);
     const summary = lines.length ? `\n    <div class="summary">\n${lines.join('\n')}\n    </div>\n  ` : '';
-    return `  <li class="current${it.trailer ? ' has-film' : ''}"><a href="${attr(it.url)}" aria-current="page">${esc(it.title)}</a>${summary}</li>`;
+    const title = `<a href="${attr(it.url)}" aria-current="page">${esc(it.title)}</a>`;
+    const head = it.asideHtml ? `<div class="work-head">${title}<span class="work-aside">${it.asideHtml}</span></div>` : title;
+    return `  <li class="current${it.trailer ? ' has-film' : ''}">${head}${summary}</li>`;
   });
   return `<ul class="nav-list">\n${li.join('\n')}\n</ul>`;
 }

@@ -70,14 +70,19 @@
   --header-height: 54px;
 
   /* ---- Motion ---- */
+  /* Three speeds and one curve for everything that moves:
+     quick feedback (hover, buttons), a scene change (menu, page), and the stage
+     lighting up (background videos and photos). */
   --ease: ease;
-  --fast: .25s;
-  --ease-out: cubic-bezier(.2, .7, .2, 1);  /* quick start, soft landing */
-  --page-in: .45s;             /* page transition: new page fades/slides in */
-  --page-out: .2s;             /* page transition: old page fades out */
-  --menu-in: .5s;              /* menu links sliding up when the menu opens */
+  --ease-out: cubic-bezier(.2, .7, .2, 1);  /* quick start, soft landing: used for almost all motion */
+  --fast: .2s;                 /* hover and button feedback */
+  --page-in: .55s;             /* new page / open menu arriving */
+  --page-out: .25s;            /* old page leaving: always quicker than arriving */
+  --menu-in: .55s;             /* menu links rising one after another */
+  --stagger: .05s;             /* delay between items that arrive one after another */
   --bg-video-opacity: .65;
   --bg-video-fade: 3s;
+  --bio-photo-opacity: .8;
 }
 
 /* No breakpoint blocks: the fluid sizes above cover every screen width. */
