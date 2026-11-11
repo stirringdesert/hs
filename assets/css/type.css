@@ -25,6 +25,7 @@
 .label,                                /* official russian dubs */
 .nav-list .work-links a,               /* russian  english  german / download pdf */
 .player .download,                     /* download */
+.demo-head .download,                  /* download, next to the demo title */
 .lang-switch a,                        /* en de ru */
 .site-footer a,                        /* impressum  datenschutzerklärung */
 .sound-toggle,
