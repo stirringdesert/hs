@@ -34,7 +34,7 @@
   "ui": {
     "trailer": "Ganzes Stück",
     "main_menu": "Hauptmenü",
-    "menu": "Menü",
+    "menu": "Menü", "close": "Schließen",
     "language": "Sprache",
     "time_in_munich": "zeit in München",
     "titles": {

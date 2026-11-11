@@ -19,42 +19,16 @@
   <link rel="icon" href="/assets/img/favicon-light.png" media="(prefers-color-scheme: light)">
   <link rel="icon" href="/assets/img/favicon-dark.png" media="(prefers-color-scheme: dark)">
   <link rel="stylesheet" href="/assets/css/tokens.css?v=48a5253b">
-  <link rel="stylesheet" href="/assets/css/style.css?v=9d83ead3">
-  <link rel="stylesheet" href="/assets/css/type.css?v=4dfba4ad">
+  <link rel="stylesheet" href="/assets/css/style.css?v=e3f085b0">
   <link rel="stylesheet" href="/assets/css/fun.css?v=603790aa">
+  <link rel="stylesheet" href="/assets/css/type.css?v=4dfba4ad">
   <script>(function(){try{var q=location.search.match(/[?&]theme=(light|dark)/);if(q)localStorage.setItem('theme',q[1]);if(localStorage.getItem('theme')==='light')document.documentElement.setAttribute('data-theme','light')}catch(e){}})()</script>
-  <script src="/assets/js/main.js?v=796d4ca9" defer></script>
+  <script src="/assets/js/main.js?v=90c69bbc" defer></script>
   <script src="/assets/js/fun.js?v=efc9e357" defer></script>
 </head>
-<body class="voice menu-everywhere">
+<body class="voice">
   <header class="site-header">
     <a class="name" href="/ru/">Игорь Сергеев</a>
-    <nav class="header-nav" aria-label="Главное меню">
-      <a href="/ru/bio/">био</a>
-      <a href="/ru/voice/">озвучка</a>
-      <a href="/ru/theater/">театр</a>
-      <a href="/open-relationship-ru/">драматургия</a>
-      <a href="/ru/contact/">контакты</a>
-    </nav>
-    <div class="top-right"><nav class="lang-switch" aria-label="Язык"><a href="/voice/" hreflang="en" lang="en" data-lang="en">EN</a><a href="/de/voice/" hreflang="de" lang="de" data-lang="de">DE</a><a href="/ru/voice/" hreflang="ru" lang="ru" data-lang="ru" aria-current="true">RU</a></nav><p class="clock" aria-hidden="true">время в Мюнхене <b data-clock>--:--</b></p></div>
-    <button class="menu-toggle" aria-label="Меню" aria-expanded="false" aria-controls="menu"><span></span><span></span><span></span></button>
-    <div class="menu" id="menu">
-      <div class="home-main">
-        <a class="home-name" href="/ru/">Игорь Сергеев</a>
-        <nav class="home-nav" aria-label="Главное меню">
-          <a href="/ru/bio/">био</a>
-          <a href="/ru/voice/">озвучка</a>
-          <a href="/ru/theater/">театр</a>
-          <a href="/open-relationship-ru/">драматургия</a>
-          <a href="/ru/contact/">контакты</a>
-        </nav>
-      </div>
-    <nav class="lang-switch menu-langs" aria-label="Язык"><a href="/voice/" hreflang="en" lang="en" data-lang="en">EN</a><a href="/de/voice/" hreflang="de" lang="de" data-lang="de">DE</a><a href="/ru/voice/" hreflang="ru" lang="ru" data-lang="ru" aria-current="true">RU</a></nav>
-      <footer class="site-footer">
-        <a href="/impressum/">Impressum</a>
-        <a href="/datenschutzerklaerung/">Datenschutz</a>
-      </footer>
-    </div>
   </header>
   <main>
     <h2 class="label">по вопросам озвучки и сотрудничества — <a class="accent" href="/ru/contact/">напишите мне</a></h2>
@@ -156,5 +130,18 @@
     <a href="/impressum/">Impressum</a>
     <a href="/datenschutzerklaerung/">Datenschutz</a>
   </footer>
+  <nav class="corner-menu" aria-label="Главное меню">
+    <div class="corner-panel" id="corner-panel">
+      <div class="corner-links">
+        <a href="/ru/bio/">био</a>
+        <a href="/ru/voice/">озвучка</a>
+        <a href="/ru/theater/">театр</a>
+        <a href="/open-relationship-ru/">драматургия</a>
+        <a href="/ru/contact/">контакты</a>
+      </div>
+      <div class="meta-row"><p class="clock" aria-hidden="true">время в Мюнхене <b data-clock>--:--</b></p><nav class="lang-switch" aria-label="Язык"><a href="/voice/" hreflang="en" lang="en" data-lang="en">EN</a><a href="/de/voice/" hreflang="de" lang="de" data-lang="de">DE</a><a href="/ru/voice/" hreflang="ru" lang="ru" data-lang="ru" aria-current="true">RU</a></nav></div>
+    </div>
+    <button type="button" class="corner-toggle" aria-expanded="false" aria-controls="corner-panel"><span class="when-closed">меню</span><span class="when-open" aria-hidden="true">закрыть</span></button>
+  </nav>
 </body>
 </html>
