@@ -327,6 +327,8 @@ for (const { f, slug, data, body: raw } of freePages) {
   }
   emit(`/${slug}/`, C.layout(s, {
     path: `/${slug}/`, title: data.title, lang, bodyClass, alternates, before,
+    // Pages in one language only (legal pages): the menu's languages lead to the home pages
+    menuAlternates: alternates?.length > 1 ? null : alternatesOf('/'),
     description: data.description,
     // mailto links become copy-to-clipboard buttons (keeps the address away from spam bots)
     main: body.replace(/\s+$/, '').replace(/<a [^>]*href="mailto:([^"]+)"[^>]*>[^<]*<\/a>/g, (_, a) => C.copyEmail(a, { extraClass: 'link', ui: s.ui })),

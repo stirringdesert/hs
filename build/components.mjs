@@ -20,7 +20,7 @@ const PLAY_ICON = 'M5.379 1.292C4.968 1.033 4.449 1.017 4.023 1.251 3.598 1.486 
 // Full HTML document. `chrome: false` leaves out the header (used by the home page).
 // The legal links live in the home view, so every page reaches them: on the home page
 // directly, everywhere else through the menu.
-export function layout(site, { path, title, bodyClass, lang = 'en', description, main, mainClass = '', before = '', chrome = true, noindex = false, extraCss = [], alternates = null, head = '' }) {
+export function layout(site, { path, title, bodyClass, lang = 'en', description, main, mainClass = '', before = '', chrome = true, noindex = false, extraCss = [], alternates = null, menuAlternates = null, head = '' }) {
   const fullTitle = title ? `${title} - ${site.name}` : site.name;
   const desc = description || site.description;
   const url = site.url + path;
@@ -52,7 +52,7 @@ export function layout(site, { path, title, bodyClass, lang = 'en', description,
   <script src="${v('/assets/js/fun.js')}" defer></script>${head ? '\n' + indent(head, 2) : ''}
 </head>
 <body class="${bodyClass}">
-${before ? before + '\n' : ''}${chrome ? header(site, alternates) + '\n' : ''}  <main${mainClass ? ` class="${mainClass}"` : ''}>
+${before ? before + '\n' : ''}${chrome ? header(site, menuAlternates || alternates) + '\n' : ''}  <main${mainClass ? ` class="${mainClass}"` : ''}>
 ${indent(main, 4)}
   </main>
 </body>
@@ -84,14 +84,16 @@ ${indent(homeView(site, alternates, { inMenu: true }), 6)}
   </header>`;
 }
 
-// The home page view: big name at the top, big menu at the bottom, and under it one
-// row (two on phones) with the time, languages and legal links. The menu on every
+// The home page view: big name at the top with the time under it, big menu at the
+// bottom, and under it one row with the languages and legal links. The menu on every
 // other page is this same view.
 export function homeView(site, alternates = null, { inMenu = false } = {}) {
   return `<div class="home-main">
   <div class="home-top">${inMenu
     ? `<a class="home-name menu-toggle is-close" href="${attr(site.home || '/')}" aria-label="${attr((site.ui || {}).close || 'Close')}">${esc(site.name)}${ARROW}</a>`
-    : `<a class="home-name" href="${attr(site.home || '/')}">${esc(site.name)}</a>`}</div>
+    : `<a class="home-name" href="${attr(site.home || '/')}">${esc(site.name)}</a>`}
+    ${clock(site)}
+  </div>
   <nav class="home-nav" aria-label="${attr((site.ui || {}).main_menu || 'Main')}">
 ${site.nav.map((n) => `    <a href="${attr(n.url)}">${esc(n.label)}</a>`).join('\n')}
   </nav>
@@ -99,11 +101,10 @@ ${site.nav.map((n) => `    <a href="${attr(n.url)}">${esc(n.label)}</a>`).join('
 </div>`;
 }
 
-// Bottom of the home view. Desktop: time, languages ... legal links, in one row.
-// Phones: languages on top; time and legal links underneath. (Grid areas in style.css.)
+// Bottom of the home view: languages on the left, legal links on the right.
 export function homeFoot(site, alternates = null) {
   return `<div class="home-foot">
-    ${clock(site)}${alternates?.length > 1 ? langSwitch(site, alternates) : ''}
+    ${alternates?.length > 1 ? langSwitch(site, alternates) : '<span></span>'}
     <nav class="legal-links" aria-label="Legal">${site.footer.map((n) => `<a href="${attr(n.url)}">${esc(n.label)}</a>`).join('')}</nav>
   </div>`;
 }
