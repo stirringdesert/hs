@@ -35,8 +35,8 @@
     var time = p.querySelector('.time');
     function fmt(s) { s = Math.floor(s || 0); return Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0'); }
     btn.addEventListener('click', function () { audio.paused ? audio.play() : audio.pause(); });
-    audio.addEventListener('play', function () { path.setAttribute('d', PAUSE); btn.setAttribute('aria-label', 'Pause audio'); });
-    audio.addEventListener('pause', function () { path.setAttribute('d', PLAY); btn.setAttribute('aria-label', 'Play audio'); });
+    audio.addEventListener('play', function () { path.setAttribute('d', PAUSE); btn.setAttribute('aria-label', p.getAttribute('data-pause') || 'Pause audio'); });
+    audio.addEventListener('pause', function () { path.setAttribute('d', PLAY); btn.setAttribute('aria-label', p.getAttribute('data-play') || 'Play audio'); });
     audio.addEventListener('timeupdate', function () {
       fill.style.width = (audio.duration ? audio.currentTime / audio.duration * 100 : 0) + '%';
       time.textContent = fmt(audio.currentTime);
@@ -85,10 +85,34 @@
     var label = btn.textContent, timer;
     btn.addEventListener('click', function () {
       copy(addr).then(function () {
-        btn.textContent = 'Copied';
+        btn.textContent = btn.getAttribute('data-copied') || 'Copied';
         clearTimeout(timer);
         timer = setTimeout(function () { btn.textContent = label; }, 1500);
       }, function () { window.prompt('Email address:', addr); });
+    });
+  });
+})();
+
+// Languages: remember the language a visitor picks (first-visit picker or the
+// EN / DE / RU switch), so the home page opens in it next time.
+(function () {
+  function remember(code) { try { localStorage.setItem('lang', code); } catch (e) {} }
+  document.querySelectorAll('.lang-switch a[data-lang], .lang-picker a[data-lang]').forEach(function (a) {
+    a.addEventListener('click', function () { remember(a.getAttribute('data-lang')); });
+  });
+  var picker = document.querySelector('.lang-picker');
+  if (!picker || !document.documentElement.classList.contains('choose-lang')) return;
+  // While the picker is open, the page behind it can't be reached with Tab.
+  var behind = [].filter.call(document.body.children, function (el) { return el !== picker && el.tagName !== 'SCRIPT'; });
+  behind.forEach(function (el) { el.inert = true; });
+  // Picking the language of this page just reveals it; the others navigate.
+  picker.querySelectorAll('a').forEach(function (a) {
+    a.addEventListener('click', function (e) {
+      if (a.getAttribute('data-lang') !== document.documentElement.lang) return;
+      e.preventDefault();
+      document.documentElement.classList.add('lang-chosen');
+      behind.forEach(function (el) { el.inert = false; });
+      setTimeout(function () { document.documentElement.classList.remove('choose-lang', 'lang-chosen'); }, 500);
     });
   });
 })();
