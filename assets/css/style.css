@@ -171,7 +171,9 @@ main {
   flex: 1;
   display: flex;
   flex-direction: column;
-  padding: 24px var(--gutter) 16px;
+  /* the space under the last line matches the space above the name (its letters sit a little
+     below the top of their line box, hence the extra) */
+  padding: 24px var(--gutter) calc(21px + var(--type-display) * .09);
   min-height: 100vh;
   min-height: 100svh;
 }
