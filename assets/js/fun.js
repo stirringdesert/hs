@@ -117,47 +117,48 @@
     });
   })();
 
-  if (reduce) return;   // everything below is motion that follows the pointer
+  // ---- Play page photo: fixed at the top like the videos, fading out as the text starts ----
+  // It is fully gone when the first chapter number is as far from the top of the
+  // screen as it is from its first paragraph.
+  (function () {
+    var bg = document.querySelector('.bg-image');
+    var first = document.querySelector('.play-scene h2');
+    if (!bg || !first) return;
+    var para = first.nextElementSibling;
+    var end = 1, queued = false;
+    function measure() {
+      var h = first.getBoundingClientRect();
+      var gap = para ? para.getBoundingClientRect().top - h.bottom : 20;
+      end = Math.max(1, h.top + window.scrollY - gap);   // scroll position where it's gone
+      update();
+    }
+    function update() {
+      queued = false;
+      var t = Math.min(1, Math.max(0, window.scrollY / end));
+      bg.style.setProperty('--fade', (1 - t).toFixed(3));
+    }
+    bg.classList.add('scroll-fade');
+    window.addEventListener('scroll', function () { if (!queued) { queued = true; requestAnimationFrame(update); } }, { passive: true });
+    window.addEventListener('resize', measure);
+    window.addEventListener('load', measure);
+    measure();
+  })();
 
-  // ---- Contact links drift toward the cursor ----
-  if (finePointer) {
-    document.querySelectorAll('.contact-list > *').forEach(function (el) {
-      el.classList.add('magnetic');
-      el.addEventListener('mousemove', function (e) {
-        var r = el.getBoundingClientRect();
-        var x = e.clientX - (r.left + r.width / 2);
-        var y = e.clientY - (r.top + r.height / 2);
-        el.style.transform = 'translate(' + (x * .12).toFixed(1) + 'px,' + (y * .2).toFixed(1) + 'px)';
-      });
-      el.addEventListener('mouseleave', function () { el.style.transform = ''; });
-    });
-  }
+  if (reduce || !finePointer) return;   // the spotlight only makes sense with a mouse
 
-  if (!finePointer) return;   // the custom cursor only makes sense with a mouse
-
-  // ---- Custom cursor ----
-  // A big soft disc that inverts what's under it. Over anything clickable it shrinks
-  // to a small dot, so the exact spot you're pointing at is clear even on small links.
-  // It sits exactly at the pointer (no trailing lag), so aiming stays precise.
-  var cursor = document.createElement('div');
-  cursor.className = 'cursor';
-  cursor.setAttribute('aria-hidden', 'true');
-  document.body.appendChild(cursor);
-  var x = -100, y = -100, queued = false;
-  function draw() { queued = false; cursor.style.transform = 'translate3d(' + x + 'px,' + y + 'px,0)'; }
+  // ---- Spotlight: a soft pool of light follows the mouse across the dark stage ----
+  // The normal arrow stays, so aiming at links works as usual.
+  var light = document.createElement('div');
+  light.className = 'spotlight';
+  light.setAttribute('aria-hidden', 'true');
+  document.body.appendChild(light);
+  var x = 0, y = 0, queued = false;
+  function draw() { queued = false; light.style.transform = 'translate3d(' + x + 'px,' + y + 'px,0)'; }
   document.addEventListener('pointermove', function (e) {
     if (e.pointerType !== 'mouse') return;
     x = e.clientX; y = e.clientY;
-    root.classList.add('has-cursor');
-    var t = e.target.closest && e.target.closest('a, button, [role="slider"], input, label, summary');
-    cursor.classList.toggle('is-link', !!t);
+    light.classList.add('on');
     if (!queued) { queued = true; requestAnimationFrame(draw); }
   }, { passive: true });
-  document.addEventListener('pointerdown', function () { cursor.classList.add('is-down'); });
-  document.addEventListener('pointerup', function () { cursor.classList.remove('is-down'); });
-  document.documentElement.addEventListener('mouseleave', function () { root.classList.remove('has-cursor'); });
-  // Over a video embed the browser draws its own cursor; hide ours there.
-  document.addEventListener('pointerover', function (e) {
-    cursor.classList.toggle('is-hidden', e.target.tagName === 'IFRAME');
-  });
+  document.documentElement.addEventListener('mouseleave', function () { light.classList.remove('on'); });
 })();
