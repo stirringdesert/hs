@@ -149,13 +149,22 @@ function shell() {
 (function () {
   var frame = document.getElementById('site');
   var where = document.getElementById('where');
-  // Each site page reports where it is and handles its own links (assets/js/preview.js).
+  // Each site page reports its address when it has loaded (assets/js/preview.js).
+  // Back walks this list itself: browser history doesn't work inside the viewer.
+  var visited = [], goingBack = false;
   window.addEventListener('message', function (e) {
-    if (e.source === frame.contentWindow && e.data && typeof e.data.previewPath === 'string') where.textContent = e.data.previewPath;
+    if (e.source !== frame.contentWindow || !e.data || typeof e.data.previewPath !== 'string') return;
+    where.textContent = e.data.previewPath;
+    var href = e.data.previewHref;
+    if (goingBack) { goingBack = false; visited[visited.length - 1] = href; }
+    else if (visited[visited.length - 1] !== href) visited.push(href);
   });
-  document.getElementById('home').onclick = function () { frame.src = 'site/index.html?' + Date.now(); };
+  document.getElementById('home').onclick = function () { frame.src = 'site/index.html'; };
   document.getElementById('back').onclick = function () {
-    try { frame.contentWindow.postMessage({ previewBack: true }, '*'); } catch (e) {}
+    if (visited.length < 2) return;
+    visited.pop();
+    goingBack = true;
+    frame.src = visited[visited.length - 1];
   };
 })();
 </script>
@@ -179,8 +188,9 @@ function pageScript(pages) {
     if (p === '' || p.slice(-1) === '/') p += 'index.html';
     return p;
   }
-  try { parent.postMessage({ previewPath: '/' + (sitePath(location.href) || '').replace(/index\\.html$/, '') }, '*'); } catch (e) {}
-  window.addEventListener('message', function (e) { if (e.data && e.data.previewBack) history.back(); });
+  window.addEventListener('load', function () {
+    try { parent.postMessage({ previewPath: '/' + (sitePath(location.href) || '').replace(/index\\.html$/, ''), previewHref: location.href.split('#')[0] }, '*'); } catch (e) {}
+  });
 
   var note, timer;
   function say(text, detail) {
