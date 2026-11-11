@@ -2,15 +2,16 @@
 title: Iran Conference
 order: 3
 video: /assets/media/iran-conference.mp4
-trailer: https://player.vimeo.com/video/669741621
-trailer_image: /assets/img/theater/iran-conference-play.jpg
-trailer_url: https://vimeo.com/ondemand/iranconferenceplay
-trailer_duration: "2:20:57"
+trailer: https://player.vimeo.com/video/658972607
+trailer_image: /assets/img/theater/iran-conference-trailer.jpg
+trailer_url: https://vimeo.com/658972607
+trailer_duration: "2:37"
 summary:
   - Premiered on Nov 22, 2019
   - Nomination for the Golden Mask Award 2021 in the category "Best Director"
 ---
 
+[Watch the full play on Vimeo](https://vimeo.com/ondemand/iranconferenceplay)
 
 Production: Takoy Theatre, Saint Petersburg
 

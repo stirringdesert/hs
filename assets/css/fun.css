@@ -19,22 +19,15 @@
    light grey wash and black text stays readable on it. */
 :root[data-theme="light"] .bg-video video,
 :root[data-theme="light"] .bg-video img { filter: grayscale(.25) brightness(1.3) contrast(.72); }
-/* The header can sit over a dark photo (About page): it inverts against whatever is
-   behind it, so it reads on light and dark alike. Not while the menu is open. */
-:root[data-theme="light"] body.bio:not(.menu-open) .site-header {
+/* Menus stay black in light mode: light mode is only for reading the play */
+:root[data-theme="light"] .corner-menu,
+:root[data-theme="light"] .corner-panel,
+:root[data-theme="light"] .menu,
+:root[data-theme="light"] .menu-open .site-header {
+  --color-bg: #000;
   --color-fg: #fff;
-  --color-muted: #8c8c8c;
-  color: #fff;
-  mix-blend-mode: difference;
-}
-/* About photo: soft edges instead of a hard cut against the light background */
-@media (min-width: 901px) {
-  :root[data-theme="light"] .bio-photo {
-    -webkit-mask-image: linear-gradient(to right, transparent, #000 40%), linear-gradient(to bottom, #000 65%, transparent);
-    -webkit-mask-composite: source-in;
-    mask-image: linear-gradient(to right, transparent, #000 40%), linear-gradient(to bottom, #000 65%, transparent);
-    mask-composite: intersect;
-  }
+  --color-muted: #a3a3a3;
+  color: var(--color-fg);
 }
 
 /* Text over background videos keeps a faint dark halo, so it stays readable on the
@@ -44,23 +37,50 @@
 .bg-video ~ main .trailer { text-shadow: none; }
 body { transition: background-color .4s var(--ease), color .4s var(--ease); }
 
-/* ---------- Dark / light switch: two small words, like the language switch ---------- */
-.theme-switch { display: flex; gap: 12px; }
-.theme-switch button {
+/* ---------- Play page: "switch to light / dark" in the bottom-left corner ----------
+   Appears where the photo has faded out, leaves after one more screen of scrolling. */
+.read-mode {
+  position: fixed;
+  left: 0;
+  bottom: 0;
+  z-index: 25;
+  padding: 0 var(--gutter) 18px;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(6px);
+  transition: opacity .5s var(--ease), transform .5s var(--ease), visibility 0s .5s;
+}
+.read-mode.on { opacity: 1; visibility: visible; transform: none; transition: opacity .5s var(--ease), transform .5s var(--ease); }
+.read-mode button {
   font: inherit;
-  letter-spacing: inherit;
-  padding: 0;
+  font-size: var(--type-small);
+  line-height: 1;
+  padding: 14px 0;          /* 44 px tall click area */
   border: 0;
   background: none;
-  color: var(--color-muted);
+  color: var(--color-fg);
   cursor: pointer;
   transition: color var(--fast) var(--ease);
 }
-.theme-switch button:hover, .theme-switch button[aria-pressed="true"] { color: var(--color-fg); }
-/* sits next to the language switch, wherever that is */
-.lang-switch + .theme-switch { margin-left: 24px; }
-.top-right:has(.theme-switch), .menu-langs:has(+ .theme-switch) { display: flex; align-items: baseline; }
-.menu-langs + .theme-switch { display: inline-flex; }
+.read-mode button:hover { color: var(--color-muted); }
+/* On phones it sits over the text, so it gets a soft shadowy corner behind it */
+@media (max-width: 900px) {
+  .read-mode::before {
+    content: "";
+    position: absolute;
+    left: -60px;
+    bottom: -60px;
+    z-index: -1;
+    width: 340px;
+    height: 200px;
+    background: radial-gradient(48% 52% at 34% 62%, color-mix(in srgb, var(--color-bg) 88%, transparent), color-mix(in srgb, var(--color-bg) 55%, transparent) 45%, transparent 100%);
+    pointer-events: none;
+  }
+}
+.menu-open .read-mode, .corner-open .read-mode { visibility: hidden; }
+
+/* While the trailer plays, the background video rests and disappears */
+.trailer-open .bg-video { opacity: 0 !important; }
 
 /* ---------- Spotlight (mouse only) ----------
    A soft pool of light that follows the mouse, like a follow spot on a dark stage.
@@ -84,7 +104,7 @@ body { transition: background-color .4s var(--ease), color .4s var(--ease); }
   width: 560px;
   height: 560px;
   border-radius: 50%;
-  background: radial-gradient(closest-side, rgba(255, 255, 255, .075), rgba(255, 255, 255, .03) 55%, transparent);
+  background: radial-gradient(closest-side, rgba(255, 255, 255, .12), rgba(255, 255, 255, .05) 55%, transparent);
 }
 .spotlight.on { opacity: 1; }
 :root[data-theme="light"] .spotlight::before { background: radial-gradient(closest-side, rgba(0, 0, 0, .05), rgba(0, 0, 0, .02) 55%, transparent); }
@@ -92,19 +112,21 @@ body { transition: background-color .4s var(--ease), color .4s var(--ease); }
 /* ---------- Links that leave the site: white, underlined, with a small arrow ----------
    The same pattern marks the email button (copy icon) and downloads (arrow down). */
 main a[href^="http"]:not(.trailer),
+a.accent,
 .copy-email,
 a[download] {
   color: var(--color-fg);
   text-decoration: underline;
   text-decoration-thickness: max(1px, .055em);
-  text-decoration-skip-ink: none;
   text-underline-offset: .1em;
   transition: color var(--fast) var(--ease);
 }
 main a[href^="http"]:not(.trailer):hover,
+a.accent:hover,
 .copy-email:hover,
 a[download]:hover { color: var(--color-muted); }
 main a[href^="http"]:not(.trailer)::after,
+a.accent::after,
 .copy-email::after,
 a[download]::after {
   content: "";
@@ -117,7 +139,7 @@ a[download]::after {
   mask: var(--icon) center / contain no-repeat;
   vertical-align: -.02em;
 }
-main a[href^="http"]:not(.trailer) {
+main a[href^="http"]:not(.trailer), a.accent {
   --icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12' fill='none' stroke='%23000' stroke-width='1.6'%3E%3Cpath d='M2.5 9.5l7-7M4 2.5h5.5V8'/%3E%3C/svg%3E");
 }
 .copy-email {
@@ -247,7 +269,3 @@ a[download] {
 .nav-list .detail a { display: inline; font-size: inherit; line-height: inherit; }
 .nav-list .detail a.trailer { display: block; }
 .nav-list .detail a:not(.trailer):hover { color: var(--color-muted); }
-
-/* The dark/light switch shows wherever the language switch shows */
-.site-header .top-right .theme-switch { display: none; }
-@media (min-width: 1200px) { .site-header .top-right .theme-switch { display: flex; } }
