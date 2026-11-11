@@ -1,6 +1,6 @@
-# harrysergeev.com
+# Site source
 
-Static portfolio site of Igor (Harry) Sergeev, moved off Framer. The pages are plain HTML, built from simple content files by a small script with no dependencies.
+Source of a small static portfolio site. The pages are plain HTML, built from simple content files by a small script with no dependencies.
 
 ## How editing works
 
