@@ -4,12 +4,12 @@
 
    One rule: the site's own words are lowercase, like the home page. That covers page
    titles, menus, labels, buttons, links and the language switch, at every size.
-   Names (people, works, roles, places, brands) and running text (descriptions, the
-   bio, the play) are written normally, with capitals.
+   Link labels count as the site's own words, even brand names (telegram, instagram).
+   Names (people, works, roles, places) and running text (descriptions, the bio,
+   the play) are written normally, with capitals.
 
-   Text that mixes the two (the clock "time in Munich", the contact link "e-mail" next
-   to "Telegram") is written in lowercase in the content itself and left as written
-   here, so the names in it keep their capitals. */
+   Text that mixes the two (the clock "time in Munich") is written in lowercase in the
+   content itself and left as written here, so the names in it keep their capitals. */
 
 :root {
   --type-statement: clamp(28px, 14.27px + 3.662vw, 67px);   /* contact sentence: big on every screen */
@@ -21,6 +21,7 @@
 .home-nav a,                           /* bio, voice acting ... */
 .contact main > .label,                /* for voiceover bookings and inquiries ... */
 .lang-picker a,                        /* en de ru on the first visit */
+.contact-list > *,                     /* e-mail, telegram, instagram, and "copied" */
 .label,                                /* official russian dubs */
 .nav-list .work-links a,               /* russian  english  german / download pdf */
 .player .download,                     /* download */
@@ -37,7 +38,8 @@
 .page-title,
 .home-nav a,
 .contact main > .label,
-.lang-picker a { letter-spacing: var(--type-display-tracking, -1px); }
+.lang-picker a,
+.contact-list > * { letter-spacing: var(--type-display-tracking, -1px); }
 
 /* The contact sentence is big text, not a label: regular weight, big on phones too */
 .contact main > .label {
@@ -57,8 +59,6 @@
 .play-scene h2,
 .legal h2,
 .legal h3,
-.contact-list > *,                     /* e-mail, Telegram, Instagram (written so in content) */
 .clock {                               /* time in Munich (written so in content) */
   text-transform: none;
 }
-.contact-list > * { letter-spacing: var(--type-display-tracking, -1px); }
