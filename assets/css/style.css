@@ -180,7 +180,7 @@ main {
 .home-top { display: flex; flex-direction: column; align-items: flex-start; gap: 14px; }
 @media (min-width: 641px) {
   .home-top { flex-direction: row; justify-content: space-between; gap: 24px; }
-  .home-top .clock { padding-top: calc(var(--type-display) * .3); }
+  .home-top .clock { padding-top: calc(var(--type-display) * .092); }   /* top of the letters lines up with the top of the name */
 }
 .home-name,
 .home-nav a {
