@@ -88,7 +88,20 @@ function readMd(file, lang) {
 // Site settings in one language, with menu links pointing into that language.
 function siteIn(lang) {
   const s = merge(site, lang === DEFAULT ? undefined : translationJson('site.json', lang));
-  return { ...s, lang, home: prefix(lang) + '/', nav: s.nav.map((n) => ({ ...n, url: localUrl(n.url, lang) })) };
+  return { ...s, lang, home: prefix(lang) + '/', nav: s.nav.map((n) => ({ ...n, url: readingUrl(n.url, lang) || localUrl(n.url, lang) })) };
+}
+
+// A play with a reading page (content/pages/*.html with `play:` in its front matter):
+// its menu link goes straight to the text in the visitor's language.
+const readingPages = fs.readdirSync(path.join(CONTENT, 'pages')).filter((f) => f.endsWith('.html')).map((f) => {
+  const { data } = parseFrontMatter(readText(`pages/${f}`), `content/pages/${f}`);
+  return data.play ? { play: data.play, lang: data.lang || 'en', url: `/${f.replace(/\.html$/, '')}/` } : null;
+}).filter(Boolean);
+function readingUrl(url, lang) {
+  const m = url.match(/^\/([a-z0-9-]+\/[a-z0-9-]+)\/$/);
+  if (!m) return null;
+  const pages = readingPages.filter((r) => r.play === m[1]);
+  return (pages.find((r) => r.lang === lang) || pages.find((r) => r.lang === 'en') || {}).url || null;
 }
 
 // Pages that exist in every language. Filled in below, before any page is built.
@@ -316,7 +329,10 @@ for (const { f, slug, data, body: raw } of freePages) {
           summaryHtml: (t.data.summary || []).map((x) => inline(String(x))),
           bodyHtml: markdown(t.body),
         } : {};
-        return { ...it, ...tr, url: `/${slug}/`, linksHtml: `<a class="play-dl-btn" href="${attr(data.pdf)}" download>${esc(label)}</a>` };
+        // The other languages' reading pages, shown on the right of the title row
+        const others = (alternates || []).filter((a) => a.code !== lang)
+          .map((a) => `<a href="${attr(a.href)}" hreflang="${a.code}" lang="${a.code}">${esc(a.label)}</a>`).join('');
+        return { ...it, ...tr, url: `/${slug}/`, asideHtml: others, linksHtml: `<a class="play-dl-btn" href="${attr(data.pdf)}" download>${esc(label)}</a>` };
       });
       const cur = items.find((it) => it.slug === playSlug);
       if (!cur) problems.push(`content/pages/${f}: play "${data.play}" not found`);
