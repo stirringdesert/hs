@@ -95,15 +95,15 @@
   // ---- Play page: photo that fades out, then a light/dark switch for reading ----
   // The photo is fixed at the top like the videos and is fully gone when the first
   // chapter number is as far from the top of the screen as from its first paragraph.
-  // At that point a "switch to light" button appears in the bottom-left corner. It
-  // goes away once the visitor has scrolled one more screen. Light mode only lives
+  // At that point a "switch to light" button appears in the bottom-right corner. It
+  // goes away after one more screen of scrolling and comes back when scrolling up. Light mode only lives
   // on this page: nothing is remembered, so every other page (and the menu) is black.
   (function () {
     var first = document.querySelector('.play-scene h2');
     if (!first) return;
     var bg = document.querySelector('.bg-image');
     var para = first.nextElementSibling;
-    var end = 1, queued = false, retired = false;
+    var end = 1, queued = false;
 
     var sw = document.createElement('div');
     sw.className = 'read-mode';
@@ -128,8 +128,8 @@
       queued = false;
       var y = window.scrollY;
       if (bg) bg.style.setProperty('--fade', (1 - Math.min(1, Math.max(0, y / end))).toFixed(3));
-      if (y > end + window.innerHeight) retired = true;   // one full screen scrolled: done
-      sw.classList.toggle('on', !retired && y >= end - 2);
+      // shown from where the photo is gone until one more screen down; back again when scrolling up
+      sw.classList.toggle('on', y >= end - 2 && y <= end + window.innerHeight);
     }
     if (bg) bg.classList.add('scroll-fade');
     window.addEventListener('scroll', function () { if (!queued) { queued = true; requestAnimationFrame(update); } }, { passive: true });

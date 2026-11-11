@@ -316,6 +316,14 @@ main {
   font-size: var(--type-label); line-height: var(--type-label-lh);
 }
 
+/* Phones: time on the left and volume on the right in one row, download below */
+@media (max-width: 640px) {
+  .player-meta { display: grid; grid-template-columns: 1fr auto; align-items: center; column-gap: 16px; }
+  .player-tools { display: contents; }
+  .player .volume { grid-column: 2; grid-row: 1; }
+  .player .download { grid-column: 1 / -1; grid-row: 2; justify-self: start; }
+}
+
 /* ---------- Voice role cards ---------- */
 
 .works {
