@@ -280,6 +280,7 @@ const freePages = fs.readdirSync(path.join(CONTENT, 'pages')).filter((f) => f.en
 for (const { f, slug, data, body: raw } of freePages) {
   let body = raw;
   let bodyClass = data.body_class || 'page';
+  let before = '';
   const lang = data.lang || DEFAULT;
   const isReading = Boolean(data.play);
   const s = isReading && LANGS.some((l) => l.code === lang) ? siteIn(lang) : siteIn(DEFAULT);
@@ -319,11 +320,13 @@ for (const { f, slug, data, body: raw } of freePages) {
         const pageTitle = (t && t.data.page_title) || cfg.title;
         body = `${C.pageTitle(pageTitle)}\n${C.split(C.workList(items, playSlug), C.detail(cur.bodyHtml))}\n${body}`;
         bodyClass = 'theater reading';
+        // The play's photo sits behind the top of the page and fades out as the text begins (fun.js)
+        if (cur.image) before = C.bgImage(cur.image, cur.imageAlt);
       }
     }
   }
   emit(`/${slug}/`, C.layout(s, {
-    path: `/${slug}/`, title: data.title, lang, bodyClass, alternates,
+    path: `/${slug}/`, title: data.title, lang, bodyClass, alternates, before,
     description: data.description,
     // mailto links become copy-to-clipboard buttons (keeps the address away from spam bots)
     main: body.replace(/\s+$/, '').replace(/<a [^>]*href="mailto:([^"]+)"[^>]*>[^<]*<\/a>/g, (_, a) => C.copyEmail(a, { extraClass: 'link', ui: s.ui })),
