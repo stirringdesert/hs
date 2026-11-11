@@ -4,22 +4,38 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Igor Sergeev</title>
-  <meta name="description" content="Тот самый русский голос Леона Кеннеди в Resident Evil 4 Remake и Джона Сноу в «Игре престолов» и ещё более 100 озвученных проектов: фильмы, сериалы, аудиокниги.">
+  <title>Igor Sergeev: voice actor, director, playwright</title>
+  <meta name="description" content="The Russian voice of Leon Kennedy in Resident Evil 4 Remake and Jon Snow in Game of Thrones. Over 100 dubbed films, series and games, 126 audiobooks. Theater director and playwright based in Munich.">
   <meta property="og:type" content="website">
-  <meta property="og:title" content="Igor Sergeev">
-  <meta property="og:description" content="Тот самый русский голос Леона Кеннеди в Resident Evil 4 Remake и Джона Сноу в «Игре престолов» и ещё более 100 озвученных проектов: фильмы, сериалы, аудиокниги.">
+  <meta property="og:title" content="Igor Sergeev: voice actor, director, playwright">
+  <meta property="og:description" content="The Russian voice of Leon Kennedy in Resident Evil 4 Remake and Jon Snow in Game of Thrones. Over 100 dubbed films, series and games, 126 audiobooks. Theater director and playwright based in Munich.">
   <meta property="og:url" content="https://harrysergeev.com/">
   <meta name="twitter:card" content="summary_large_image">
   <link rel="canonical" href="https://harrysergeev.com/">
+  <link rel="alternate" hreflang="en" href="https://harrysergeev.com/">
+  <link rel="alternate" hreflang="de" href="https://harrysergeev.com/de/">
+  <link rel="alternate" hreflang="ru" href="https://harrysergeev.com/ru/">
+  <link rel="alternate" hreflang="x-default" href="https://harrysergeev.com/">
   <link rel="icon" href="/assets/img/favicon-light.png" media="(prefers-color-scheme: light)">
   <link rel="icon" href="/assets/img/favicon-dark.png" media="(prefers-color-scheme: dark)">
   <link rel="stylesheet" href="/assets/css/tokens.css?v=a5669fc7">
-  <link rel="stylesheet" href="/assets/css/style.css?v=fa6cb37b">
-  <script src="/assets/js/main.js?v=20273128" defer></script>
+  <link rel="stylesheet" href="/assets/css/style.css?v=e7f15f48">
+  <script src="/assets/js/main.js?v=cdd51475" defer></script>
+  <script>
+  (function () {
+    try {
+      var l = localStorage.getItem('lang'), m = {"en":"/","de":"/de/","ru":"/ru/"};
+      if (!l) document.documentElement.classList.add('choose-lang');
+      else if (m[l] && m[l] !== location.pathname) location.replace(m[l]);
+    } catch (e) {}
+  })();
+  </script>
 </head>
 <body class="home">
-  <p class="clock" aria-hidden="true">Time in Munich <b data-clock>--:--</b></p>
+<div class="top-right"><nav class="lang-switch" aria-label="Language"><a href="/" hreflang="en" lang="en" data-lang="en" aria-current="true">EN</a><a href="/de/" hreflang="de" lang="de" data-lang="de">DE</a><a href="/ru/" hreflang="ru" lang="ru" data-lang="ru">RU</a></nav><p class="clock" aria-hidden="true">time in Munich <b data-clock>--:--</b></p></div>
+<div class="lang-picker" role="dialog" aria-modal="true" aria-label="Language / Sprache / Язык">
+  <nav><a href="/" hreflang="en" lang="en" data-lang="en">en</a><a href="/de/" hreflang="de" lang="de" data-lang="de">de</a><a href="/ru/" hreflang="ru" lang="ru" data-lang="ru">ru</a></nav>
+</div>
   <main>
     <a class="home-name" href="/">Igor Sergeev</a>
     <nav class="home-nav" aria-label="Main">

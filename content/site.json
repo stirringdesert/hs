@@ -1,28 +1,98 @@
 {
   "name": "Igor Sergeev",
+  "title": "Igor Sergeev: voice actor, director, playwright",
+  "description": "The Russian voice of Leon Kennedy in Resident Evil 4 Remake and Jon Snow in Game of Thrones. Over 100 dubbed films, series and games, 126 audiobooks. Theater director and playwright based in Munich.",
   "url": "https://harrysergeev.com",
-  "description": "Тот самый русский голос Леона Кеннеди в Resident Evil 4 Remake и Джона Сноу в «Игре престолов» и ещё более 100 озвученных проектов: фильмы, сериалы, аудиокниги.",
+  "languages": [
+    {
+      "code": "en",
+      "label": "EN"
+    },
+    {
+      "code": "de",
+      "label": "DE"
+    },
+    {
+      "code": "ru",
+      "label": "RU"
+    }
+  ],
   "nav": [
-    { "label": "bio", "url": "/bio/" },
-    { "label": "voice acting", "url": "/voice/" },
-    { "label": "theater", "url": "/theater/" },
-    { "label": "playwriting", "url": "/playwriting/open-relationship/" },
-    { "label": "contact", "url": "/contact/" }
+    {
+      "label": "bio",
+      "url": "/bio/"
+    },
+    {
+      "label": "voice acting",
+      "url": "/voice/"
+    },
+    {
+      "label": "theater",
+      "url": "/theater/"
+    },
+    {
+      "label": "playwriting",
+      "url": "/playwriting/open-relationship/"
+    },
+    {
+      "label": "contact",
+      "url": "/contact/"
+    }
   ],
   "footer": [
-    { "label": "Impressum", "url": "/impressum/" },
-    { "label": "Datenschutzerklärung", "url": "/datenschutzerklaerung/" }
+    {
+      "label": "Impressum",
+      "url": "/impressum/"
+    },
+    {
+      "label": "Datenschutzerklärung",
+      "url": "/datenschutzerklaerung/"
+    }
   ],
   "sections": {
-    "theater": { "title": "Director", "page_title": "Theater", "has_index": true },
-    "playwriting": { "title": "Author", "page_title": "Playwriting", "has_index": false }
+    "theater": {
+      "title": "Director",
+      "page_title": "Theater",
+      "has_index": true
+    },
+    "playwriting": {
+      "title": "Author",
+      "page_title": "Playwriting",
+      "has_index": false
+    }
   },
   "contact": {
     "label": "for voiceover bookings and inquiries, please contact:",
     "links": [
-      { "label": "sergeevvoice@gmail.com", "short": "E-mail", "copy": "sergeevvoice@gmail.com" },
-      { "label": "Telegram", "url": "https://t.me/harrysergeev" },
-      { "label": "Instagram", "url": "https://www.instagram.com/harrysergeev/" }
+      {
+        "label": "sergeevvoice@gmail.com",
+        "short": "e-mail",
+        "copy": "sergeevvoice@gmail.com"
+      },
+      {
+        "label": "Telegram",
+        "url": "https://t.me/harrysergeev"
+      },
+      {
+        "label": "Instagram",
+        "url": "https://www.instagram.com/harrysergeev/"
+      }
     ]
+  },
+  "ui": {
+    "main_menu": "Main",
+    "menu": "Menu",
+    "language": "Language",
+    "time_in_munich": "time in Munich",
+    "titles": {
+      "bio": "Bio",
+      "voice": "Voice acting",
+      "contact": "Contact"
+    },
+    "play": "Play audio",
+    "pause": "Pause audio",
+    "download": "DOWNLOAD",
+    "copy_email": "Copy email address",
+    "copied": "Copied"
   }
 }
