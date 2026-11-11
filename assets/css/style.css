@@ -350,7 +350,7 @@ main {
 .voice .bookings { margin-top: 40px; }   /* phones: right after the player */
 .audiobooks { margin-top: 46px; }
 .audiobooks .text { max-width: 827px; margin-top: 34px; display: flex; flex-direction: column; gap: 20px; }
-.voice .bottom-cta { margin-top: 100px; }
+.voice .bottom-cta { margin-top: 100px; text-align: center; }
 
 /* ---------- Theater / playwriting: list + detail ---------- */
 

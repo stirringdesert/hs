@@ -226,7 +226,7 @@ ${v.audiobooks.text.map((t) => `    <p>${inline(t, { linkClass: 'accent' })}</p>
   </div>
 </section>`);
     }
-    parts.push('', C.label(cta, { extraClass: 'bottom-cta' }));
+    parts.push('', `<p class="bookings bottom-cta">${cta}</p>`);   // same paragraph style as the line under the player
     page('/voice/', { title: ui.titles.voice, bodyClass: 'voice', main: parts.join('\n') });
   }
 
