@@ -1,19 +1,38 @@
 {
+  "name": "Игорь Сергеев",
   "nav": [
-    { "label": "био" },
-    { "label": "озвучка" },
-    { "label": "театр" },
-    { "label": "драматургия" },
-    { "label": "контакты" }
+    {
+      "label": "био"
+    },
+    {
+      "label": "озвучка"
+    },
+    {
+      "label": "театр"
+    },
+    {
+      "label": "драматургия"
+    },
+    {
+      "label": "контакты"
+    }
   ],
   "sections": {
-    "theater": { "title": "Режиссёр", "page_title": "Театр" },
-    "playwriting": { "title": "Автор", "page_title": "Драматургия" }
+    "theater": {
+      "title": "Режиссёр",
+      "page_title": "Театр"
+    },
+    "playwriting": {
+      "title": "Автор",
+      "page_title": "Драматургия"
+    }
   },
   "contact": {
     "label": "по вопросам озвучки и сотрудничества:",
     "links": [
-      { "short": "Почта" }
+      {
+        "short": "Почта"
+      }
     ]
   },
   "ui": {
@@ -21,7 +40,11 @@
     "menu": "Меню",
     "language": "Язык",
     "time_in_munich": "Время в Мюнхене",
-    "titles": { "bio": "Био", "voice": "Озвучка", "contact": "Контакты" },
+    "titles": {
+      "bio": "Биография",
+      "voice": "Озвучка",
+      "contact": "Контакты"
+    },
     "play": "Слушать",
     "pause": "Пауза",
     "download": "СКАЧАТЬ",
