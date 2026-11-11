@@ -138,6 +138,5 @@ Each entry: what was said → the likely reason → the rule that follows.
 
 These need the art director's call. Update this section when they answer.
 
-- **Desktop menu:** the same full-screen menu as on phones, or the old row of links in the header? (`menu_desktop` in `content/site.json`, tested in the navigation PR.)
 - **Light mode:** still a test. It's being fixed (#24), but whether it stays is undecided.
 - **Blue:** #21 makes links white and underlined, so the blue may only survive in the voice page's "contact" call to action. Drop it entirely?
