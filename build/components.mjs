@@ -70,7 +70,7 @@ ${site.nav.map((n) => `      <a href="${attr(n.url)}">${esc(n.label)}</a>`).join
 
 // "Time in Munich" clock shown at the top right on wide screens (filled in by main.js).
 export function clock() {
-  return `<p class="clock" aria-hidden="true">Time in Munich <b data-clock>--:--</b></p>`;
+  return `<p class="clock" aria-hidden="true">time in Munich <b data-clock>--:--</b></p>`;
 }
 
 export function footer(site) {

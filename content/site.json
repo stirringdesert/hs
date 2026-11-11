@@ -20,7 +20,7 @@
   "contact": {
     "label": "for voiceover bookings and inquiries, please contact:",
     "links": [
-      { "label": "sergeevvoice@gmail.com", "short": "E-mail", "copy": "sergeevvoice@gmail.com" },
+      { "label": "sergeevvoice@gmail.com", "short": "e-mail", "copy": "sergeevvoice@gmail.com" },
       { "label": "Telegram", "url": "https://t.me/harrysergeev" },
       { "label": "Instagram", "url": "https://www.instagram.com/harrysergeev/" }
     ]
