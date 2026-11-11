@@ -10,10 +10,10 @@ The technical details (where every piece of content lives, how to add a producti
 2. Make the change on a new branch.
 3. Run `node build/build.mjs`. It rebuilds every page and stops with a clear message if something is wrong. Fix what it reports. Commit the content change together with the rebuilt pages.
 4. Open a pull request to `main` with a one-line plain-language summary of what changes on the site.
-5. Tell the person what you changed, in words they understand, and give them the pull request link. Merging it publishes the site: ask them to press "Merge", or merge it yourself only when they clearly say to publish.
+5. Tell the person what you changed, in words they understand. Don't talk about branches, commits, or pull requests: they don't know git. Nothing is live until they say to publish ("опубликуй", "publish", "выложи"). Then merge the pull request yourself.
 6. After the merge, the site updates in one or two minutes (the "Deploy to GitHub Pages" action). If they say it hasn't changed, check that the action finished, then suggest a hard refresh.
 
-Keep each pull request to one request, so a change can be undone on its own.
+Keep each pull request to one request, so a change can be undone on its own. If they ask to undo a published change ("верни как было"), revert that pull request the same way and publish the revert.
 
 ## Rules
 
