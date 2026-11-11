@@ -7,9 +7,9 @@
   var finePointer = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
   var lang = (root.lang || 'en').slice(0, 2);
   var T = {
-    en: { toLight: 'switch to light', toDark: 'switch to dark', close: 'Close' },
-    de: { toLight: 'zu hell wechseln', toDark: 'zu dunkel wechseln', close: 'Schließen' },
-    ru: { toLight: 'включить светлую', toDark: 'включить тёмную', close: 'Закрыть' },
+    en: { toLight: 'turn lights on', toDark: 'turn lights off', close: 'Close' },
+    de: { toLight: 'licht an', toDark: 'licht aus', close: 'Schließen' },
+    ru: { toLight: 'включить свет', toDark: 'выключить свет', close: 'Закрыть' },
   }[lang] || {};
 
   // ---- Sound button on background videos (only shown for videos with sound) ----
@@ -95,7 +95,7 @@
   // ---- Play page: photo that fades out, then a light/dark switch for reading ----
   // The photo is fixed at the top like the videos and is fully gone when the first
   // chapter number is as far from the top of the screen as from its first paragraph.
-  // At that point a "switch to light" button appears in the bottom-right corner. It
+  // At that point a "turn lights on" button appears in the bottom-right corner. It
   // goes away when the second chapter begins and comes back when scrolling up. Light mode only lives
   // on this page: nothing is remembered, so every other page (and the menu) is black.
   (function () {
@@ -111,7 +111,7 @@
     sw.className = 'read-mode';
     sw.innerHTML = '<button type="button" class="theme-toggle-text"></button>';
     var btn = sw.firstChild;
-    function label() { btn.textContent = root.getAttribute('data-theme') === 'light' ? (T.toDark || 'switch to dark') : (T.toLight || 'switch to light'); }
+    function label() { btn.textContent = root.getAttribute('data-theme') === 'light' ? (T.toDark || 'turn lights off') : (T.toLight || 'turn lights on'); }
     btn.addEventListener('click', function () {
       if (root.getAttribute('data-theme') === 'light') root.removeAttribute('data-theme');
       else root.setAttribute('data-theme', 'light');

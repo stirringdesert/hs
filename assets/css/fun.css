@@ -37,7 +37,7 @@
 .bg-video ~ main .trailer { text-shadow: none; }
 body { transition: background-color .4s var(--ease), color .4s var(--ease); }
 
-/* ---------- Play page: "switch to light / dark" in the bottom-right corner ----------
+/* ---------- Play page: "turn lights on / off" in the bottom-right corner ----------
    Shown from where the photo has faded out until the second chapter begins. */
 .read-mode {
   position: fixed;
