@@ -128,6 +128,8 @@ Each entry: what was said → the likely reason → the rule that follows.
 | 59 | The language links on the Open Relationship page had no hover effect. | Every link should answer the same way. | Every link reacts on hover the same way: it dims to grey. |
 | 60 | In light mode on the play page the text "shouldn't have a blending mode, looks faded with image" (it came from the ray cursor's layer). | Text must stay crisp; effects that mix it with the picture make it look washed out. | No blend effects on top of text. |
 | 61 | The light mode setting should be kept between pages. It's now remembered for the reading pages only; other pages and the menu stay black. | A reader's choice should still hold when they come back. | Remember what the visitor chose, within the scope where the choice applies. |
+| 62 | The play text over the photo in light mode "still looks weird, I think it's all just actually grey". The text was black; the photo had been lightened and softened to suit the light background, which greyed the whole page. It now keeps its real colours. | On a light page, a washed-out photo makes everything look dull and faded. | Don't bleach media to fit a mode. Show it as it is, and keep the text crisp. |
+| 63 | The bookings line should use the same style and size as paragraph text. | It's a sentence, not a label, so small bold text made it shout. | Sentences use the paragraph style. The bold label style is only for short tags. |
 
 ## Do and don't
 
