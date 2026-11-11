@@ -105,6 +105,8 @@ openssl enc -aes-256-cbc -pbkdf2 -iter 200000 -salt -in font.woff2 -out assets/f
 
 ## Assets
 
+The demo has two files in `content/voice.json`: `file` is the full-quality WAV that the download link gives, and `stream` is a small MP3 the player plays (it starts much faster). After replacing the WAV, make a new MP3: `ffmpeg -i assets/media/demo.wav -b:a 192k assets/media/demo.mp3`.
+
 All images, audio, fonts and videos are in `assets/` (downloaded from the old Framer site with `tools/fetch-assets.sh`). The production background videos were converted from HEVC to H.264 so they play in every browser.
 
 `open-relationship-ru/` holds the full Russian text of the play (the READ RU link), copied from the Framer page.

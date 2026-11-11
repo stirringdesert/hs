@@ -35,6 +35,7 @@ export function layout(site, { path, title, bodyClass, lang = 'en', description,
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="color-scheme" content="dark">
+  <meta name="theme-color" content="#000">
   <title>${esc(fullTitle)}</title>
   <meta name="description" content="${attr(desc)}">${noindex ? '\n  <meta name="robots" content="noindex">' : ''}
   <meta property="og:type" content="website">
@@ -153,12 +154,6 @@ export function langPicker(alternates) {
 // "time in Munich" clock (filled in by main.js).
 export function clock(site = {}) {
   return `<p class="clock" aria-hidden="true">${esc(site.ui?.time_in_munich || 'time in Munich')} <b data-clock>--:--</b></p>`;
-}
-
-export function footer(site) {
-  return `  <footer class="site-footer">
-${site.footer.map((n) => `    <a href="${attr(n.url)}">${esc(n.label)}</a>`).join('\n')}
-  </footer>`;
 }
 
 // Big page heading, e.g. "director", "works" (lowercase comes from type.css).

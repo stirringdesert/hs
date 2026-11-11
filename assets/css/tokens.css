@@ -22,8 +22,6 @@
   --color-bg: #000;            /* page background */
   --color-fg: #fff;            /* main text */
   --color-muted: #a3a3a3;      /* secondary text, hover state */
-  --color-link: #0099ff;       /* links inside text */
-  --color-accent: #4d8bdb;     /* call-to-action links (voice page) */
   --color-placeholder: #111;   /* shown while an image loads */
 
   /* ---- Font ---- */
@@ -62,6 +60,12 @@
   --type-small: 14px;          /* footer */
   --type-small-lh: 19px;
   --type-legal: 12px;          /* Impressum / Datenschutz links */
+  /* The play text (reading pages): body size, plus these */
+  --type-play-small: 20px;     /* chapter numbers and the author line under the title */
+  --type-play-lh: clamp(23px, 22.63px + .095vw, 24px);      /* play paragraphs */
+  --play-para-gap: clamp(12px, 9.03px + .762vw, 20px);      /* between paragraphs */
+  --play-chapter-gap: clamp(8px, 3.54px + 1.143vw, 20px);   /* extra space under a chapter number */
+  --play-title-space: clamp(160px, 108px + 13.33vw, 300px);  /* above and below the title screen */
 
   /* ---- Layout ---- */
   --gutter: 24px;              /* space at the left/right edge of the page */

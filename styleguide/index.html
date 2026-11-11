@@ -5,6 +5,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="color-scheme" content="dark">
+  <meta name="theme-color" content="#000">
   <title>Style guide - Igor Sergeev</title>
   <meta name="description" content="The Russian voice of Leon Kennedy in Resident Evil 4 Remake and Jon Snow in Game of Thrones. Over 100 dubbed films, series and games, 126 audiobooks. Theater director and playwright based in Munich.">
   <meta name="robots" content="noindex">
@@ -18,11 +19,11 @@
   <link rel="icon" href="/assets/img/favicon-dark.png" media="(prefers-color-scheme: dark)">
   <link rel="preload" href="/assets/fonts/tt-firs-neue-regular.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="/assets/fonts/tt-firs-neue-demibold.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="/assets/css/tokens.css?v=77212215">
-  <link rel="stylesheet" href="/assets/css/style.css?v=eadb31d2">
-  <link rel="stylesheet" href="/assets/css/type.css?v=9d155a68">
-  <link rel="stylesheet" href="/assets/css/fun.css?v=f18d7d7f">
-  <link rel="stylesheet" href="/assets/css/styleguide.css?v=2384caf2">
+  <link rel="stylesheet" href="/assets/css/tokens.css?v=924e3275">
+  <link rel="stylesheet" href="/assets/css/style.css?v=d5961481">
+  <link rel="stylesheet" href="/assets/css/type.css?v=b5fba61d">
+  <link rel="stylesheet" href="/assets/css/fun.css?v=b2568cc5">
+  <link rel="stylesheet" href="/assets/css/styleguide.css?v=61f84555">
   <script src="/assets/js/main.js?v=c3f7edc2" defer></script>
   <script src="/assets/js/fun.js?v=30431ad4" defer></script>
   <script type="speculationrules">{"prefetch":[{"where":{"and":[{"href_matches":"/*"},{"not":{"href_matches":"/assets/*"}}]},"eagerness":"moderate"}]}</script>
@@ -61,8 +62,6 @@
         <div class="sg-swatch"><i style="background:var(--color-bg)"></i>Background<code>--color-bg</code></div>
         <div class="sg-swatch"><i style="background:var(--color-fg)"></i>Text<code>--color-fg</code></div>
         <div class="sg-swatch"><i style="background:var(--color-muted)"></i>Muted text, hover<code>--color-muted</code></div>
-        <div class="sg-swatch"><i style="background:var(--color-link)"></i>Links in text<code>--color-link</code></div>
-        <div class="sg-swatch"><i style="background:var(--color-accent)"></i>Call-to-action links<code>--color-accent</code></div>
         <div class="sg-swatch"><i style="background:var(--color-placeholder)"></i>Image placeholder<code>--color-placeholder</code></div>
       </div>
     </section>
@@ -70,22 +69,26 @@
     <section class="sg-section">
       <h2 class="label">Type</h2>
       <div class="sg-row"><div>Display<code>--type-display</code></div><div><div style="font-size:var(--type-display);line-height:var(--type-display-lh);letter-spacing:var(--type-display-tracking)">Igor Sergeev</div></div></div>
-      <div class="sg-row"><div>Page title<code>.page-title</code></div><div><div class="page-title">Director</div></div></div>
-      <div class="sg-row"><div>Contact link<code>--type-contact</code></div><div><div style="font-size:var(--type-contact);line-height:var(--type-contact-lh)">Telegram</div></div></div>
+      <div class="sg-row"><div>Page title<code>.page-title</code></div><div><div class="page-title">director</div></div></div>
+      <div class="sg-row"><div>Contact link<code>--type-contact</code></div><div><div style="font-size:var(--type-contact);line-height:var(--type-contact-lh)">telegram</div></div></div>
       <div class="sg-row"><div>Player time<code>--type-time</code></div><div><div style="font-size:var(--type-time);line-height:var(--type-time-lh)">1:24</div></div></div>
       <div class="sg-row"><div>Production list<code>--type-list</code></div><div><div style="font-size:var(--type-list);line-height:var(--type-list-lh)">Iran Conference</div></div></div>
       <div class="sg-row"><div>Heading<code>--type-heading</code></div><div><div style="font-size:var(--type-heading);line-height:var(--type-heading-lh)">Leon Kennedy</div></div></div>
       <div class="sg-row"><div>Menu<code>--type-nav</code></div><div><div style="font-size:var(--type-nav);line-height:var(--type-nav-lh);letter-spacing:var(--type-nav-tracking)">voice acting</div></div></div>
       <div class="sg-row"><div>Body<code>--type-body</code></div><div><div>Igor Sergeev is a playwright, director, actor and voice actor based in Munich.</div></div></div>
-      <div class="sg-row"><div>Label<code>.label</code></div><div><div class="label">Official Russian dubs</div></div></div>
-      <div class="sg-row"><div>Caption<code>--type-caption</code></div><div><div style="font-size:var(--type-caption)">DOWNLOAD</div></div></div>
-      <div class="sg-row"><div>Small<code>--type-small</code></div><div><div style="font-size:var(--type-small);line-height:var(--type-small-lh)">Impressum</div></div></div>
+      <div class="sg-row"><div>Label<code>.label</code></div><div><div class="label">official russian dubs</div></div></div>
+      <div class="sg-row"><div>Play text: chapter number<code>--type-play-small</code></div><div><div style="font-size:var(--type-play-small)">1.</div></div></div>
+      <div class="sg-row"><div>Caption<code>--type-caption</code></div><div><div style="font-size:var(--type-caption)">download</div></div></div>
+      <div class="sg-row"><div>Small<code>--type-small</code></div><div><div style="font-size:var(--type-small);line-height:var(--type-small-lh)">time in Munich</div></div></div>
+      <div class="sg-row"><div>Legal links<code>--type-legal</code></div><div><div style="font-size:var(--type-legal);color:var(--color-muted)">impressum</div></div></div>
     </section>
 
     <section class="sg-section">
       <h2 class="label">Links</h2>
-      <div class="sg-row"><div>Text link<code>.link</code></div><div><a class="link" href="#">Watch on Vimeo</a></div></div>
-      <div class="sg-row"><div>Call to action<code>.accent</code></div><div><span class="label">for voiceover bookings and inquiries, please <a class="accent" href="#">contact</a></span></div></div>
+      <div class="sg-row"><div>Link in text (white, underlined, arrow)<code>.link</code></div><div><p>More on <a class="link" href="https://example.com" target="_blank" rel="noopener">Wikipedia (RU)</a></p></div></div>
+      <div class="sg-row"><div>Call to action<code>.accent</code></div><div><p>for voiceover bookings and inquiries, please <a class="accent" href="#">contact</a></p></div></div>
+      <div class="sg-row"><div>Email (copies the address)<code>.copy-email</code></div><div><button type="button" class="copy-email" data-e="bW9jLmVscG1heGVAZW1hbg==" title="Copy email address" data-copied="copied">e-mail</button></div></div>
+      <div class="sg-row"><div>Download<code>a[download]</code></div><div><a href="#" download>download pdf</a></div></div>
     </section>
 
     <section class="sg-section">
@@ -130,7 +133,7 @@
           <li><a href="#">Mary Stuart</a></li>
         </ul>
         <div class="detail">
-          <p><a class="link" href="#">Watch on Vimeo</a></p>
+          <p><a class="link" href="https://example.com" target="_blank" rel="noopener">Watch the full play on Vimeo</a></p>
           <p>Production: Takoy Theatre, Saint Petersburg</p>
           <p>Directed by Igor Sergeev and Vladimir Kuznetsov</p>
         </div>
@@ -159,8 +162,12 @@
     <section class="sg-section">
       <h2 class="label">Audio player</h2>
       <div class="sg-demo">
-      <div class="player" data-src="/assets/media/demo.wav" data-play="Play audio" data-pause="Pause audio">
-        <audio preload="metadata" src="/assets/media/demo.wav"></audio>
+      <div class="demo-head">
+        <h1 class="page-title">demo</h1>
+        <a class="download" href="/assets/media/demo.wav" download>DOWNLOAD</a>
+      </div>
+      <div class="player" data-src="/assets/media/demo.mp3" data-play="Play audio" data-pause="Pause audio">
+        <audio preload="metadata" src="/assets/media/demo.mp3"></audio>
         <div class="player-row">
           <button type="button" class="player-play" aria-label="Play audio"><svg viewBox="0 0 16 16" aria-hidden="true"><path class="icon-play" d="M5.379 1.292C4.968 1.033 4.449 1.017 4.023 1.251 3.598 1.486 3.334 1.933 3.333 2.419V13.581C3.334 14.067 3.598 14.514 4.023 14.749 4.449 14.983 4.968 14.967 5.379 14.708L14.215 9.127C14.602 8.883 14.836 8.457 14.836 8 14.836 7.543 14.602 7.117 14.215 6.873Z"/></svg></button>
           <div class="bar" role="slider" aria-label="Seek" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" tabindex="0"><span class="track"><i></i></span></div>
@@ -179,12 +186,12 @@
     </section>
 
     <section class="sg-section">
-      <h2 class="label">Footer</h2>
+      <h2 class="label">Home page and menu (legal links at the bottom)</h2>
       <div class="sg-demo">
-        <footer class="site-footer">
-          <a href="/impressum/">Impressum</a>
-          <a href="/datenschutzerklaerung/">Datenschutz</a>
-        </footer>
+      <div class="home-foot">
+          <span></span>
+          <nav class="legal-links" aria-label="Legal"><a href="/impressum/">Impressum</a><a href="/datenschutzerklaerung/">Datenschutz</a></nav>
+        </div>
       </div>
     </section>
   </main>
