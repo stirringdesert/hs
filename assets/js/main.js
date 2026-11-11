@@ -15,10 +15,16 @@
   var isOpen = function () { return menu.classList.contains('open'); };
   menu.addEventListener('mouseenter', function () { if (hover.matches) set(true); });
   menu.addEventListener('mouseleave', function () {
-    if (!hover.matches || menu.contains(document.activeElement)) return;
+    var f = document.activeElement;
+    if (!hover.matches || (menu.contains(f) && f.matches(':focus-visible'))) return;   // keep open while using the keyboard
     timer = setTimeout(function () { set(false); }, 300);
   });
-  btn.addEventListener('click', function () { set(!isOpen()); });
+  btn.addEventListener('click', function () {
+    // With a mouse the menu is already open from hovering, so a click keeps it open
+    // (moving away closes it). On touch screens the word toggles open/closed.
+    if (hover.matches && isOpen()) return;
+    set(!isOpen());
+  });
   menu.addEventListener('focusin', function (e) { if (e.target.matches(':focus-visible')) set(true); });   // keyboard only; taps use click
   menu.addEventListener('focusout', function (e) { if (!menu.contains(e.relatedTarget)) set(false); });
   document.addEventListener('keydown', function (e) {
