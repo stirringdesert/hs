@@ -76,6 +76,7 @@ Each entry: what was said → the likely reason → the rule that follows.
 | 14 | Light mode as a test, "not sure if will use". | Curious, but black is the identity. | Dark is the default and the identity. Light mode is an experiment until it's confirmed. |
 | 15 | First-visit language picker: "just a minimal choice on black" (en, de, ru). | Even a utility screen is part of the stage. The first impression is black and type. | Utility screens use the same big type on black. No flags, boxes or dropdowns. |
 | 16 | Photo of the two of them on the play page "in the same style as the videos". Voice roles (later) should open to show info and a short clip. | One consistent treatment for media. Details are revealed on interaction instead of shown all at once. | New media copies the dimmed full-bleed video style. Show the surface first and let curiosity open the details. |
+| 17 | Outside scripts and embeds are fine "as long as there's no information on their unavailability in Russia". | Russian visitors matter, but the site shouldn't give up useful tools out of caution alone. | Before adding an outside service, check whether it's reported blocked or slowed down in Russia. Use it if it isn't. |
 
 ## Do and don't
 
@@ -95,7 +96,7 @@ Each entry: what was said → the likely reason → the rule that follows.
 - Center layouts. The play text is the only exception, because it's a printed page.
 - Duplicate a control. When adding a new way, remove the old one.
 - Autoplay sound, or open the mail app or other apps without asking.
-- Load fonts, scripts or embeds from third-party services. The site has to work in Russia (see `CLAUDE.md`).
+- Use a third-party script, embed or font that is known to be blocked or slowed down in Russia (for example anything served through Cloudflare). Outside services are fine otherwise. Check for reports of blocking first (see `CLAUDE.md`).
 - Make legal links prominent, or remove them.
 - Change the look of an element in one place only. Change it everywhere, or not at all.
 

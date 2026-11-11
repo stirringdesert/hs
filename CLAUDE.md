@@ -24,7 +24,7 @@ Keep each pull request to one request, so a change can be undone on its own. If 
 - Fonts: the font files are paid and must never be committed unencrypted. Only `assets/fonts/*.woff2.enc` is in the repo (plain `.woff2` is gitignored), and the deploy decrypts them with the `FONT_KEY` secret. The build works without the fonts; pages just fall back to a system font when previewed locally. Never print, guess, or ask for the key.
 - This repository is public. Don't add personal details beyond what the site already shows: no private phone numbers, home addresses, passwords, keys, or notes about private matters. Don't add the owner's name or the domain to the repository description, topics, or README.
 - Keep `impressum` and `datenschutzerklaerung` reachable from every page. German law requires them. Changes to their wording should be checked by the owner.
-- The site must keep loading in Russia. Don't move hosting, add a CDN, or load scripts, fonts, or embeds from third-party services (Google Fonts, Cloudflare, YouTube embeds and similar) without asking first, because some are slowed down or blocked there.
+- The site must keep loading in Russia. Don't move hosting or add a CDN without asking first. Third-party scripts, fonts and embeds are fine, unless there are reports that the service is blocked or slowed down in Russia (for example anything served through Cloudflare). Check before adding one.
 - Videos and images go in `assets/`. Keep videos as H.264 `.mp4` (HEVC doesn't play in every browser) and reasonably small; GitHub refuses files over 100 MB.
 - Don't change `.github/workflows/`, `CNAME`, or repository settings unless the person asks for exactly that.
 
