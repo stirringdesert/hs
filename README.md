@@ -45,7 +45,7 @@ Paragraph of description. Blank lines separate paragraphs.
 Cast: ...
 ```
 
-- `order` sets the position in the list. `video` is optional (the background video). Add `hidden: true` to take a production off the site without deleting it.
+- `order` sets the position in the list. `video` is optional (the background video). Add `sound: true` only if the video file has an audio track: a "Sound" button then appears so visitors can unmute it. Instead of a video, a page can have a background photo: `image: /assets/img/...` (plus `image_alt:`), shown in the same dimmed full-screen style with a slow drift. Add `hidden: true` to take a production off the site without deleting it.
 - Text supports `[link text](url)`, `**bold**`, `*italic*`. A single line break inside a paragraph becomes a line break.
 - Deleting a content file removes its page on the next build.
 
@@ -73,6 +73,10 @@ https://claude.ai/artifact/TDSeaW3f6Bqcbctk2LQd5P
 3. Look at it (desktop and phone), ask for tweaks, repeat. When it looks right, merge the PR and `main` deploys the live site.
 
 The preview is private: only people it is shared with (from the page's Share menu) can open it.
+
+## Playful layer and light mode
+
+`assets/css/fun.css` and `assets/js/fun.js` add the interactive extras: a dot cursor that grows over links, floating video/photo previews when hovering menu items and productions (the map is built from the content files), letters that jump on the big titles, tilting voice cards, contact links that drift toward the cursor, the background-video sound button and a test light mode (round button bottom-left, or `?theme=light` / `?theme=dark` in any URL; remembered per browser). Everything respects the system "reduce motion" setting, and the cursor/previews only run with a mouse. Removing the two files turns all of it off.
 
 ## Publishing
 
