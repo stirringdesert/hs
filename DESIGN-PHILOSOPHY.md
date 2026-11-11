@@ -53,6 +53,7 @@ The logic:
 - Flush left with a 24 px edge gutter. Things hug the edges and corners, and the middle is often left empty on purpose.
 - On desktop, two equal columns: the list on the left, the text on the right. On phones, one column.
 - The home page is a single composed screen: name at the top, menu at the bottom, legal links in the corner.
+- Navigation is the word "menu" in the bottom-left corner of every page. It raises the home view's links (with the time and languages) on hover or tap, the same on every screen.
 - Lines: a single 2 px white rule under the selected item. No boxes, card borders, shadows, gradients or rounded corners.
 - Text sizes grow and shrink smoothly with the screen (CSS `clamp()`), never in jumps.
 
@@ -105,6 +106,7 @@ Each entry: what was said → the likely reason → the rule that follows.
 | 37 | Icons next to links are too small: they should feel about the size of the text. If possible, raise the underline to sit closer to the letters (visible on the Telegram link). The email underline was thinner than the others. | Small details must look deliberate and identical across siblings. | Icons are sized to the text they sit next to. Underlines have the same thickness and offset everywhere. |
 | 38 | The halo (shadow) around text is too visible, especially in light mode. Light mode backgrounds should be a little more visible, with a ratio similar to dark mode. | Text effects for readability should be invisible. Both modes should be the same design, just inverted. | Readability aids are as subtle as possible. Media visibility should feel the same in both modes. |
 | 39 | Animations are "still buggy" (maybe the preview). | Polish is the bar for every motion. | Test every animation on the real site and on a phone before showing it. |
+| 40 | Navigation: a corner menu, the same on every screen. The word "menu" sits in the bottom-left corner of every page, and hovering or tapping it raises the home page's links, with the time and the languages. | The hamburger made you click in one corner and then travel to the other. Navigation should feel like the loved home layout and work the same everywhere. | One navigation pattern for all screens, opening where your hand already is. The menu is the home view, and the trigger is a plain word. |
 
 ## Do and don't
 
@@ -137,6 +139,5 @@ Each entry: what was said → the likely reason → the rule that follows.
 These need the art director's call. Update this section when they answer.
 
 - **Desktop menu:** the same full-screen menu as on phones, or the old row of links in the header? (`menu_desktop` in `content/site.json`, tested in the navigation PR.)
-- **Desktop and phone navigation:** a new pattern is being designed (#26). Until then the full-screen menu stays.
 - **Light mode:** still a test. It's being fixed (#24), but whether it stays is undecided.
 - **Blue:** #21 makes links white and underlined, so the blue may only survive in the voice page's "contact" call to action. Drop it entirely?
