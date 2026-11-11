@@ -83,6 +83,8 @@ function walk(dir) {
         for (const k of Object.keys(m)) m[k] = relLink(m[k], depth);
         return `m = ${JSON.stringify(m)};`;
       }).replace('m[l] !== location.pathname', 'new URL(m[l], location.href).pathname !== location.pathname');
+      // Link handling for the preview (see pageScript() below).
+      html = html.replace('</body>', `<script src="${'../'.repeat(depth)}assets/js/preview.js"></script>\n</body>`);
       fs.writeFileSync(dest, html);
     } else {
       fs.copyFileSync(abs, dest);
@@ -92,7 +94,11 @@ function walk(dir) {
 walk(ROOT);
 
 const posix = (rel) => rel.split(path.sep).join('/');
-fs.writeFileSync(path.join(OUT, 'index.html'), shell(files.map(posix).filter((f) => f.endsWith('.html'))));
+const pageList = files.map(posix).filter((f) => f.endsWith('.html'));
+fs.writeFileSync(path.join(OUT, 'index.html'), shell());
+fs.mkdirSync(path.join(SITE, 'assets', 'js'), { recursive: true });
+fs.writeFileSync(path.join(SITE, 'assets', 'js', 'preview.js'), pageScript(pageList));
+files.push(path.join('assets', 'js', 'preview.js'));
 
 const map = {};
 for (const rel of files.sort()) {
@@ -105,7 +111,7 @@ console.log(`Preview ready: ${OUT}/index.html (+${Object.keys(map).length} files
 
 // The frame page: a thin bar (Back, Home, page name, light/dark-safe) above the site.
 // Links that can't work inside the preview show a short note instead of leaving it.
-function shell(pages) {
+function shell() {
   return `<!doctype html>
 <html lang="en">
 <head>
@@ -139,59 +145,69 @@ function shell(pages) {
   <span class="tag">Preview</span>
 </div>
 <iframe id="site" src="site/index.html" title="Site preview"></iframe>
-<div class="note" id="note" role="status"></div>
 <script>
 (function () {
-  var PAGES = ${JSON.stringify(pages)};
   var frame = document.getElementById('site');
-  var note = document.getElementById('note');
   var where = document.getElementById('where');
-  var base = new URL('site/', location.href).href;
-  var timer;
-  function say(html) {
-    note.innerHTML = html; note.classList.add('show');
-    clearTimeout(timer); timer = setTimeout(function () { note.classList.remove('show'); }, 5000);
-  }
+  // Each site page reports where it is and handles its own links (assets/js/preview.js).
+  window.addEventListener('message', function (e) {
+    if (e.source === frame.contentWindow && e.data && typeof e.data.previewPath === 'string') where.textContent = e.data.previewPath;
+  });
+  document.getElementById('home').onclick = function () { frame.src = 'site/index.html?' + Date.now(); };
+  document.getElementById('back').onclick = function () {
+    try { frame.contentWindow.postMessage({ previewBack: true }, '*'); } catch (e) {}
+  };
+})();
+</script>
+</body>
+</html>
+`;
+}
+
+// Runs inside every site page of the preview. The preview viewer can't leave its frame
+// or open new tabs, so links to other sites, email links and pages that aren't part of
+// the preview show a short note instead of doing nothing.
+function pageScript(pages) {
+  return `(function () {
+  var PAGES = ${JSON.stringify(pages)};
+  var me = document.currentScript && document.currentScript.src;
+  if (!me) return;
+  var base = me.replace(/assets\\/js\\/preview\\.js.*$/, '');
   function sitePath(href) {
     if (href.indexOf(base) !== 0) return null;
     var p = href.slice(base.length).split(/[?#]/)[0];
     if (p === '' || p.slice(-1) === '/') p += 'index.html';
     return p;
   }
-  document.getElementById('home').onclick = function () { frame.src = 'site/index.html'; };
-  document.getElementById('back').onclick = function () {
-    try { frame.contentWindow.history.back(); } catch (e) { frame.src = 'site/index.html'; }
-  };
-  frame.addEventListener('load', function () {
-    var doc;
-    try { doc = frame.contentDocument; } catch (e) {}
-    if (!doc) return;
-    var p = sitePath(frame.contentWindow.location.href);
-    if (p && PAGES.indexOf(p) === -1 && !/\\.(pdf|mp4|wav|jpg|png)$/.test(p)) {
-      say('That page is not part of the preview. Taking you home.');
-      frame.src = 'site/index.html';
-      return;
+  try { parent.postMessage({ previewPath: '/' + (sitePath(location.href) || '').replace(/index\\.html$/, '') }, '*'); } catch (e) {}
+  window.addEventListener('message', function (e) { if (e.data && e.data.previewBack) history.back(); });
+
+  var note, timer;
+  function say(text, detail) {
+    if (!note) {
+      note = document.createElement('div');
+      note.setAttribute('role', 'status');
+      note.style.cssText = 'position:fixed;left:50%;bottom:20px;transform:translateX(-50%);z-index:2147483647;max-width:calc(100% - 32px);box-sizing:border-box;'
+        + 'background:#fff;color:#000;border-radius:8px;padding:10px 14px;font:13px/1.35 -apple-system,BlinkMacSystemFont,sans-serif;box-shadow:0 4px 20px rgba(0,0,0,.4);transition:opacity .2s;pointer-events:none';
+      document.body.appendChild(note);
     }
-    where.textContent = '/' + (p || '').replace(/index\\.html$/, '');
-    doc.addEventListener('click', function (e) {
-      var a = e.target.closest && e.target.closest('a[href]');
-      if (!a || e.defaultPrevented) return;
-      var href = a.href;
-      if (/^(mailto|tel):/.test(href)) { e.preventDefault(); say('Opens an email or call link on the live site: ' + a.getAttribute('href').replace(/^[a-z]+:/, '')); return; }
-      var p = sitePath(href);
-      if (p === null) {
-        e.preventDefault();
-        // The preview can't open other sites (the viewer blocks new tabs), so say where it goes.
-        try { window.open(href, '_blank', 'noopener'); } catch (err) {}
-        say('Link to another site (works on the live site):<br><b>' + href.replace(/</g, '&lt;') + '</b>');
-        return;
-      }
-      if (/\\.html$/.test(p) && PAGES.indexOf(p) === -1) { e.preventDefault(); say('Not in the preview yet.'); }
-    }, true);
-  });
+    note.textContent = text;
+    if (detail) { var b = document.createElement('b'); b.style.cssText = 'display:block;word-break:break-all;font-weight:600'; b.textContent = detail; note.appendChild(b); }
+    note.style.opacity = '1';
+    clearTimeout(timer); timer = setTimeout(function () { note.style.opacity = '0'; }, 5000);
+  }
+
+  document.addEventListener('click', function (e) {
+    var a = e.target.closest && e.target.closest('a[href]');
+    if (!a) return;
+    var raw = a.getAttribute('href') || '';
+    if (raw.charAt(0) === '#') return;
+    var href = a.href;
+    if (/^(mailto|tel):/i.test(href)) { e.preventDefault(); say('Email/phone link (works on the live site):', raw.replace(/^[a-z]+:/i, '')); return; }
+    var p = sitePath(href);
+    if (p === null) { e.preventDefault(); say('Link to another site (works on the live site):', href); return; }
+    if (/\\.html$/.test(p) && PAGES.indexOf(p) === -1) { e.preventDefault(); say('This page is not in the preview yet.'); }
+  }, true);
 })();
-</script>
-</body>
-</html>
 `;
 }
