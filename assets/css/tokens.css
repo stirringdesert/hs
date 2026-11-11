@@ -76,7 +76,7 @@
   --page-in: .45s;             /* page transition: new page fades/slides in */
   --page-out: .2s;             /* page transition: old page fades out */
   --menu-in: .5s;              /* menu links sliding up when the menu opens */
-  --bg-video-opacity: .5;
+  --bg-video-opacity: .65;
   --bg-video-fade: 3s;
 }
 

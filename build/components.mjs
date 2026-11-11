@@ -54,28 +54,15 @@ ${before ? before + '\n' : ''}${chrome ? header(site, alternates) + '\n' : ''}  
 ${indent(main, 4)}
   </main>
 ${footer(site)}
-${themeToggle()}${previewData(site)}
 </body>
 </html>
 `;
 }
 
 // Light mode is a test: the site stays dark unless a visitor picks light with the
-// round button (remembered in the browser) or opens a page with ?theme=light.
+// dark/light switch next to the language switch (remembered in the browser) or opens a page with ?theme=light.
 // This runs before the page paints, so there is no dark/light flash.
 const THEME_BOOT = `(function(){try{var q=location.search.match(/[?&]theme=(light|dark)/);if(q)localStorage.setItem('theme',q[1]);if(localStorage.getItem('theme')==='light')document.documentElement.setAttribute('data-theme','light')}catch(e){}})()`;
-
-// Round light/dark switch in the bottom-left corner (wired up in fun.js).
-export function themeToggle() {
-  return `  <button type="button" class="theme-toggle" aria-label="Switch to light mode" title="Light / dark"><i></i></button>`;
-}
-
-// Link -> picture/video map for the floating previews that follow the cursor when
-// you hover a menu item or a production (fun.js). Built from the content files.
-function previewData(site) {
-  if (!site.previews || !Object.keys(site.previews).length) return '';
-  return `\n  <script type="application/json" id="hover-previews">${JSON.stringify(site.previews).replace(/</g, '\\u003c')}</script>`;
-}
 
 export function header(site, alternates = null) {
   const ui = site.ui || {};
@@ -169,6 +156,15 @@ export function bgVideo(src, { sound = false } = {}) {
   <button type="button" class="sound-toggle" aria-pressed="false" aria-label="Turn sound on"><span class="eq" aria-hidden="true"><i></i><i></i><i></i><i></i></span><span class="sound-label">Sound</span></button>`;
 }
 
+// Still picture of a production's trailer. A click opens the player in a window the
+// width of the page content (fun.js); without JavaScript it is a normal link.
+export function trailer({ embed, image, url, label = 'Trailer', duration = '' }) {
+  return `<a class="trailer" href="${attr(url || embed)}" data-embed="${attr(embed)}" aria-label="${attr(label)}" target="_blank" rel="noopener">
+  <img src="${attr(image)}" alt="" loading="lazy">
+  <span class="trailer-play"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="${PLAY_ICON}"/></svg>${esc(label)}${duration ? ` <span class="trailer-time">${esc(duration)}</span>` : ''}</span>
+</a>`;
+}
+
 // Fixed full-screen photo behind a page, styled like the background videos
 // (same dimming and fade-in, plus a slow drift so it feels alive).
 export function bgImage(src, alt = '') {
@@ -179,11 +175,12 @@ export function bgImage(src, alt = '') {
 // and shows its summary lines.
 export function workList(items, currentSlug) {
   const li = items.map((it) => {
-    if (it.slug !== currentSlug) return `  <li><a href="${attr(it.url)}">${esc(it.title)}</a></li>`;
+    const film = it.trailer ? ' class="has-film"' : '';
+    if (it.slug !== currentSlug) return `  <li${film}><a href="${attr(it.url)}">${esc(it.title)}</a></li>`;
     const lines = it.summaryHtml.map((p) => `      <p>${p}</p>`);
     if (it.linksHtml) lines.push(`      <p class="work-links">${it.linksHtml}</p>`);
     const summary = lines.length ? `\n    <div class="summary">\n${lines.join('\n')}\n    </div>\n  ` : '';
-    return `  <li class="current"><a href="${attr(it.url)}" aria-current="page">${esc(it.title)}</a>${summary}</li>`;
+    return `  <li class="current${it.trailer ? ' has-film' : ''}"><a href="${attr(it.url)}" aria-current="page">${esc(it.title)}</a>${summary}</li>`;
   });
   return `<ul class="nav-list">\n${li.join('\n')}\n</ul>`;
 }
@@ -197,17 +194,24 @@ export function detail(blocks) {
   return `<div class="detail">\n${blocks.map((b) => '  ' + b).join('\n')}\n</div>`;
 }
 
-// Audio player with play/pause, seek bar, time and download link.
+// Audio player: play/pause, seek bar (click or drag), time, volume and download.
+// Every control has a click area of at least 44 px. Wired up in main.js.
 export function player(src, ui = {}) {
   return `<div class="player" data-src="${attr(src)}" data-play="${attr(ui.play || 'Play audio')}" data-pause="${attr(ui.pause || 'Pause audio')}">
   <audio preload="metadata" src="${attr(src)}"></audio>
   <div class="player-row">
-    <button type="button" aria-label="${attr(ui.play || 'Play audio')}"><svg viewBox="0 0 16 16" aria-hidden="true"><path class="icon-play" d="${PLAY_ICON}"/></svg></button>
-    <div class="bar" role="slider" aria-label="Seek" tabindex="0"><i></i></div>
+    <button type="button" class="player-play" aria-label="${attr(ui.play || 'Play audio')}"><svg viewBox="0 0 16 16" aria-hidden="true"><path class="icon-play" d="${PLAY_ICON}"/></svg></button>
+    <div class="bar" role="slider" aria-label="${attr(ui.seek || 'Seek')}" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" tabindex="0"><span class="track"><i></i></span></div>
   </div>
   <div class="player-meta">
-    <span class="time">0:00</span>
-    <a class="download" href="${attr(src)}" download>${esc(ui.download || 'DOWNLOAD')}</a>
+    <span class="time"><span class="now">0:00</span><span class="total"></span></span>
+    <span class="player-tools">
+      <span class="volume">
+        <button type="button" class="player-mute" aria-label="${attr(ui.mute || 'Mute')}" aria-pressed="false"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2 6h3l4-3v10l-4-3H2z"/><path class="waves" d="M11 5.5a3.5 3.5 0 0 1 0 5M12.8 3.5a6.3 6.3 0 0 1 0 9" fill="none" stroke="currentColor" stroke-width="1.4"/></svg></button>
+        <input type="range" class="player-volume" min="0" max="1" step="0.05" value="1" aria-label="${attr(ui.volume || 'Volume')}">
+      </span>
+      <a class="download" href="${attr(src)}" download>${esc(ui.download || 'DOWNLOAD')}</a>
+    </span>
   </div>
 </div>`;
 }
