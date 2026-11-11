@@ -1,14 +1,32 @@
 {
+  "title": "Igor Sergeev: Synchronsprecher, Regisseur, Autor",
+  "description": "Die russische Stimme von Leon Kennedy in Resident Evil 4 Remake und Jon Snow in Game of Thrones. Über 100 synchronisierte Filme, Serien und Spiele, 126 Hörbücher. Theaterregisseur und Dramatiker in München.",
   "nav": [
-    { "label": "bio" },
-    { "label": "synchron" },
-    { "label": "theater" },
-    { "label": "stücke" },
-    { "label": "kontakt" }
+    {
+      "label": "bio"
+    },
+    {
+      "label": "synchron"
+    },
+    {
+      "label": "theater"
+    },
+    {
+      "label": "stücke"
+    },
+    {
+      "label": "kontakt"
+    }
   ],
   "sections": {
-    "theater": { "title": "Regie", "page_title": "Theater" },
-    "playwriting": { "title": "Autor", "page_title": "Stücke" }
+    "theater": {
+      "title": "Regie",
+      "page_title": "Theater"
+    },
+    "playwriting": {
+      "title": "Autor",
+      "page_title": "Stücke"
+    }
   },
   "contact": {
     "label": "für Synchronaufnahmen und Anfragen:"
@@ -19,7 +37,11 @@
     "menu": "Menü",
     "language": "Sprache",
     "time_in_munich": "Zeit in München",
-    "titles": { "bio": "Bio", "voice": "Synchron", "contact": "Kontakt" },
+    "titles": {
+      "bio": "Bio",
+      "voice": "Synchron",
+      "contact": "Kontakt"
+    },
     "play": "Abspielen",
     "pause": "Pause",
     "download": "HERUNTERLADEN",
