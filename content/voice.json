@@ -2,10 +2,11 @@
   "cta": "for voiceover bookings and inquiries, please [contact](/contact/)",
   "demo": {
     "title": "Demo",
-    "file": "/assets/media/demo.wav"
+    "file": "/assets/media/demo.wav",
+    "stream": "/assets/media/demo.mp3"
   },
   "works_title": "Works",
-  "works_label": "Officail russian dubs",
+  "works_label": "Official Russian dubs",
   "roles": [
     {
       "character": "Leon Kennedy",

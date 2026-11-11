@@ -39,140 +39,167 @@ img, video { display: block; max-width: 100%; }
   padding: 0;
   cursor: pointer;
 }
-.copy-email.link { color: var(--color-link); }
+/* Links in text (.link, .accent) are white and underlined with a small icon: see fun.css */
 
-.link { color: var(--color-link); }
-.link:hover { text-decoration: underline; }
-.accent { color: var(--color-accent); }
-
+/* Letter case for these (and every other text) is set in type.css */
 .page-title {
   font-size: var(--type-title);
   line-height: var(--type-title-lh);
-  text-transform: uppercase;
 }
 .label {
   font-weight: var(--weight-bold);
   font-size: var(--type-label);
   line-height: var(--type-label-lh);
-  text-transform: uppercase;
 }
 
-/* ---------- Header + menu ---------- */
+/* ---------- Header ---------- */
 
+/* The name and arrow stay at the top while the page scrolls. Once scrolled, a faint
+   shadow fades in behind them, darkest at the name and fading out over a long way,
+   so they stay readable over text and photos without a visible patch. */
 .site-header {
-  position: relative;
+  position: sticky;
+  top: 0;
   z-index: 20;
   display: flex;
   align-items: center;
-  gap: 12px;
   padding: 20px var(--gutter) 0;
   height: var(--header-height);
+  pointer-events: none;   /* only the name catches clicks, not the empty strip */
 }
+.site-header > .name, .site-header .menu { pointer-events: auto; }
+.site-header::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: -1;
+  width: min(100vw, 640px);
+  height: 230px;
+  /* a shadow corner: darkest off screen in the top-left, still dark behind the name,
+     fading out over a long way to the right and down */
+  background: radial-gradient(ellipse 420px 200px at 60px 10px,
+    color-mix(in srgb, var(--color-bg) 88%, transparent),
+    color-mix(in srgb, var(--color-bg) 74%, transparent) 30%,
+    color-mix(in srgb, var(--color-bg) 45%, transparent) 55%,
+    color-mix(in srgb, var(--color-bg) 18%, transparent) 78%,
+    transparent);
+  opacity: 0;
+  transition: opacity var(--page-in) var(--ease-out);
+  pointer-events: none;
+}
+.scrolled .site-header::before { opacity: 1; }
 .site-header .name {
-  position: relative;
-  z-index: 11;
   font-size: var(--type-nav);
   line-height: var(--type-nav);
   letter-spacing: var(--type-nav-tracking);
   padding: 4px 0;
 }
-.menu-toggle {
-  position: relative;
-  z-index: 11;               /* stays above the open menu, so it works as the close button */
-  width: 27px;
-  height: 27px;
-  padding: 0;
-  border: 0;
-  background: none;
-  cursor: pointer;
-  color: var(--color-fg);
-}
-.menu-toggle span {
-  position: absolute;
-  left: 0;
-  width: 27px;
-  height: 2px;
-  background: currentColor;
-  transition: transform var(--fast) var(--ease), opacity .2s var(--ease), top var(--fast) var(--ease);
-}
-.menu-toggle span:nth-child(1) { top: 7px; }
-.menu-toggle span:nth-child(2) { top: 13px; }
-.menu-toggle span:nth-child(3) { top: 20px; }
-.menu-open .menu-toggle span:nth-child(1) { top: 13px; transform: rotate(45deg) scaleX(.75); }
-.menu-open .menu-toggle span:nth-child(2) { opacity: 0; }
-.menu-open .menu-toggle span:nth-child(3) { top: 13px; transform: rotate(-45deg) scaleX(.75); }
 
+/* Name + arrow: one button. The whole thing dims on hover; nothing moves. */
+.menu-toggle { display: inline-flex; align-items: center; gap: .3em; cursor: pointer; }
+.menu-toggle:hover { color: var(--color-muted); }
+.menu-toggle:focus:not(:focus-visible) { outline: none; }
+.menu-arrow { display: inline-flex; width: .62em; height: .62em; flex: none; }
+.menu-arrow svg {
+  width: 100%;
+  height: 100%;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  vector-effect: non-scaling-stroke;   /* same line weight at every size */
+}
+.is-close .menu-arrow svg { transform: rotate(180deg); }
+
+/* The open menu is the home page itself: same big name, links, time, languages, legal.
+   It opens like the shadow behind the name spreading over the whole screen: a soft
+   black circle grows from the name, and the menu shows wherever the shadow reaches.
+   Closing shrinks it back into the corner. (main.js grows the name at the same time.) */
+@property --reveal { syntax: "<length>"; inherits: false; initial-value: 0px; }
 .menu {
   position: fixed;
   inset: 0;
-  z-index: 10;
+  z-index: 50;
   background: var(--color-bg);
   display: flex;
   flex-direction: column;
-  justify-content: flex-end;
-  padding: 0 var(--gutter) 20px;
-  opacity: 0;
+  overflow-y: auto;
   visibility: hidden;
-  transition: opacity var(--fast) var(--ease), visibility var(--fast);
+  --reveal: 0px;
+  -webkit-mask-image: radial-gradient(circle at var(--mx, 100px) var(--my, 40px), #000 calc(var(--reveal) - 35vmax), transparent var(--reveal));
+  mask-image: radial-gradient(circle at var(--mx, 100px) var(--my, 40px), #000 calc(var(--reveal) - 35vmax), transparent var(--reveal));
+  transition: --reveal var(--menu-out) var(--ease-in-out), visibility 0s linear var(--menu-out);
 }
-.menu-open .menu { opacity: 1; visibility: visible; }
-.menu a {
-  font-size: var(--type-nav);
-  line-height: var(--type-nav-lh);
-  letter-spacing: var(--type-nav-tracking);
-  width: fit-content;
+.menu-open .menu {
+  visibility: visible;
+  --reveal: 180vmax;   /* the far corner is fully covered */
+  transition: --reveal var(--menu-in) var(--ease-in-out), visibility 0s;
 }
-.menu a:hover, .nav-list a:hover { color: var(--color-muted); }
 .menu-open { overflow: hidden; }
+.menu-open .site-header { z-index: 60; }   /* above the sound button and other fixed extras */
+.menu-open .site-header::before { opacity: 0; transition-duration: var(--menu-in); }
 
 /* ---------- Main + footer ---------- */
 
 main {
   flex: 1;
-  padding: 44px var(--gutter) 0;
+  padding: 44px var(--gutter) clamp(56px, 8vw, 96px);   /* the last line never touches the bottom of the screen */
 }
 
-.site-footer {
-  display: flex;
-  justify-content: flex-end;
-  gap: 24px;
-  padding: 60px var(--gutter) 20px;
-  font-size: var(--type-small);
-  line-height: var(--type-small-lh);
-}
-.site-footer a:hover { color: var(--color-muted); }
 
-/* ---------- Home ---------- */
+/* ---------- Home view (home page and the open menu) ---------- */
 
-/* The home page fits one screen: name at the top, menu at the bottom. */
-.home main { min-height: 0; }
-
-.home main {
+/* Fits one screen: name at the top; the menu, then time, languages and legal links
+   at the bottom. */
+.home-page { display: flex; flex-direction: column; padding: 0; }
+.home-main {
+  flex: 1;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
-  padding-top: 24px;
+  padding: 24px var(--gutter) 16px;
+  min-height: 100vh;
+  min-height: 100svh;
 }
-.home .home-name,
-.home .home-nav a {
+/* Phones: the time sits under the name. Wider screens: in the top-right corner. */
+.home-top { display: flex; flex-direction: column; align-items: flex-start; gap: 14px; }
+@media (min-width: 641px) {
+  .home-top { flex-direction: row; justify-content: space-between; gap: 24px; }
+  .home-top .clock { padding-top: calc(var(--type-display) * .092); }   /* top of the letters lines up with the top of the name */
+}
+.home-name,
+.home-nav a {
   font-size: var(--type-display);
   letter-spacing: var(--type-display-tracking);
 }
-.home .home-name { line-height: var(--type-display-lh); width: fit-content; }
-.home .home-nav { display: flex; flex-direction: column; padding-top: 40px; }
-.home .home-nav a { line-height: var(--type-display-nav-lh); width: fit-content; }
-.home .home-nav a:hover { color: var(--color-muted); }
-.home main { padding-bottom: 24px; }   /* room for the descenders of the last menu line */
-.home .site-footer { padding-top: 0; }
-@media (min-width: 641px) {
-  /* footer sits in the bottom-right corner next to the menu instead of adding height */
-  body.home { position: relative; }
-  .home .site-footer { position: absolute; right: 0; bottom: 0; }
+.home-name { line-height: var(--type-display-lh); width: fit-content; transform-origin: 0 0; white-space: nowrap; }
+/* The big name in the menu always stays on one line with its arrow. «Игорь Сергеев» is
+   the longest: on narrow phones it gets just small enough to fit (about 7.95em wide). */
+.home-name .menu-arrow { width: .5em; height: .5em; }
+.home-name.menu-toggle { gap: .25em; }
+.menu .home-name:lang(ru) { font-size: min(var(--type-display), calc((100vw - 2 * var(--gutter)) / 7.95)); }
+.home-nav { display: flex; flex-direction: column; margin-top: auto; padding-top: 40px; }
+.home-nav a { line-height: var(--type-display-nav-lh); width: fit-content; }
+.home-nav a:hover { color: var(--color-muted); }
+
+/* Under the menu: languages on the left, legal links on the right (all screens) */
+.home-foot {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 24px;
+  margin-top: 32px;
+  font-size: var(--type-small);
+  line-height: 13px;
 }
+.home-foot .legal-links { display: flex; gap: 16px; font-size: var(--type-legal); color: var(--color-muted); }
+.legal-links a:hover { color: var(--color-fg); }
+.home-top .clock { font-size: var(--type-small); line-height: 13px; }
+.clock { margin: 0; white-space: nowrap; }
+.clock b { font-weight: var(--weight-bold); margin-left: 4px; }
 
 /* ---------- Bio ---------- */
 
-.bio main { position: relative; padding-top: 44px; }
+.bio main { position: relative; }
 .bio-text {
   position: relative;
   z-index: 1;
@@ -182,56 +209,115 @@ main {
   gap: 20px;
 }
 .bio-text .page-title { margin-bottom: 16px; }
+/* The portrait is a fixed background, like the videos on production pages: it never
+   scrolls and never makes the page longer. It fades in slowly, and its left and bottom
+   edges dissolve into the black so no cut edge shows. Only the text scrolls over it. */
 .bio-photo {
-  position: absolute;
-  top: calc(var(--header-height) * -1);
-  right: 0;
-  width: 55%;
-  max-width: 685px;
-  height: calc(100% + var(--header-height));
-  min-height: 100vh;
-  opacity: .7;
+  position: fixed;
+  inset: 0 0 0 auto;
+  z-index: -1;
+  width: 58vw;
+  overflow: hidden;
   pointer-events: none;
+  opacity: var(--bio-photo-opacity);
+  animation: stage-in var(--bg-video-fade) var(--ease-out) both;
 }
-.bio-photo img { width: 100%; height: 100%; object-fit: cover; }
+/* Desktop: the top of his head lines up with the first paragraph.
+   The hood starts 32% down the photo, and the photo is 1.5 times as tall as it is wide. */
+.bio-photo img {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  max-width: none;
+  height: auto;
+  top: calc(var(--header-height) + 44px + var(--type-title) * 1.03 + 36px - 58vw * .48);
+  -webkit-mask-image: linear-gradient(to right, transparent, #000 38%), linear-gradient(to bottom, #000 70%, transparent);
+  -webkit-mask-composite: source-in;
+  mask-image: linear-gradient(to right, transparent, #000 38%), linear-gradient(to bottom, #000 70%, transparent);
+  mask-composite: intersect;
+  opacity: var(--fade, 1);   /* fades away while scrolling, like the play page photo (main.js) */
+}
 
-/* ---------- Audio player ---------- */
+/* ---------- Audio player ----------
+   Every control has a 44 px click area; the visible parts stay thin. */
 
-.player { margin-top: 64px; }
+.player { margin-top: 64px; --player-hit: 44px; }
 .player-row { display: flex; align-items: center; }
 .player button {
-  width: 18px; height: 18px; margin-right: 18px; padding: 0;
+  display: grid; place-items: center;
+  width: var(--player-hit); height: var(--player-hit); padding: 0;
   border: 0; background: none; cursor: pointer; color: var(--color-fg);
+  transition: color var(--fast) var(--ease);
 }
-.player button svg { width: 100%; height: 100%; fill: currentColor; }
-.player .bar {
+.player button:hover { color: var(--color-muted); }
+.player button svg { width: 18px; height: 18px; fill: currentColor; }
+.player-play { margin-left: -13px; margin-right: 5px; }
+.player .bar {               /* tall invisible hit area around a thin track */
   position: relative;
   flex: 1;
+  height: var(--player-hit);
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  touch-action: none;
+}
+.player .track {
+  position: relative;
+  width: 100%;
   height: 4px;
   border-radius: 5px;
   background: var(--color-muted);
-  overflow: hidden;
-  cursor: pointer;
+  transition: height var(--fast) var(--ease);
 }
-.player .bar i {
+.player .bar:hover .track, .player .bar.dragging .track, .player .bar:focus-visible .track { height: 6px; }
+.player .track i {
   position: absolute; inset: 0 auto 0 0;
-  width: 0; background: var(--color-fg);
-  transition: width .1s linear;
+  width: 0; border-radius: inherit; background: var(--color-fg);
 }
+.player .track i::after {     /* knob at the play position, shown on hover and drag */
+  content: "";
+  position: absolute; right: -7px; top: 50%;
+  width: 14px; height: 14px; margin-top: -7px;
+  border-radius: 50%; background: var(--color-fg);
+  transform: scale(0); transition: transform var(--fast) var(--ease);
+}
+.player .bar:hover .track i::after, .player .bar.dragging .track i::after, .player .bar:focus-visible .track i::after { transform: scale(1); }
 .player-meta {
-  display: flex; justify-content: space-between; align-items: flex-end;
-  padding-left: 36px; margin-top: 4px;
+  display: flex; justify-content: space-between; align-items: center;
+  flex-wrap: nowrap;   /* time on the left, volume on the right, always one line */
+  padding-left: 36px; gap: 8px 24px;
 }
 .player .time { font-size: var(--type-time); line-height: var(--type-time-lh); font-variant-numeric: tabular-nums; }
-.player .download { font-size: var(--type-caption); line-height: var(--type-caption); padding-bottom: 12px; }
-.player .download:hover { color: var(--color-muted); }
+.player .time .total { color: var(--color-muted); font-size: var(--type-body); margin-left: 10px; }
+.player-tools { display: flex; align-items: center; gap: 20px; }
+.player .volume { display: flex; align-items: center; }
+.player-mute[aria-pressed="true"] .waves { opacity: 0; }
+.player-volume {           /* thin line slider, 80 px wide, 44 px tall to grab */
+  -webkit-appearance: none; appearance: none;
+  width: 80px; height: var(--player-hit); margin: 0;
+  background: none; cursor: pointer;
+  --v: 100%;
+}
+.player-volume::-webkit-slider-runnable-track { height: 2px; background: linear-gradient(var(--color-fg), var(--color-fg)) 0 / var(--v) 100% no-repeat, var(--color-muted); }
+.player-volume::-moz-range-track { height: 2px; background: var(--color-muted); }
+.player-volume::-moz-range-progress { height: 2px; background: var(--color-fg); }
+.player-volume::-webkit-slider-thumb { -webkit-appearance: none; width: 10px; height: 10px; margin-top: -4px; border-radius: 50%; background: var(--color-fg); border: 0; }
+.player-volume::-moz-range-thumb { width: 10px; height: 10px; border-radius: 50%; background: var(--color-fg); border: 0; }
+.no-volume .player-volume { display: none; }   /* iPhones ignore page volume; the phone's buttons do it */
+/* The demo's title, with the download link on the same line, on the right */
+.demo-head { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; }
+.demo-head .download {        /* same look as the other small actions: underlined, icon */
+  flex: none;
+  font-size: var(--type-label); line-height: var(--type-label-lh);
+  padding: 12px 0;            /* 44 px tall click area */
+}
 
 /* ---------- Voice role cards ---------- */
 
 .works {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 26px 26px;
+  gap: 26px;
   margin-top: 34px;
 }
 .work img { width: 100%; height: 162px; object-fit: cover; background: var(--color-placeholder); }
@@ -240,12 +326,15 @@ main {
 
 /* ---------- Voice page ---------- */
 
-.voice .label + .page-title { margin-top: 50px; }
-.voice .works-title { margin-top: 124px; }
+.voice .works-title { margin-top: 64px; }   /* its own section, but close to the demo */
 .voice .works-title + .label { margin-top: 24px; }
+/* The demo title is as far from the player as "works" is from "official russian dubs".
+   The player's 44 px click areas reach above the visible line, hence the smaller margin. */
+.voice .demo-head + .player { margin-top: 2px; }
+.voice .bookings { margin-top: 40px; }   /* phones: right after the player */
 .audiobooks { margin-top: 46px; }
 .audiobooks .text { max-width: 827px; margin-top: 34px; display: flex; flex-direction: column; gap: 20px; }
-.voice .bottom-cta { margin-top: 100px; }
+.voice .bottom-cta { margin-top: 100px; text-align: center; }
 
 /* ---------- Theater / playwriting: list + detail ---------- */
 
@@ -258,6 +347,7 @@ main {
 .nav-list { display: flex; flex-direction: column; gap: 14px; padding: 0; margin: 0; }
 .nav-list > li { list-style: none; }
 .nav-list a { font-size: var(--type-list); line-height: var(--type-list-lh); display: inline-block; }
+.nav-list a:hover { color: var(--color-muted); }
 .nav-list .current a { color: var(--color-fg); }
 .nav-list .summary {
   border-top: 2px solid var(--color-fg);
@@ -273,11 +363,19 @@ main {
 .nav-list .work-links a {
   font-size: var(--type-body);
   line-height: var(--type-body-lh);
-  text-transform: uppercase;
   text-decoration: underline;
   text-underline-offset: 3px;
 }
 .nav-list .work-links a:hover { color: var(--color-muted); }
+/* Reading pages: the other languages sit on the right of the play's title row */
+.nav-list .work-head { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; }
+.nav-list .work-aside { display: flex; gap: 16px; }
+.nav-list .work-aside a {
+  font-size: var(--type-body);
+  line-height: var(--type-body-lh);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
 /* Reading pages: the play text starts below the playwriting section */
 .reading .split + .play-body { margin-top: 120px; }
 
@@ -288,22 +386,24 @@ main {
   z-index: -1;
   opacity: var(--bg-video-opacity);
   pointer-events: none;
-  animation: bg-fade var(--bg-video-fade) ease-in-out both;
+  animation: stage-in var(--bg-video-fade) var(--ease-out) both;
 }
-@keyframes bg-fade { from { opacity: 0; } to { opacity: var(--bg-video-opacity); } }
-@media (prefers-reduced-motion: reduce) { .bg-video { animation: none; } }
+/* Background media lights up slowly, like a stage: from dark and slightly closer.
+   When the next page shows the same picture, it stays lit instead (main.js adds .stage-lit). */
+@keyframes stage-in { from { opacity: 0; transform: scale(1.03); } }
+.stage-lit .bg-video, .stage-lit .bio-photo { animation: none; }
 .bg-video video { width: 100%; height: 100%; object-fit: cover; }
 
 /* ---------- Play text (open-relationship-ru) ---------- */
 
-.play main { padding-top: 100px; }
-.play-body { width: 50%; display: flex; flex-direction: column; gap: 40px; }
-.play-scene { display: flex; flex-direction: column; gap: 12px; }
-.play-scene h2 { font-size: var(--type-heading); line-height: var(--type-heading-lh); }
-.play-scene p { line-height: 1.35; }
-.play-title { padding: 300px 0; display: flex; flex-direction: column; gap: 20px; text-align: center; }
-.play-title h1 { font-size: var(--type-title); line-height: var(--type-title-lh); text-transform: uppercase; }
-.play-title h2 { font-size: var(--type-heading); line-height: var(--type-heading-lh); text-transform: uppercase; }
+.play-body { width: 100%; max-width: 696px; margin: 0 auto; display: flex; flex-direction: column; gap: 40px; }   /* centred at the desktop width until it meets the page padding */
+/* Sizes and spacing grow smoothly with the screen, like the rest of the site (no jumps) */
+.play-scene { display: flex; flex-direction: column; gap: var(--play-para-gap); }
+.play-scene h2 { font-size: var(--type-play-small); line-height: 1; text-align: center; margin-bottom: var(--play-chapter-gap); }
+.play-scene p { line-height: var(--type-play-lh); }
+.play-title { padding: var(--play-title-space) 0; display: flex; flex-direction: column; gap: 20px; text-align: center; }
+.play-title h1 { font-size: var(--type-title); line-height: var(--type-title-lh); }
+.play-title h2 { font-size: var(--type-play-small); line-height: 1; }
 .play-note { margin-bottom: 40px; }
 
 
@@ -321,38 +421,46 @@ main {
 .legal p { margin-bottom: 12px; }
 .legal .page-title { margin-bottom: 20px; }
 
-/* ---------- Header extras: inline nav + clock (desktop only) ---------- */
+/* ---------- Languages ---------- */
 
-.header-nav, .clock { display: none; }
-.clock {
-  position: absolute;
-  top: 24px;
-  right: var(--gutter);
-  margin: 0;
-  font-size: var(--type-small);
-  line-height: 13px;
-  z-index: 20;
+/* EN DE RU switch: the current language is white, the others muted */
+.lang-switch { display: flex; gap: 12px; }
+.lang-switch a { color: var(--color-muted); transition: color var(--fast) var(--ease); }
+.lang-switch a:hover, .lang-switch a[aria-current] { color: var(--color-fg); }
+
+/* First visit: full-screen language choice on black, before the home page */
+.lang-picker { display: none; }
+.choose-lang body { overflow: hidden; }
+.choose-lang .lang-picker {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-bg);
+  transition: background-color var(--menu-out) var(--ease-in-out);
 }
-.clock b { font-weight: var(--weight-bold); margin-left: 4px; }
-/* Contact links read E-MAIL / TELEGRAM / INSTAGRAM at every width, like the Framer site */
-.contact-list { text-transform: uppercase; }
+/* After the choice the black lifts while the words shrink into the small switch (main.js) */
+.lang-chosen .lang-picker { background-color: transparent; pointer-events: none; }
+.lang-picker nav { display: flex; gap: clamp(32px, 9vw, 140px); animation: lang-picker-in var(--menu-in) var(--ease) both; }
+.lang-picker a {
+  transform-origin: 0 0;
+  font-size: var(--type-display);
+  line-height: var(--type-display-lh);
+  letter-spacing: var(--type-display-tracking);
+  transition: color var(--fast) var(--ease);
+}
+.lang-picker a:hover, .lang-picker a:focus-visible { color: var(--color-muted); }
+@keyframes lang-picker-in { from { opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .lang-picker nav { animation: none; } }
+
+/* Contact links show their short label (e-mail, telegram, instagram) at every width */
 .contact-list .long { display: none; }
-.contact main > .label { font-weight: var(--weight-regular); }
 
 /* ---------- Desktop layout ---------- */
 
 @media (min-width: 1200px) {
-  .site-header { gap: 50px; }
-  .menu-toggle, .menu { display: none; }
-  .header-nav { display: flex; gap: 50px; }
-  .header-nav a {
-    font-size: var(--type-nav);
-    line-height: var(--type-nav);
-    letter-spacing: var(--type-nav-tracking);
-    padding: 4px 0;
-  }
-  .header-nav a:hover { color: var(--color-muted); }
-  .clock { display: block; }
 
   /* theater / playwriting */
   .nav-list { gap: 8px; }
@@ -361,20 +469,17 @@ main {
 
   /* bio */
   .bio-text { max-width: calc(50% - var(--col-gap) / 2); }
-  .bio-photo { top: -36px; width: 47.6%; max-width: none; height: 1140px; min-height: 0; opacity: 1; }
 
   /* voice */
-  .voice main { position: relative; }
-  .voice main > .label:first-child {
-    position: absolute;
-    top: 44px;
-    right: var(--gutter);
-    width: calc(50% - var(--gutter));
-    text-align: right;
+  /* the bookings line sits in the right half, on the same line as the volume slider */
+  .voice .demo { display: grid; grid-template-columns: 1fr 1fr; column-gap: var(--col-gap); }
+  .voice .demo > .demo-head, .voice .demo > .player { grid-column: 1; }
+  .voice .demo-head + .player { margin-top: 8px; }
+  .voice .demo > .bookings {
+    grid-column: 2; grid-row: 1 / span 2; align-self: end; text-align: right;
+    margin: 0 0 calc((var(--type-time-lh) - 1.25em) / 2 + 3px);   /* centred on the time row */
   }
-  .voice .label + .page-title { margin-top: 0; }
-  .voice .player { width: calc(50% - var(--col-gap) / 2); margin-top: 38px; }
-  .voice .works-title { margin-top: 117px; }
+  .voice .works-title { margin-top: 88px; }
   .works { grid-template-columns: repeat(4, 1fr); gap: 68px 26px; }
   .audiobooks { margin-top: 48px; }
   .audiobooks .text { max-width: 691px; }
@@ -388,19 +493,10 @@ main {
     align-items: start;
     padding-top: 195px;
   }
-  .contact main > .label {
-    font-size: 67px;
-    line-height: 67px;
-  }
   .contact-list { margin-top: 0; gap: 0; align-items: flex-end; text-align: right; }
 
   /* play text */
-  .play main { padding-top: 120px; }
-  .play-body { width: 696px; margin: 0 auto; gap: 40px; }
-  .play-scene { gap: 20px; }
-  .play-scene h2 { font-size: 20px; line-height: 20px; text-align: center; text-transform: uppercase; margin-bottom: 20px; }
-  .play-scene p { line-height: 24px; text-align: justify; }
-  .play-title h2 { font-size: 20px; line-height: 20px; }
+  .play-scene p { text-align: justify; }
   .play-note { text-align: center; }
 }
 
@@ -408,13 +504,84 @@ main {
 
 @media (max-width: 900px) {
   .split { grid-template-columns: 1fr; row-gap: 40px; }
-  .bio-photo { position: relative; top: 0; width: 100%; max-width: none; height: auto; min-height: 0; margin-top: 40px; }
-  .play-body { width: 100%; }
-  .play-title { padding: 160px 0; }
-  .play-title h1 { font-size: 40px; line-height: 44px; }
+  /* About page on phones and tablets: a close crop of the face that bleeds off the right
+     edge, with the title and text running over it. */
+  .bio { --u: min(1vw, 5.2px); }   /* photo unit: 1% of a phone screen, capped on tablets */
+  .bio-photo { width: calc(var(--u) * 100); height: calc(var(--u) * 112); bottom: auto; }
+  /* Face center sits at about 63% across and 48% down the photo */
+  .bio-photo img {
+    width: calc(var(--u) * 150);
+    left: calc(var(--u) * -28);
+    top: calc(var(--u) * -56);
+    -webkit-mask-image: none;
+    mask-image: none;
+  }
+  .bio-photo {
+    -webkit-mask-image: linear-gradient(to bottom, #000 62%, transparent), linear-gradient(to right, transparent, #000 50%);
+    -webkit-mask-composite: source-in;
+    mask-image: linear-gradient(to bottom, #000 62%, transparent), linear-gradient(to right, transparent, #000 50%);
+    mask-composite: intersect;
+  }
+  .bio-text { padding-top: calc(var(--u) * 62); }
 }
 
 @media (max-width: 640px) {
-  .home .site-footer { margin-top: 0; }
   .works { grid-template-columns: 1fr; }
+}
+
+/* ---------- Page transitions ----------
+   Pages change instantly, with one exception: leaving the home page or the open menu
+   plays the menu animation in reverse. The big name shrinks into the header name and
+   the whole view shrinks into the corner shadow (main.js marks it with .vt-contract and
+   skips every other transition). Browsers without view transitions just load the page.
+   Off for reduced motion. */
+
+@view-transition { navigation: auto; }
+
+.site-header .name, .home-name { view-transition-name: site-name; }
+/* A name may be used once per page. With the menu open, the menu's big name takes it,
+   and the page underneath stays part of the background picture. */
+.menu .home-name { view-transition-name: none; }
+.menu-open .site-header .name { view-transition-name: none; }
+.menu-open .menu .home-name { view-transition-name: site-name; }
+.menu-open .bg-video, .menu-open .bio-photo,
+.vt-contract .bg-video, .vt-contract .bio-photo { view-transition-name: none; }
+.bg-video, .bio-photo { view-transition-name: stage; }
+
+::view-transition-group(*) { animation-duration: var(--page-in); animation-timing-function: var(--ease-out); }
+::view-transition-old(root) { animation: fade-out var(--page-out) var(--ease) both; }
+/* The new page arrives by rising a little, just after the old one is gone */
+::view-transition-new(root) { animation: rise-in var(--page-in) var(--ease-out) calc(var(--page-out) * .6) both; }
+/* Background media cross-fades slowly and never moves */
+::view-transition-group(stage) { animation: none; }
+::view-transition-old(stage) { animation: fade-out var(--page-in) var(--ease) both; }
+::view-transition-new(stage) { animation: none; }
+/* Big-to-small name: keep the sharp old picture until late, then swap */
+::view-transition-old(site-name) { animation: name-out var(--page-in) var(--ease) both; }
+::view-transition-new(site-name) { animation: name-in var(--page-in) var(--ease) both; }
+
+/* From the home page or the open menu: the old view shrinks into the corner on top of
+   the new page, which is already in place underneath */
+.vt-contract::view-transition-group(*) { animation-duration: var(--menu-out); animation-timing-function: var(--ease-in-out); }
+.vt-contract::view-transition-old(site-name),
+.vt-contract::view-transition-new(site-name) { animation-duration: var(--menu-out); }
+.vt-contract::view-transition-new(root) { animation: none; }
+.vt-contract::view-transition-old(root) {
+  z-index: 1;
+  animation: contract var(--menu-out) var(--ease-in-out) both;
+  -webkit-mask-image: radial-gradient(circle at 100px 40px, #000 calc(var(--reveal) - 35vmax), transparent var(--reveal));
+  mask-image: radial-gradient(circle at 100px 40px, #000 calc(var(--reveal) - 35vmax), transparent var(--reveal));
+}
+@keyframes contract { from { --reveal: 180vmax; } to { --reveal: 0px; } }
+
+@keyframes fade-out { to { opacity: 0; } }
+@keyframes rise-in { from { opacity: 0; transform: translateY(24px); } }
+/* the two pictures of the name overlap at full strength, so it never dims halfway */
+@keyframes name-out { 0%, 55% { opacity: 1; } 80%, 100% { opacity: 0; } }
+@keyframes name-in { 0%, 30% { opacity: 0; } 55%, 100% { opacity: 1; } }
+
+@media (prefers-reduced-motion: reduce) {
+  @view-transition { navigation: none; }
+  .menu, .menu-open .menu { transition: none; }
+  .bg-video, .bio-photo { animation: none; }
 }

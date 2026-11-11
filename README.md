@@ -1,6 +1,6 @@
-# harrysergeev.com
+# Site source
 
-Static portfolio site of Igor (Harry) Sergeev, moved off Framer. The pages are plain HTML, built from simple content files by a small script with no dependencies.
+Source of a small static portfolio site. The pages are plain HTML, built from simple content files by a small script with no dependencies.
 
 ## How editing works
 
@@ -45,7 +45,7 @@ Paragraph of description. Blank lines separate paragraphs.
 Cast: ...
 ```
 
-- `order` sets the position in the list. `video` is optional (the background video). Add `hidden: true` to take a production off the site without deleting it.
+- `order` sets the position in the list. `video` is optional (the background video). Add `sound: true` only if the video file has an audio track: a "Sound" button then appears so visitors can unmute it. Instead of a video, a page can have a background photo: `image: /assets/img/...` (plus `image_alt:`), shown in the same dimmed full-screen style with a slow drift. Add `hidden: true` to take a production off the site without deleting it.
 - Text supports `[link text](url)`, `**bold**`, `*italic*`. A single line break inside a paragraph becomes a line break.
 - Deleting a content file removes its page on the next build.
 
@@ -56,6 +56,17 @@ Put the image in `assets/img/voice/` and add an entry to `roles` in `content/voi
 ```
 { "character": "Jon Snow", "title": "Game of Thrones", "image": "/assets/img/voice/jon-snow.jpg" }
 ```
+
+## Languages
+
+The site is in English (at the root), German (`/de/`) and Russian (`/ru/`). The list is `languages` in `content/site.json`; the first one lives at the root.
+
+- Every text file can have a translation next to it, named with the language code: `bio.de.md`, `voice.ru.json`, `theater/bumerit.de.md`, `site.ru.json` (menu, page names, small labels).
+- A translation only needs what changes. In `.md` files, front matter fields replace the English ones and the text replaces the English text. In `voice.<lang>.json`, `roles` lists only translated fields, keyed by the English character name.
+- If a translation file is missing, that page shows the English text and the build lists what is untranslated.
+- Site links in text (like `[contact](/contact/)`) automatically point to the same language.
+- On the first visit to the home page, a full-screen picker (en / de / ru) asks for a language. The choice is remembered in the browser, and the EN / DE / RU switch in the corner changes it.
+- Impressum and Datenschutzerklärung exist only in German. The play reading pages (`/open-relationship-en|de|ru/`) are linked to each other by the language switch.
 
 ## Design system
 
@@ -74,6 +85,10 @@ https://claude.ai/artifact/TDSeaW3f6Bqcbctk2LQd5P
 
 The preview is private: only people it is shared with (from the page's Share menu) can open it.
 
+## Playful layer and light mode
+
+`assets/css/fun.css` and `assets/js/fun.js` add the interactive extras: a dot cursor that grows over links, floating video/photo previews when hovering menu items and productions (the map is built from the content files), letters that jump on the big titles, tilting voice cards, contact links that drift toward the cursor, the background-video sound button and a test light mode (round button bottom-left, or `?theme=light` / `?theme=dark` in any URL; remembered per browser). Everything respects the system "reduce motion" setting, and the cursor/previews only run with a mouse. Removing the two files turns all of it off.
+
 ## Publishing
 
 Every push to `main` deploys the site to GitHub Pages (`.github/workflows/pages.yml`). The workflow decrypts the fonts, runs the build, and publishes everything except `.git`, `.github`, `tools/`, `build/`, `content/` and `README.md`.
@@ -89,6 +104,8 @@ openssl enc -aes-256-cbc -pbkdf2 -iter 200000 -salt -in font.woff2 -out assets/f
 ```
 
 ## Assets
+
+The demo has two files in `content/voice.json`: `file` is the full-quality WAV that the download link gives, and `stream` is a small MP3 the player plays (it starts much faster). After replacing the WAV, make a new MP3: `ffmpeg -i assets/media/demo.wav -b:a 192k assets/media/demo.mp3`.
 
 All images, audio, fonts and videos are in `assets/` (downloaded from the old Framer site with `tools/fetch-assets.sh`). The production background videos were converted from HEVC to H.264 so they play in every browser.
 

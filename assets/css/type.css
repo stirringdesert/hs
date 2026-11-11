@@ -1,0 +1,64 @@
+/* harrysergeev.com — typography system: which letter case each kind of text uses.
+   This file is the one place that decides case. Sizes live in tokens.css (plus the one
+   below). The reasons are in DESIGN-PHILOSOPHY.md ("Typography system").
+
+   One rule: the site's own words are lowercase, like the home page. That covers page
+   titles, menus, labels, buttons, links and the language switch, at every size.
+   Link labels count as the site's own words, even brand names (telegram, instagram).
+   Names (people, works, roles, places) and running text (descriptions, the bio,
+   the play) are written normally, with capitals.
+
+   Text that mixes the two (the clock "time in Munich") is written in lowercase in the
+   content itself and left as written here, so the names in it keep their capitals. */
+
+:root {
+  --type-statement: clamp(28px, 14.27px + 3.662vw, 67px);   /* contact sentence: big on every screen */
+}
+
+/* ---------- The site's own words: lowercase ---------- */
+
+.page-title,                           /* director, works, demo, about, биография */
+.home-nav a,                           /* bio, voice acting ... */
+.contact main > .label,                /* for voiceover bookings and inquiries ... */
+.lang-picker a,                        /* en de ru on the first visit */
+.contact-list > *,                     /* e-mail, telegram, instagram, and "copied" */
+.label,                                /* official russian dubs */
+.nav-list .work-links a,               /* russian  english  german / download pdf */
+.demo-head .download,                  /* download, next to the demo title */
+.lang-switch a,                        /* en de ru */
+.legal-links a,                        /* impressum  datenschutzerklärung */
+.sound-toggle,
+.trailer-play,                         /* trailer */
+.trailer-close,                        /* close */
+.theme-toggle-text {                   /* dark light */
+  text-transform: lowercase;
+  letter-spacing: normal;
+}
+/* Big lowercase keeps the tighter spacing of the home page */
+.page-title,
+.home-nav a,
+.contact main > .label,
+.lang-picker a,
+.contact-list > * { letter-spacing: var(--type-display-tracking, -1px); }
+
+/* The contact sentence is big text, not a label: regular weight, big on phones too */
+.contact main > .label {
+  font-weight: var(--weight-regular);
+  font-size: var(--type-statement);
+  line-height: 1.02;
+}
+
+/* ---------- Names and running text: as written ---------- */
+
+.home-name,                            /* Igor Sergeev */
+.site-header .name,
+.nav-list a,                           /* Mary Stuart, Iran Conference */
+.work h3,                              /* Leon Kennedy */
+.play-title h1,                        /* Open Relationship */
+.play-title h2,
+.play-scene h2,
+.legal h2,
+.legal h3,
+.clock {                               /* time in Munich (written so in content) */
+  text-transform: none;
+}

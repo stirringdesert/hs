@@ -1,9 +1,13 @@
 ---
-# Russian version of the playwriting section, shown on top of /open-relationship-ru/
+# Russian version of the playwriting section: the /ru/ playwriting page and the top of /open-relationship-ru/
 page_title: Автор
-title: «Открытые отношения»
+title: Открытые отношения
 summary:
   - "Первая часть завершена: июль 2024"
+links:
+  - [РУССКИЙ](/open-relationship-ru/)
+  - [АНГЛИЙСКИЙ](/open-relationship-en/)
+  - [НЕМЕЦКИЙ](/open-relationship-de/)
 ---
 
 Документальная квир-драма о поиске себя в пространстве, где границы любви размыты, а честность — самое трудное испытание. Через откровенные монологи и описания повседневности текст исследует, как сложно отказаться от привычных ролей и моногамных ожиданий, и превращает интимный опыт в политическую и личную драму.
