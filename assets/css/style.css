@@ -123,12 +123,12 @@ img, video { display: block; max-width: 100%; }
   transition: transform var(--menu-in) var(--ease-out), opacity var(--menu-in) var(--ease-out);
 }
 .menu-open .menu .home-name, .menu-open .menu .home-nav a { transform: none; opacity: 1; }
-.menu-open .menu .home-nav a:nth-child(1) { transition-delay: .04s; }
-.menu-open .menu .home-nav a:nth-child(2) { transition-delay: .08s; }
-.menu-open .menu .home-nav a:nth-child(3) { transition-delay: .12s; }
-.menu-open .menu .home-nav a:nth-child(4) { transition-delay: .16s; }
-.menu-open .menu .home-nav a:nth-child(5) { transition-delay: .2s; }
-.menu-open .menu .home-nav a:nth-child(6) { transition-delay: .24s; }
+.menu-open .menu .home-nav a:nth-child(1) { transition-delay: calc(var(--stagger) * 1); }
+.menu-open .menu .home-nav a:nth-child(2) { transition-delay: calc(var(--stagger) * 2); }
+.menu-open .menu .home-nav a:nth-child(3) { transition-delay: calc(var(--stagger) * 3); }
+.menu-open .menu .home-nav a:nth-child(4) { transition-delay: calc(var(--stagger) * 4); }
+.menu-open .menu .home-nav a:nth-child(5) { transition-delay: calc(var(--stagger) * 5); }
+.menu-open .menu .home-nav a:nth-child(6) { transition-delay: calc(var(--stagger) * 6); }
 
 /* ---------- Main + footer ---------- */
 
@@ -187,21 +187,33 @@ main {
   gap: 20px;
 }
 .bio-text .page-title { margin-bottom: 16px; }
+/* The portrait is a fixed background, like the videos on production pages: it never
+   scrolls and never makes the page longer. It fades in slowly, and its left and bottom
+   edges dissolve into the black so no cut edge shows. Only the text scrolls over it. */
 .bio-photo {
-  position: absolute;
-  top: calc(var(--header-height) * -1);
-  right: 0;
-  width: 55%;
-  max-width: 685px;
-  height: calc(100% + var(--header-height));
-  min-height: 100vh;
-  opacity: .7;
+  position: fixed;
+  inset: 0 0 0 auto;
+  z-index: -1;
+  width: 58vw;
+  overflow: hidden;
   pointer-events: none;
+  opacity: var(--bio-photo-opacity);
+  animation: stage-in var(--bg-video-fade) var(--ease-out) both;
 }
-.bio-photo img { width: 100%; height: 100%; object-fit: cover; }
-
-@keyframes bio-photo-in { from { transform: translateX(30%); opacity: 0; } }
-@media (prefers-reduced-motion: reduce) { .bio-photo { animation: none !important; } }
+/* Desktop: the top of his head lines up with the first paragraph.
+   The hood starts 32% down the photo, and the photo is 1.5 times as tall as it is wide. */
+.bio-photo img {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  max-width: none;
+  height: auto;
+  top: calc(var(--header-height) + 44px + var(--type-title) * 1.03 + 36px - 58vw * .48);
+  -webkit-mask-image: linear-gradient(to right, transparent, #000 38%), linear-gradient(to bottom, #000 70%, transparent);
+  -webkit-mask-composite: source-in;
+  mask-image: linear-gradient(to right, transparent, #000 38%), linear-gradient(to bottom, #000 70%, transparent);
+  mask-composite: intersect;
+}
 
 /* ---------- Audio player ---------- */
 
@@ -287,6 +299,15 @@ main {
   text-underline-offset: 3px;
 }
 .nav-list .work-links a:hover { color: var(--color-muted); }
+/* Reading pages: the other languages sit on the right of the play's title row */
+.nav-list .work-head { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; }
+.nav-list .work-aside { display: flex; gap: 16px; }
+.nav-list .work-aside a {
+  font-size: var(--type-body);
+  line-height: var(--type-body-lh);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
 /* Reading pages: the play text starts below the playwriting section */
 .reading .split + .play-body { margin-top: 120px; }
 
@@ -297,9 +318,12 @@ main {
   z-index: -1;
   opacity: var(--bg-video-opacity);
   pointer-events: none;
-  animation: bg-fade var(--bg-video-fade) ease-in-out both;
+  animation: stage-in var(--bg-video-fade) var(--ease-out) both;
 }
-@keyframes bg-fade { from { opacity: 0; } to { opacity: var(--bg-video-opacity); } }
+/* Background media lights up slowly, like a stage: from dark and slightly closer.
+   When the next page shows the same picture, it stays lit instead (main.js adds .stage-lit). */
+@keyframes stage-in { from { opacity: 0; transform: scale(1.03); } }
+.stage-lit .bg-video, .stage-lit .bio-photo { animation: none; }
 @media (prefers-reduced-motion: reduce) { .bg-video { animation: none; } }
 .bg-video video { width: 100%; height: 100%; object-fit: cover; }
 
@@ -308,7 +332,7 @@ main {
 .play main { padding-top: 100px; }
 .play-body { width: 50%; display: flex; flex-direction: column; gap: 40px; }
 .play-scene { display: flex; flex-direction: column; gap: 12px; }
-.play-scene h2 { font-size: var(--type-heading); line-height: var(--type-heading-lh); }
+.play-scene h2 { font-size: 20px; line-height: 20px; text-align: center; margin-bottom: 8px; }
 .play-scene p { line-height: 1.35; }
 .play-title { padding: 300px 0; display: flex; flex-direction: column; gap: 20px; text-align: center; }
 .play-title h1 { font-size: var(--type-title); line-height: var(--type-title-lh); text-transform: uppercase; }
@@ -418,7 +442,6 @@ main {
 
   /* bio */
   .bio-text { max-width: calc(50% - var(--col-gap) / 2); }
-  .bio-photo { top: -36px; width: 47.6%; max-width: none; height: 1140px; min-height: 0; opacity: 1; }
 
   /* voice */
   .voice main { position: relative; }
@@ -455,7 +478,7 @@ main {
   .play main { padding-top: 120px; }
   .play-body { width: 696px; margin: 0 auto; gap: 40px; }
   .play-scene { gap: 20px; }
-  .play-scene h2 { font-size: 20px; line-height: 20px; text-align: center; text-transform: uppercase; margin-bottom: 20px; }
+  .play-scene h2 { margin-bottom: 20px; }
   .play-scene p { line-height: 24px; text-align: justify; }
   .play-title h2 { font-size: 20px; line-height: 20px; }
   .play-note { text-align: center; }
@@ -466,25 +489,23 @@ main {
 @media (max-width: 900px) {
   .split { grid-template-columns: 1fr; row-gap: 40px; }
   /* About page on phones and tablets: a close crop of the face that bleeds off the right
-     edge, with the title and text running over it. The photo slides in from the right. */
+     edge, with the title and text running over it. */
   .bio { --u: min(1vw, 5.2px); }   /* photo unit: 1% of a phone screen, capped on tablets */
+  .bio-photo { width: calc(var(--u) * 100); height: calc(var(--u) * 112); bottom: auto; }
+  /* Face center sits at about 63% across and 48% down the photo */
+  .bio-photo img {
+    width: calc(var(--u) * 150);
+    left: calc(var(--u) * -28);
+    top: calc(var(--u) * -56);
+    -webkit-mask-image: none;
+    mask-image: none;
+  }
   .bio-photo {
-    top: calc(var(--header-height) * -1);
-    right: 0;
-    width: calc(var(--u) * 100);
-    max-width: none;
-    height: calc(var(--u) * 112);
-    min-height: 0;
-    opacity: .85;
-    overflow: hidden;
     -webkit-mask-image: linear-gradient(to bottom, #000 62%, transparent), linear-gradient(to right, transparent, #000 50%);
     -webkit-mask-composite: source-in;
     mask-image: linear-gradient(to bottom, #000 62%, transparent), linear-gradient(to right, transparent, #000 50%);
     mask-composite: intersect;
-    animation: bio-photo-in 1.2s var(--ease-out) both;
   }
-  /* Face center sits at about 63% across and 48% down the photo */
-  .bio-photo img { position: absolute; max-width: none; width: calc(var(--u) * 150); height: auto; left: calc(var(--u) * -28); top: calc(var(--u) * -56); }
   .bio-text { padding-top: calc(var(--u) * 62); }
   .play-body { width: 100%; }
   .play-title { padding: 160px 0; }
@@ -499,36 +520,60 @@ main {
 }
 
 /* ---------- Page transitions ----------
-   Browsers with cross-page view transitions (Chrome, Edge, Safari 18.2+) fade the old page
-   out and slide the new one in. The name, menu button, header links and clock stay in place,
-   and the big name on the home page (or in the open menu) shrinks into the header name.
-   Other browsers simply load the next page as before. */
+   Browsers with view transitions (Chrome, Edge, Safari 18.2+) change pages like scenes:
+   the old page fades out quickly, the new content rises into place, the background
+   media cross-fades, and everything that exists on both pages (name, menu button,
+   language switch, clock, footer, light switch) stays exactly where it is. The big name
+   on the home page or in the menu shrinks into the header name. Other browsers just
+   load the next page. Off for visitors who ask for reduced motion. */
 
 @view-transition { navigation: auto; }
 
 .site-header .name, .home-name { view-transition-name: site-name; }
 .header-nav { view-transition-name: site-nav; }
-.clock { view-transition-name: site-clock; }
+.top-right { view-transition-name: site-top-right; }
 .menu-toggle { view-transition-name: site-toggle; }
 .site-footer { view-transition-name: site-footer; }
-/* A name may be used once per page: with the menu open, the big name in the menu takes it */
-.menu .home-name, .menu .site-footer { view-transition-name: none; }
+.theme-toggle { view-transition-name: site-theme; }
+.cursor { view-transition-name: site-cursor; }
+main { view-transition-name: page; }
+.bg-video, .bio-photo { view-transition-name: stage; }
+/* A name may be used once per page. With the menu open, the menu's big name takes it,
+   and the page underneath stays part of the background picture. */
+.menu .home-name, .menu .site-footer, .menu .top-right { view-transition-name: none; }
 .menu-open .site-header .name { view-transition-name: none; }
 .menu-open .menu .home-name { view-transition-name: site-name; }
+.menu-open main, .menu-open .bg-video, .menu-open .bio-photo,
+.vt-menu main, .vt-menu .bg-video, .vt-menu .bio-photo { view-transition-name: none; }
 
 ::view-transition-group(*) { animation-duration: var(--page-in); animation-timing-function: var(--ease-out); }
-::view-transition-old(root) { animation: page-out var(--page-out) var(--ease) both; }
-::view-transition-new(root) { animation: page-in var(--page-in) var(--ease-out) both; }
+::view-transition-old(root) { animation: fade-out var(--page-out) var(--ease) both; }
+::view-transition-new(root) { animation: fade-in var(--page-in) var(--ease-out) both; }
+/* Page content: leaves by fading, arrives by rising a little, just after the old one is gone */
+::view-transition-group(page) { animation: none; }
+::view-transition-old(page) { animation: fade-out var(--page-out) var(--ease) both; }
+::view-transition-new(page) { animation: rise-in var(--page-in) var(--ease-out) calc(var(--page-out) * .6) both; }
+/* Background media cross-fades slowly and never moves */
+::view-transition-group(stage) { animation: none; }
+::view-transition-old(stage) { animation: fade-out var(--page-in) var(--ease) both; }
+::view-transition-new(stage) { animation: none; }
 /* Big-to-small name: keep the sharp old picture until late, then swap */
 ::view-transition-old(site-name) { animation: name-out var(--page-in) var(--ease) both; }
 ::view-transition-new(site-name) { animation: name-in var(--page-in) var(--ease) both; }
+/* The custom cursor hides while the page changes instead of freezing in place */
+::view-transition-group(site-cursor) { display: none; }
 
-@keyframes page-out { to { opacity: 0; } }
-@keyframes page-in { from { opacity: 0; transform: translateY(16px); } }
+/* Opening and closing the menu: a plain quick cross-fade, nothing slides */
+.vt-menu::view-transition-new(root) { animation: fade-in var(--page-out) var(--ease) both; }
+
+@keyframes fade-out { to { opacity: 0; } }
+@keyframes fade-in { from { opacity: 0; } }
+@keyframes rise-in { from { opacity: 0; transform: translateY(24px); } }
 @keyframes name-out { 0%, 50% { opacity: 1; } 100% { opacity: 0; } }
 @keyframes name-in { 0%, 50% { opacity: 0; } 100% { opacity: 1; } }
 
 @media (prefers-reduced-motion: reduce) {
   @view-transition { navigation: none; }
   .menu .home-name, .menu .home-nav a { transition: none; transform: none; }
+  .bg-video, .bio-photo { animation: none; }
 }
