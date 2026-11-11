@@ -21,7 +21,7 @@ const type = [
   ['Heading', '', 'font-size:var(--type-heading);line-height:var(--type-heading-lh)', '--type-heading', 'Leon Kennedy'],
   ['Menu', '', 'font-size:var(--type-nav);line-height:var(--type-nav-lh);letter-spacing:var(--type-nav-tracking)', '--type-nav', 'voice acting'],
   ['Body', '', '', '--type-body', 'Igor Sergeev is a playwright, director, actor and voice actor based in Munich.'],
-  ['Label', '', '', '.label', 'Officail russian dubs'],
+  ['Label', '', '', '.label', 'Official Russian dubs'],
   ['Caption', '', 'font-size:var(--type-caption)', '--type-caption', 'DOWNLOAD'],
   ['Small', '', 'font-size:var(--type-small);line-height:var(--type-small-lh)', '--type-small', 'Impressum'],
 ];

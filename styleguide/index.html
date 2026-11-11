@@ -16,9 +16,12 @@
   <link rel="icon" href="/assets/img/favicon-light.png" media="(prefers-color-scheme: light)">
   <link rel="icon" href="/assets/img/favicon-dark.png" media="(prefers-color-scheme: dark)">
   <link rel="stylesheet" href="/assets/css/tokens.css?v=634da582">
-  <link rel="stylesheet" href="/assets/css/style.css?v=aea22780">
+  <link rel="stylesheet" href="/assets/css/style.css?v=bde156de">
+  <link rel="stylesheet" href="/assets/css/fun.css?v=6010b1aa">
   <link rel="stylesheet" href="/assets/css/styleguide.css?v=2384caf2">
-  <script src="/assets/js/main.js?v=677d7f0e" defer></script>
+  <script>(function(){try{var q=location.search.match(/[?&]theme=(light|dark)/);if(q)localStorage.setItem('theme',q[1]);if(localStorage.getItem('theme')==='light')document.documentElement.setAttribute('data-theme','light')}catch(e){}})()</script>
+  <script src="/assets/js/main.js?v=1bf5b790" defer></script>
+  <script src="/assets/js/fun.js?v=94185b6c" defer></script>
 </head>
 <body class="sg menu-everywhere">
   <header class="site-header">
@@ -30,7 +33,7 @@
       <a href="/playwriting/open-relationship/">playwriting</a>
       <a href="/contact/">contact</a>
     </nav>
-    <p class="clock" aria-hidden="true">Time in Munich <b data-clock>--:--</b></p>
+    <div class="top-right"><p class="clock" aria-hidden="true">Time in Munich <b data-clock>--:--</b></p></div>
     <button class="menu-toggle" aria-label="Menu" aria-expanded="false" aria-controls="menu"><span></span><span></span><span></span></button>
     <div class="menu" id="menu">
       <div class="home-main">
@@ -77,7 +80,7 @@
       <div class="sg-row"><div>Heading<code>--type-heading</code></div><div><div style="font-size:var(--type-heading);line-height:var(--type-heading-lh)">Leon Kennedy</div></div></div>
       <div class="sg-row"><div>Menu<code>--type-nav</code></div><div><div style="font-size:var(--type-nav);line-height:var(--type-nav-lh);letter-spacing:var(--type-nav-tracking)">voice acting</div></div></div>
       <div class="sg-row"><div>Body<code>--type-body</code></div><div><div>Igor Sergeev is a playwright, director, actor and voice actor based in Munich.</div></div></div>
-      <div class="sg-row"><div>Label<code>.label</code></div><div><div class="label">Officail russian dubs</div></div></div>
+      <div class="sg-row"><div>Label<code>.label</code></div><div><div class="label">Official Russian dubs</div></div></div>
       <div class="sg-row"><div>Caption<code>--type-caption</code></div><div><div style="font-size:var(--type-caption)">DOWNLOAD</div></div></div>
       <div class="sg-row"><div>Small<code>--type-small</code></div><div><div style="font-size:var(--type-small);line-height:var(--type-small-lh)">Impressum</div></div></div>
     </section>
@@ -100,7 +103,7 @@
             <a href="/playwriting/open-relationship/">playwriting</a>
             <a href="/contact/">contact</a>
           </nav>
-          <p class="clock" aria-hidden="true">Time in Munich <b data-clock>--:--</b></p>
+          <div class="top-right"><p class="clock" aria-hidden="true">Time in Munich <b data-clock>--:--</b></p></div>
           <button class="menu-toggle" aria-label="Menu" aria-expanded="false" aria-controls="sg-menu"><span></span><span></span><span></span></button>
           <div class="menu" id="sg-menu">
             <div class="home-main">
@@ -166,7 +169,7 @@
     <section class="sg-section">
       <h2 class="label">Audio player</h2>
       <div class="sg-demo">
-      <div class="player" data-src="/assets/media/demo.wav">
+      <div class="player" data-src="/assets/media/demo.wav" data-play="Play audio" data-pause="Pause audio">
         <audio preload="metadata" src="/assets/media/demo.wav"></audio>
         <div class="player-row">
           <button type="button" aria-label="Play audio"><svg viewBox="0 0 16 16" aria-hidden="true"><path class="icon-play" d="M5.379 1.292C4.968 1.033 4.449 1.017 4.023 1.251 3.598 1.486 3.334 1.933 3.333 2.419V13.581C3.334 14.067 3.598 14.514 4.023 14.749 4.449 14.983 4.968 14.967 5.379 14.708L14.215 9.127C14.602 8.883 14.836 8.457 14.836 8 14.836 7.543 14.602 7.117 14.215 6.873Z"/></svg></button>
@@ -194,5 +197,7 @@
     <a href="/impressum/">Impressum</a>
     <a href="/datenschutzerklaerung/">Datenschutz</a>
   </footer>
+  <button type="button" class="theme-toggle" aria-label="Switch to light mode" title="Light / dark"><i></i></button>
+  <script type="application/json" id="hover-previews">{"/theater/sasha-why/":"/assets/media/sasha-why.mp4","/theater/bumerit/":"/assets/media/bumerit.mp4","/theater/iran-conference/":"/assets/media/iran-conference.mp4","/theater/maria-stuart/":"/assets/media/maria-stuart.mp4","/theater/billy-milligan/":"/assets/media/billy-milligan.mp4","/theater/the-charlie-gordon-effect/":"/assets/media/the-charlie-gordon-effect.mp4","/theater/":"/assets/media/sasha-why.mp4","/bio/":"/assets/img/bio.jpg","/voice/":"/assets/img/voice/leon-kennedy.jpg","/de/theater/sasha-why/":"/assets/media/sasha-why.mp4","/de/theater/bumerit/":"/assets/media/bumerit.mp4","/de/theater/iran-conference/":"/assets/media/iran-conference.mp4","/de/theater/maria-stuart/":"/assets/media/maria-stuart.mp4","/de/theater/billy-milligan/":"/assets/media/billy-milligan.mp4","/de/theater/the-charlie-gordon-effect/":"/assets/media/the-charlie-gordon-effect.mp4","/de/theater/":"/assets/media/sasha-why.mp4","/de/bio/":"/assets/img/bio.jpg","/de/voice/":"/assets/img/voice/leon-kennedy.jpg","/ru/theater/sasha-why/":"/assets/media/sasha-why.mp4","/ru/theater/bumerit/":"/assets/media/bumerit.mp4","/ru/theater/iran-conference/":"/assets/media/iran-conference.mp4","/ru/theater/maria-stuart/":"/assets/media/maria-stuart.mp4","/ru/theater/billy-milligan/":"/assets/media/billy-milligan.mp4","/ru/theater/the-charlie-gordon-effect/":"/assets/media/the-charlie-gordon-effect.mp4","/ru/theater/":"/assets/media/sasha-why.mp4","/ru/bio/":"/assets/img/bio.jpg","/ru/voice/":"/assets/img/voice/leon-kennedy.jpg"}</script>
 </body>
 </html>

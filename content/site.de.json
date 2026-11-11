@@ -1,0 +1,28 @@
+{
+  "nav": [
+    { "label": "bio" },
+    { "label": "synchron" },
+    { "label": "theater" },
+    { "label": "stücke" },
+    { "label": "kontakt" }
+  ],
+  "sections": {
+    "theater": { "title": "Regie", "page_title": "Theater" },
+    "playwriting": { "title": "Autor", "page_title": "Stücke" }
+  },
+  "contact": {
+    "label": "für Synchronaufnahmen und Anfragen:"
+  },
+  "ui": {
+    "main_menu": "Hauptmenü",
+    "menu": "Menü",
+    "language": "Sprache",
+    "time_in_munich": "Zeit in München",
+    "titles": { "bio": "Bio", "voice": "Synchron", "contact": "Kontakt" },
+    "play": "Abspielen",
+    "pause": "Pause",
+    "download": "HERUNTERLADEN",
+    "copy_email": "E-Mail-Adresse kopieren",
+    "copied": "Kopiert"
+  }
+}

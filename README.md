@@ -45,7 +45,7 @@ Paragraph of description. Blank lines separate paragraphs.
 Cast: ...
 ```
 
-- `order` sets the position in the list. `video` is optional (the background video). Add `hidden: true` to take a production off the site without deleting it.
+- `order` sets the position in the list. `video` is optional (the background video). Add `sound: true` only if the video file has an audio track: a "Sound" button then appears so visitors can unmute it. Instead of a video, a page can have a background photo: `image: /assets/img/...` (plus `image_alt:`), shown in the same dimmed full-screen style with a slow drift. Add `hidden: true` to take a production off the site without deleting it.
 - Text supports `[link text](url)`, `**bold**`, `*italic*`. A single line break inside a paragraph becomes a line break.
 - Deleting a content file removes its page on the next build.
 
@@ -57,11 +57,37 @@ Put the image in `assets/img/voice/` and add an entry to `roles` in `content/voi
 { "character": "Jon Snow", "title": "Game of Thrones", "image": "/assets/img/voice/jon-snow.jpg" }
 ```
 
+## Languages
+
+The site is in English (at the root), German (`/de/`) and Russian (`/ru/`). The list is `languages` in `content/site.json`; the first one lives at the root.
+
+- Every text file can have a translation next to it, named with the language code: `bio.de.md`, `voice.ru.json`, `theater/bumerit.de.md`, `site.ru.json` (menu, page names, small labels).
+- A translation only needs what changes. In `.md` files, front matter fields replace the English ones and the text replaces the English text. In `voice.<lang>.json`, `roles` lists only translated fields, keyed by the English character name.
+- If a translation file is missing, that page shows the English text and the build lists what is untranslated.
+- Site links in text (like `[contact](/contact/)`) automatically point to the same language.
+- On the first visit to the home page, a full-screen picker (en / de / ru) asks for a language. The choice is remembered in the browser, and the EN / DE / RU switch in the corner changes it.
+- Impressum and Datenschutzerklärung exist only in German. The play reading pages (`/open-relationship-en|de|ru/`) are linked to each other by the language switch.
+
 ## Design system
 
 - **Tokens** (`assets/css/tokens.css`): every color, font size, line height, gutter and animation value. Phone and tablet sizes are set there too, in two media blocks at the bottom. Components use only `var(--...)` tokens for colors and type.
 - **Components** (`build/components.mjs`): `layout`, `header`, `footer`, `pageTitle`, `label`, `workList` (production list with summary), `split` + `detail` (two-column layout), `bgVideo`, `player`, `workCard` / `workGrid`. Each page is assembled from these.
 - **Style guide** (`/styleguide/`, built from `build/styleguide.mjs`): shows all of the above live, so design changes can be checked on one page.
+
+## Previewing changes before they go live
+
+Design changes are checked in a private claude.ai Artifact, "Site preview", before they are merged to `main`:
+https://claude.ai/artifact/TDSeaW3f6Bqcbctk2LQd5P
+
+1. Make the change on a branch and run `node tools/preview.mjs --key-file <font key file>` (or set `FONT_KEY`). It builds the site, decrypts the fonts, and writes a copy with relative links to `_preview/` (git-ignored), plus `_preview/files.json`.
+2. Publish `_preview/index.html` to the Site preview URL with the Artifact tool, passing `files.json` as `files`. After the first publish, files you leave out are kept, so for most changes `node tools/preview.mjs --pages-only` and publishing only the HTML/CSS/JS is enough.
+3. Look at it (desktop and phone), ask for tweaks, repeat. When it looks right, merge the PR and `main` deploys the live site.
+
+The preview is private: only people it is shared with (from the page's Share menu) can open it.
+
+## Playful layer and light mode
+
+`assets/css/fun.css` and `assets/js/fun.js` add the interactive extras: a dot cursor that grows over links, floating video/photo previews when hovering menu items and productions (the map is built from the content files), letters that jump on the big titles, tilting voice cards, contact links that drift toward the cursor, the background-video sound button and a test light mode (round button bottom-left, or `?theme=light` / `?theme=dark` in any URL; remembered per browser). Everything respects the system "reduce motion" setting, and the cursor/previews only run with a mouse. Removing the two files turns all of it off.
 
 ## Publishing
 

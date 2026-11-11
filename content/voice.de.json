@@ -1,0 +1,21 @@
+{
+  "cta": "für Buchungen und Anfragen bitte [kontaktieren](/contact/)",
+  "demo": { "title": "Demo" },
+  "works_title": "Rollen",
+  "works_label": "Offizielle russische Synchronfassungen",
+  "roles": {
+    "D. L. Tanus": { "title": "Das Damengambit" },
+    "Igor Straussman": { "title": "Victor Frankenstein – Genie und Wahnsinn" },
+    "Pi Patel": { "title": "Life of Pi: Schiffbruch mit Tiger" },
+    "Jimmy Tree": { "title": "Ewige Jugend" },
+    "Louis": { "title": "Einfach das Ende der Welt" },
+    "Lawrence Durrell": { "title": "Die Durrells" }
+  },
+  "audiobooks": {
+    "label": "Hörbücher",
+    "text": [
+      "Über 126 eingesprochene Hörbücher auf der Plattform [LitRes](https://www.litres.ru/author/igor-sergeev-2/). Die Bandbreite reicht von Klassikern (William Faulkners „Schall und Wahn“, Jack Londons „Der Seewolf“) und Philosophie (Erich Fromms „Haben oder Sein“, Perry Andersons „Die Ursprünge der Postmoderne“) bis zu Gegenwartsliteratur, Thrillern und Sachbüchern. Darunter Werke von Paulo Coelho, Michael Roach, Tatjana Ustinowa, Amor Towles, David Grann, Viktor Zoi, Jegor Letow und anderen.",
+      "Die Hörbücher anhören auf [LitRes](https://www.litres.ru/author/igor-sergeev-2/)"
+    ]
+  }
+}

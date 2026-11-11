@@ -333,16 +333,59 @@ main {
 /* ---------- Header extras: inline nav + clock (desktop only) ---------- */
 
 .header-nav, .clock { display: none; }
-.clock {
+/* Top right corner: language switch + clock */
+.top-right {
   position: absolute;
   top: 24px;
   right: var(--gutter);
-  margin: 0;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  gap: 32px;
   font-size: var(--type-small);
   line-height: 13px;
-  z-index: 20;
 }
+.clock { margin: 0; }
 .clock b { font-weight: var(--weight-bold); margin-left: 4px; }
+/* ---------- Languages ---------- */
+
+/* EN DE RU switch: the current language is white, the others muted */
+.lang-switch { display: flex; gap: 12px; }
+.lang-switch a { color: var(--color-muted); transition: color var(--fast) var(--ease); }
+.lang-switch a:hover, .lang-switch a[aria-current] { color: var(--color-fg); }
+/* On phones and tablets the switch sits in the menu, except on the home page (no menu) */
+.site-header .top-right .lang-switch { display: none; }
+.menu .menu-langs { margin-top: 32px; gap: 24px; }
+/* With the full-screen menu, the switch sits bottom-left, level with the legal links
+   (same spot as on the phone home page); wide screens show it at the top right instead. */
+.menu-everywhere .menu .menu-langs { position: absolute; left: var(--gutter); bottom: 20px; margin: 0; gap: 12px; font-size: var(--type-small); line-height: 13px; }
+@media (min-width: 1200px) { .menu-everywhere .menu .menu-langs { display: none; } }
+
+/* First visit: full-screen language choice on black, before the home page */
+.lang-picker { display: none; }
+.choose-lang body { overflow: hidden; }
+.choose-lang .lang-picker {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-bg);
+  transition: opacity .5s var(--ease);
+}
+.lang-chosen .lang-picker { opacity: 0; }
+.lang-picker nav { display: flex; gap: clamp(32px, 9vw, 140px); animation: lang-picker-in .8s var(--ease) both; }
+.lang-picker a {
+  font-size: var(--type-display);
+  line-height: var(--type-display-lh);
+  letter-spacing: var(--type-display-tracking);
+  transition: color var(--fast) var(--ease);
+}
+.lang-picker a:hover, .lang-picker a:focus-visible { color: var(--color-muted); }
+@keyframes lang-picker-in { from { opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .lang-picker nav { animation: none; } }
+
 /* Contact links read E-MAIL / TELEGRAM / INSTAGRAM at every width, like the Framer site */
 .contact-list { text-transform: uppercase; }
 .contact-list .long { display: none; }
@@ -365,7 +408,8 @@ main {
   .header-nav a:hover { color: var(--color-muted); }
   .clock { display: block; }
   /* Same full-screen menu as on phones ("menu_desktop": "overlay"): the clock moves left of the button */
-  .menu-everywhere .site-header .clock { right: calc(var(--gutter) + 27px + 32px); top: 31px; }
+  .menu-everywhere .site-header .top-right { right: calc(var(--gutter) + 27px + 32px); top: 31px; }
+  .site-header .top-right .lang-switch { display: flex; }
 
   /* theater / playwriting */
   .nav-list { gap: 8px; }
@@ -449,6 +493,8 @@ main {
 
 @media (max-width: 640px) {
   .home .site-footer { margin-top: 0; }
+  /* the big name fills the top on phones, so the language switch moves next to the footer */
+  .home .top-right { top: auto; bottom: 20px; left: var(--gutter); right: auto; }
   .works { grid-template-columns: 1fr; }
 }
 
