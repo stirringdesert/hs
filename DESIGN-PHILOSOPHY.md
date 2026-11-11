@@ -23,7 +23,7 @@ The site should let each of them get there in one or two clicks. Everything else
 
 - **Confident and quiet.** The name and the page titles are huge, and the rest is a lot of empty black. Type at poster size does the job other portfolios give to photos.
 - **Personal, not corporate.** Lowercase menu ("bio", "voice acting"), the "Time in Munich" clock, a play about his own life. It reads like a person, not an agency.
-- **Serious surface, playful underneath.** The owner finds the current site "too serious" and wants it more fun and interactive. The fun should come from **how things move and respond** (motion, hover, sound, small surprises), not from more colors, ornaments or clutter. Imagine an actor who keeps a straight face and then winks.
+- **Serious surface, playful underneath, and only a little.** The owner finds the site "too serious", but the first playful round (jumping letters, floating previews, tilting cards) was "too fun". The right amount is small: a few interactions that feel **useful and polished**, like a custom cursor that helps you aim, smooth transitions, a menu that's easy to reach. No gimmicks, nothing that wobbles for its own sake. Imagine an actor who keeps a straight face and only now and then lets a wink through.
 - **One continuous object.** Pages should feel like scenes of the same play, not separate documents. The same element looks the same everywhere, and moving between pages should feel like continuing, not jumping.
 
 ## The visual language
@@ -32,16 +32,24 @@ The site should let each of them get there in one or two clicks. Everything else
 
 **Type.** One family, TT Firs Neue, in two weights (regular and demibold). Its odd geometric letters (the open `g`, the straight `y`) are the brand, so the type is allowed to be very big. Hierarchy comes from **size and case**, almost never from weight or color.
 
-| Role | Look | Example |
-|---|---|---|
-| Display | huge, regular, lowercase menu | home page name and menu |
-| Page title | big, UPPERCASE | DIRECTOR, AUTHOR, WORKS, DEMO |
-| List / heading | medium, Title Case | production names, role names |
-| Body | regular, comfortable size | descriptions |
-| Label / action | small, UPPERCASE (labels in demibold) | DOWNLOAD, RUSSIAN, E-MAIL |
-| Legal / meta | tiny, grey | Impressum, clock |
+### Typography system
 
-Case carries meaning: **lowercase is the person talking** (navigation), **UPPERCASE is a sign on the wall** (titles, labels, actions).
+Every piece of text belongs to one of three tiers. The tier decides its letter case. `assets/css/type.css` puts this in code and is the only place that sets case.
+
+| Tier | Case | Size | Used for | Examples |
+|---|---|---|---|---|
+| **1. Big: it speaks** | lowercase | display, page title, contact | page titles, home and menu links, contact links and sentence, the first-visit language choice | director, works, demo, биография, voice acting, e-mail, en de ru |
+| **2. Middle: as written** | normal capitals | list, heading, body | names of works and people, role names, descriptions, the play | Mary Stuart, Leon Kennedy, Open Relationship |
+| **3. Small: it labels** | UPPERCASE, +0.04em spacing | label, caption, small | section labels, buttons and actions, the language switch, the clock | OFFICIAL RUSSIAN DUBS, DOWNLOAD, RUSSIAN, EN DE RU, TIME IN MUNICH |
+| Fine print | as written, grey | legal | Impressum, Datenschutzerklärung | Impressum |
+
+The logic:
+- **Big lowercase is a person talking.** The home page set the tone (a name, then a lowercase list), and big text everywhere should sound like that voice: relaxed and confident, never shouting. Big caps read as an advert.
+- **Small caps are signs on the wall.** At small sizes, caps with a little spacing hold their own next to big type, and they mark "this is a control or a label, not content".
+- **Names are never changed.** Igor Sergeev, Mary Stuart and Jon Snow keep their capitals in every tier except the small caps one. Write names correctly in the content: tier 1 only lowercases the CSS text, so a name inside a big sentence must not be put in tier 1 by accident.
+- **Fine print stays quiet:** no caps, so it doesn't draw the eye.
+- **Bold (demibold) only marks section labels** in tier 3. Never use bold for big text or for emphasis in running text.
+- Within a tier everything is consistent. A new element picks its tier first and copies it.
 
 **Layout.**
 - Flush left with a 24 px edge gutter. Things hug the edges and corners, and the middle is often left empty on purpose.
@@ -77,6 +85,21 @@ Each entry: what was said → the likely reason → the rule that follows.
 | 15 | First-visit language picker: "just a minimal choice on black" (en, de, ru). | Even a utility screen is part of the stage. The first impression is black and type. | Utility screens use the same big type on black. No flags, boxes or dropdowns. |
 | 16 | Photo of the two of them on the play page "in the same style as the videos". Voice roles (later) should open to show info and a short clip. | One consistent treatment for media. Details are revealed on interaction instead of shown all at once. | New media copies the dimmed full-bleed video style. Show the surface first and let curiosity open the details. |
 | 17 | Outside scripts and embeds are fine "as long as there's no information on their unavailability in Russia". | Russian visitors matter, but the site shouldn't give up useful tools out of caution alone. | Before adding an outside service, check whether it's reported blocked or slowed down in Russia. Use it if it isn't. |
+| 18 | Remove the jumping letters ("too fun"), the floating picture previews on hover and the tilting cards. | The playful layer turned into gimmicks that compete with the work and make the site feel less grown-up. | Fun has a ceiling. Keep interactions that help (cursor, transitions) and drop ones that are only decoration. |
+| 19 | The dot cursor: "I like it", but on links it's hard to aim at small links and tell which one is hovered. Maybe big, getting small on hover. | Playful is fine as long as it never costs usability. | Every playful element must make aiming and reading easier, not harder. |
+| 20 | Swap the places of the clock and the language switch. Later: have them only in the menu and on the home page, because they move around when the menu button appears. | Things that jump position between pages feel broken. Secondary info belongs in one stable place. | An element keeps the same place on every page. If it can't, it lives in fewer places. |
+| 21 | Outside links: white, underlined, with a small arrow (or a copy icon for the email). | One consistent, readable signal for "this leaves the site" or "this copies", instead of colored text. | Links in text are white and underlined. A small icon says what the link does. Color isn't used for links. |
+| 22 | Russian version: «Игорь Сергеев» in Cyrillic; bio title «биография». | Each language version should feel native, not translated on top of English. | Translate names and titles into the reader's script where it's natural. |
+| 23 | Headings lowercase like the home page, the same for other large text (contact). Keep names capitalized. Caps can be useful for small elements. "Come up with a style system so we have consistency, logic and understanding." | The home page voice should run through the whole site, and every element should follow a clear rule instead of case-by-case choices. | See the typography system: big lowercase, middle as written, small caps. |
+| 24 | Light mode: the background is "too creamy" (it can be warm, just not obviously). Bio photo has no fade on desktop. Menu items invisible on the black photo. The switch belongs in the menu, as text. | Light mode should be the same design in negative, not a different mood. Every state has to be readable. Controls are words, not symbols. | Tint neutrals only slightly. Check contrast in both modes on every page. Controls are text, in the menu. |
+| 25 | Background videos too transparent: raise the opacity and check text contrast on the dark Billy Milligan video. | The videos are part of the work, and should be seen, as long as text stays readable. | Media is as visible as possible while text keeps enough contrast. Check the darkest and brightest media. |
+| 26 | Rethink the navigation, ideally the same on all screens. Keep the home/menu layout and bring it into the pages. The hamburger flow is bad: you click in one corner and travel to the other. It should be as easy as hovering a side of the screen and picking a page, and obvious for people who aren't tech-savvy. | Short paths for the hand and the eye. The home layout is loved, the hamburger isn't. Clever must still be obvious. | Put targets near where the user already is. Interactions must explain themselves on first sight. One navigation pattern for all screens. |
+| 27 | The remaining animations look buggy: they jitter, are inconsistent, some are missing, some repeat when they shouldn't, and they feel "basic and reused". | Quality over quantity. Unpolished motion is worse than none. | Every animation is smooth and runs once when it should, and the same kind of thing always moves the same way. Test on real devices. Fewer, better, original animations. |
+| 28 | Bio photo: fixed like the video backgrounds, higher on desktop (head where the paragraph starts), slightly larger so text overlaps it, with a proper fade (no chopped edge). The photo must not make the page scroll. | Background media is the set, not content. It must never change the page's layout or length, and edges must not show. | Background images are fixed and full-bleed like the videos. Only content makes a page scroll. Fades hide every edge. |
+| 29 | Voice player: better player, small volume slider, download styled like the rest of the site, bigger click targets. | A key tool (the demo) should feel finished and be easy to use. | Controls have generous click areas (at least 44 px) and use the site's type styles. |
+| 30 | Theater on phones: the description goes under the name and expands like an accordion, pushing the other items down. Film icon next to Iran Conference; replace the watch link with an inline player or a preview that opens a player popup as wide as the content. Sound for videos postponed. | Keep the reader in place: content should open where you tapped, and media should play on the site. | Reveal details in place, next to what was tapped. Keep video on the site instead of sending people away. |
+| 31 | Play: only one play for now, so go straight to its text page. Other language links on the other side of the name. Remove the quotes from the play's title screen (they look weird on phones). Chapter numbers centered on phones like on desktop. | No pointless steps. Phone and desktop should look the same. | Skip pages that only hold one item. Keep phone and desktop as similar as possible. |
+| 32 | Mobile menu: the language switch sits right against the last menu item, and the clock should be there too. "As few differences between mobile and desktop as possible, while keeping things logical and easy to read and reach." | Spacing is part of quality, and one design for all screens is easier to understand. | Give elements room to breathe. Design once for every screen and only adapt what must change. |
 
 ## Do and don't
 
@@ -85,14 +108,18 @@ Each entry: what was said → the likely reason → the rule that follows.
 - Keep the black stage, white type and the one grey.
 - Let type be the hero. Big, flush left, lots of black around it.
 - Reuse existing components and patterns (the home view, the list plus detail split, the dimmed full-bleed media).
-- Make it feel alive through motion and response: hover, transitions, small surprises.
+- Make it feel alive through motion and response, but in small doses and polished: smooth, consistent, never jittery or repeating.
+- Pick a typography tier (big lowercase, middle as written, small caps) for any new text, and follow `type.css`.
+- Keep layouts and controls the same on phone and desktop wherever it stays easy to read and reach.
 - Keep the home page to one screen, and keep every overlay easy to close.
 - Check every visual change on a phone (390 px) and a desktop (1440 px) and compare it with the live site.
 - Respect "reduce motion" and keyboard focus.
 
 **Don't**
 - Add new colors, fonts or font weights.
-- Add boxes, card borders, drop shadows, gradients, rounded corners, emoji or decorative icons where a word works. (The playful layer's rounded preview and pill-shaped sound button are being tested and still need a decision, see below.)
+- Add boxes, card borders, drop shadows, gradients, rounded corners, emoji or decorative icons where a word works. Small functional icons next to a word are fine (an arrow on an outside link, a copy icon on the email).
+- Add gimmicks: jumping letters, floating hover previews, tilting cards were all "too fun" and were removed.
+- Use big UPPERCASE for headings or large text. Big text is lowercase (names excepted).
 - Center layouts. The play text is the only exception, because it's a printed page.
 - Duplicate a control. When adding a new way, remove the old one.
 - Autoplay sound, or open the mail app or other apps without asking.
@@ -105,7 +132,7 @@ Each entry: what was said → the likely reason → the rule that follows.
 These need the art director's call. Update this section when they answer.
 
 - **Desktop menu:** the same full-screen menu as on phones, or the old row of links in the header? (`menu_desktop` in `content/site.json`, tested in the navigation PR.)
-- **Light mode:** keep it or drop it?
-- **How much play:** is the custom dot cursor too much? Are the jumping letters and tilting cards right?
-- **Rounded shapes:** the hover previews have rounded corners and the sound button is a pill, while the rest of the site is square. Square them up, or let the playful layer have softer shapes?
-- **Two blues** (`--color-link` and `--color-accent`) came over from Framer. Merge them into one?
+- **Desktop and phone navigation:** a new pattern is being designed (#26). Until then the full-screen menu stays.
+- **Light mode:** still a test. It's being fixed (#24), but whether it stays is undecided.
+- **Contact links:** in the big lowercase tier they read "e-mail, telegram, instagram". Telegram and Instagram are brand names. Should they keep their capitals?
+- **Blue:** #21 makes links white and underlined, so the blue may only survive in the voice page's "contact" call to action. Drop it entirely?
