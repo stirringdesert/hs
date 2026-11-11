@@ -18,8 +18,22 @@
 /* Videos and photos behind the text: lifted and softened so dark footage turns into a
    light grey wash and black text stays readable on it. */
 :root[data-theme="light"] .bg-video video { filter: grayscale(.25) brightness(1.3) contrast(.72); }
-/* The play page photo keeps its real colours and contrast in light mode: lifting and
-   softening it turned the whole page into a grey haze. */
+/* The play page in light mode: the top of the page stays a dark stage (photo on black,
+   white text) exactly like dark mode, and fades into the light page as the photo fades.
+   A dark photo washed onto white turned everything grey, and black text on it looked faded. */
+:root[data-theme="light"] .bg-image.scroll-fade { background: #000; opacity: var(--fade, 1); }
+:root[data-theme="light"] .bg-image.scroll-fade img { opacity: .8; }
+:root[data-theme="light"] .reading .site-header,
+:root[data-theme="light"] .reading main > .page-title,
+:root[data-theme="light"] .reading .split {
+  --color-bg: #000;
+  --color-fg: #fff;
+  --color-muted: #a3a3a3;
+  --color-link: #fff;
+  --color-accent: #fff;
+  color: var(--color-fg);
+  text-shadow: 0 0 24px rgba(0, 0, 0, .3);
+}
 /* Menus stay black in light mode: light mode is only for reading the play */
 :root[data-theme="light"] .corner-menu,
 :root[data-theme="light"] .corner-panel,
