@@ -38,14 +38,14 @@ The site should let each of them get there in one or two clicks. Everything else
 
 | Kind of text | Case | Examples |
 |---|---|---|
-| **The site's own words**, at any size: page titles, menus, labels, buttons, links, the language switch, legal links | lowercase | director, works, demo, биография, voice acting, official russian dubs, download, russian english german, en de ru, impressum |
-| **Names:** people, works, roles, places, brands | as written | Igor Sergeev, Mary Stuart, Leon Kennedy, Open Relationship, Telegram, Munich |
+| **The site's own words**, at any size: page titles, menus, labels, buttons, link labels (brand names too), the language switch, legal links, messages | lowercase | director, works, demo, биография, voice acting, official russian dubs, download, russian english german, en de ru, telegram, instagram, copied, impressum |
+| **Names:** people, works, roles, places | as written | Igor Sergeev, Mary Stuart, Leon Kennedy, Open Relationship, Munich |
 | **Running text:** descriptions, bio, credits, the play | normal sentences | A tragicomedy based on documentary materials… |
 
 The logic:
 - **Lowercase is the person talking.** The home page set the tone (a name, then a lowercase list), and the whole interface should sound like that voice: relaxed, confident, never shouting. Caps read as an advert or a warning sign.
 - **Size, weight and grey make the hierarchy, not case.** With one case everywhere, nothing competes for attention through capitals alone. Section labels are small demibold; legal links are tiny grey.
-- **Names are never changed.** A name inside interface text keeps its capitals ("time in Munich", "e-mail · Telegram · Instagram"). Write such mixed text in lowercase in the content and leave it out of the lowercase rule in `type.css`, so the name survives.
+- **Names are never changed.** A name of a person, work or place inside interface text keeps its capitals ("time in Munich"). Brand names used as link labels are lowercase like any other link ("telegram", "instagram"), because there they work as interface words, not names. Write such mixed text in lowercase in the content and leave it out of the lowercase rule in `type.css`, so the name survives.
 - **Running text is normal prose.** Forcing lowercase on sentences makes them harder to read and looks affected.
 - New text picks its kind first, then follows the rule. No exceptions for one-off elements.
 
@@ -53,7 +53,7 @@ The logic:
 - Flush left with a 24 px edge gutter. Things hug the edges and corners, and the middle is often left empty on purpose.
 - On desktop, two equal columns: the list on the left, the text on the right. On phones, one column.
 - The home page is a single composed screen: name at the top, menu at the bottom, legal links in the corner.
-- Navigation is the word "menu" in the bottom-left corner of every page. It raises the home view's links (with the time and languages) on hover or tap, the same on every screen.
+- Navigation is the full-screen home view, opened by a small arrow next to the name. The time and languages live in the menu and on the home page only.
 - Lines: a single 2 px white rule under the selected item. No boxes, card borders, shadows, gradients or rounded corners.
 - Text sizes grow and shrink smoothly with the screen (CSS `clamp()`), never in jumps.
 
@@ -107,6 +107,13 @@ Each entry: what was said → the likely reason → the rule that follows.
 | 38 | The halo (shadow) around text is too visible, especially in light mode. Light mode backgrounds should be a little more visible, with a ratio similar to dark mode. | Text effects for readability should be invisible. Both modes should be the same design, just inverted. | Readability aids are as subtle as possible. Media visibility should feel the same in both modes. |
 | 39 | Animations are "still buggy" (maybe the preview). | Polish is the bar for every motion. | Test every animation on the real site and on a phone before showing it. |
 | 40 | Navigation: a corner menu, the same on every screen. The word "menu" sits in the bottom-left corner of every page, and hovering or tapping it raises the home page's links, with the time and the languages. | The hamburger made you click in one corner and then travel to the other. Navigation should feel like the loved home layout and work the same everywhere. | One navigation pattern for all screens, opening where your hand already is. The menu is the home view, and the trigger is a plain word. |
+| 41 | The corner menu is "terrible". Back to the full-screen menu, opened by a small arrow next to the home link. Time and languages live in the menu and on the home page. On phones the bottom-left area has two rows (switches above, time and legal below); on desktop it stays at the bottom. | The full-screen home view is the loved part; the new trigger and corner layout weren't. A small, clear trigger next to the name keeps the menu tied to the home page. | Keep what's loved and change only what's broken. The menu is always the full home view. The trigger is small and sits next to the name. |
+| 42 | Light mode only on the playwriting reading page: a "switch to light/dark" text switch appears bottom-left once you scroll to where the photo has faded out, disappears after one more screen of scrolling, and the site goes back to black on any other page. The menu stays black. On phones, a soft, not fully opaque dark corner behind the switch. | Light mode is a reading tool for the long play text, not a second identity for the site. It should show up exactly when reading starts and then step aside. | Black is the site. Light is only a reading aid on the play page. Utilities appear at the moment they're useful and then leave. Backdrops behind floating controls are soft and barely noticeable. |
+| 43 | Make the cursor effect a little more noticeable. | The new cursor is right but too timid to register. | Subtle, but it must be noticeable. If an effect can't be seen, it isn't worth having. |
+| 44 | Link underlines: "I liked how it was broken by the letters". Return to that. | The underline that skips descenders feels typographic and crafted, like print. A solid line through the letters feels mechanical. | Underlines skip the descenders (the browser default `text-decoration-skip-ink`). Don't override it. |
+| 45 | Legal links are too high: they belong at the very bottom of the viewport, but not fixed. | Fine print sits at the floor of the page, out of the way. | Footer at the bottom of the screen on short pages and after the content on long ones. Never floating. |
+| 46 | Iran Conference: undo the full-play link because it asks for money. Trailer and link are fine. Pause the background video and fade it out while the popup is open. | Never send visitors into a paywall. While something plays, nothing else should move behind it. | Link only to freely viewable media. When a player opens, stop and hide the background. |
+| 47 | The link in "for voiceover bookings…" should look like the other outside links. Telegram, Instagram and the "copied" message all lowercase. | One link style and one case for everything the site says. This overrides the earlier choice to keep the brand capitals (#33). | Every link looks the same. Link labels and messages are lowercase, brand names included. |
 
 ## Do and don't
 
@@ -138,5 +145,4 @@ Each entry: what was said → the likely reason → the rule that follows.
 
 These need the art director's call. Update this section when they answer.
 
-- **Light mode:** still a test. It's being fixed (#24), but whether it stays is undecided.
 - **Blue:** #21 makes links white and underlined, so the blue may only survive in the voice page's "contact" call to action. Drop it entirely?
