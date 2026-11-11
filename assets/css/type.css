@@ -24,7 +24,8 @@
 .contact-list > *,                     /* e-mail, telegram, instagram, and "copied" */
 .label,                                /* official russian dubs */
 .nav-list .work-links a,               /* russian  english  german / download pdf */
-.player .download, .demo-head .download, /* download */
+.player .download,                     /* download */
+.demo-head .download,                  /* download, next to the demo title */
 .lang-switch a,                        /* en de ru */
 .site-footer a, .legal-links a,                        /* impressum  datenschutzerklärung */
 .sound-toggle,
