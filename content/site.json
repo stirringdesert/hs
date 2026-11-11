@@ -38,7 +38,6 @@
       "url": "/contact/"
     }
   ],
-  "menu_desktop": "overlay",
   "footer": [
     {
       "label": "Impressum",
@@ -82,7 +81,7 @@
   "ui": {
     "trailer": "Trailer",
     "main_menu": "Main",
-    "menu": "Menu",
+    "menu": "Menu", "close": "Close",
     "language": "Language",
     "time_in_munich": "Time in Munich",
     "titles": {

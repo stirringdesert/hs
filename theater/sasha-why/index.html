@@ -19,44 +19,18 @@
   <link rel="icon" href="/assets/img/favicon-light.png" media="(prefers-color-scheme: light)">
   <link rel="icon" href="/assets/img/favicon-dark.png" media="(prefers-color-scheme: dark)">
   <link rel="stylesheet" href="/assets/css/tokens.css?v=48a5253b">
-  <link rel="stylesheet" href="/assets/css/style.css?v=9d83ead3">
+  <link rel="stylesheet" href="/assets/css/style.css?v=e3f085b0">
   <link rel="stylesheet" href="/assets/css/fun.css?v=5b58c29e">
   <link rel="stylesheet" href="/assets/css/type.css?v=34de64a7">
   <script>(function(){try{var q=location.search.match(/[?&]theme=(light|dark)/);if(q)localStorage.setItem('theme',q[1]);if(localStorage.getItem('theme')==='light')document.documentElement.setAttribute('data-theme','light')}catch(e){}})()</script>
   <script>try{if(sessionStorage.getItem('stage')==="assets/media/sasha-why.mp4")document.documentElement.classList.add('stage-lit')}catch(e){}</script>
-  <script src="/assets/js/main.js?v=796d4ca9" defer></script>
+  <script src="/assets/js/main.js?v=90c69bbc" defer></script>
   <script src="/assets/js/fun.js?v=8273b696" defer></script>
 </head>
-<body class="theater menu-everywhere">
+<body class="theater">
   <div class="bg-video" aria-hidden="true"><video src="/assets/media/sasha-why.mp4" autoplay muted loop playsinline preload="auto"></video></div>
   <header class="site-header">
     <a class="name" href="/">Igor Sergeev</a>
-    <nav class="header-nav" aria-label="Main">
-      <a href="/bio/">bio</a>
-      <a href="/voice/">voice acting</a>
-      <a href="/theater/">theater</a>
-      <a href="/open-relationship-en/">playwriting</a>
-      <a href="/contact/">contact</a>
-    </nav>
-    <div class="top-right"><nav class="lang-switch" aria-label="Language"><a href="/theater/sasha-why/" hreflang="en" lang="en" data-lang="en" aria-current="true">EN</a><a href="/de/theater/sasha-why/" hreflang="de" lang="de" data-lang="de">DE</a><a href="/ru/theater/sasha-why/" hreflang="ru" lang="ru" data-lang="ru">RU</a></nav><p class="clock" aria-hidden="true">Time in Munich <b data-clock>--:--</b></p></div>
-    <button class="menu-toggle" aria-label="Menu" aria-expanded="false" aria-controls="menu"><span></span><span></span><span></span></button>
-    <div class="menu" id="menu">
-      <div class="home-main">
-        <a class="home-name" href="/">Igor Sergeev</a>
-        <nav class="home-nav" aria-label="Main">
-          <a href="/bio/">bio</a>
-          <a href="/voice/">voice acting</a>
-          <a href="/theater/">theater</a>
-          <a href="/open-relationship-en/">playwriting</a>
-          <a href="/contact/">contact</a>
-        </nav>
-      </div>
-    <nav class="lang-switch menu-langs" aria-label="Language"><a href="/theater/sasha-why/" hreflang="en" lang="en" data-lang="en" aria-current="true">EN</a><a href="/de/theater/sasha-why/" hreflang="de" lang="de" data-lang="de">DE</a><a href="/ru/theater/sasha-why/" hreflang="ru" lang="ru" data-lang="ru">RU</a></nav>
-      <footer class="site-footer">
-        <a href="/impressum/">Impressum</a>
-        <a href="/datenschutzerklaerung/">Datenschutz</a>
-      </footer>
-    </div>
   </header>
   <main>
     <h1 class="page-title">Director</h1>
@@ -85,5 +59,18 @@
     <a href="/impressum/">Impressum</a>
     <a href="/datenschutzerklaerung/">Datenschutz</a>
   </footer>
+  <nav class="corner-menu" aria-label="Main">
+    <div class="corner-panel" id="corner-panel">
+      <div class="corner-links">
+        <a href="/bio/">bio</a>
+        <a href="/voice/">voice acting</a>
+        <a href="/theater/">theater</a>
+        <a href="/open-relationship-en/">playwriting</a>
+        <a href="/contact/">contact</a>
+      </div>
+      <div class="meta-row"><p class="clock" aria-hidden="true">Time in Munich <b data-clock>--:--</b></p><nav class="lang-switch" aria-label="Language"><a href="/theater/sasha-why/" hreflang="en" lang="en" data-lang="en" aria-current="true">EN</a><a href="/de/theater/sasha-why/" hreflang="de" lang="de" data-lang="de">DE</a><a href="/ru/theater/sasha-why/" hreflang="ru" lang="ru" data-lang="ru">RU</a></nav></div>
+    </div>
+    <button type="button" class="corner-toggle" aria-expanded="false" aria-controls="corner-panel"><span class="when-closed">menu</span><span class="when-open" aria-hidden="true">close</span></button>
+  </nav>
 </body>
 </html>

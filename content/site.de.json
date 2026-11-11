@@ -16,7 +16,7 @@
   "ui": {
     "trailer": "Trailer",
     "main_menu": "Hauptmenü",
-    "menu": "Menü",
+    "menu": "Menü", "close": "Schließen",
     "language": "Sprache",
     "time_in_munich": "Zeit in München",
     "titles": { "bio": "Bio", "voice": "Synchron", "contact": "Kontakt" },

@@ -38,7 +38,7 @@
   "ui": {
     "trailer": "Трейлер",
     "main_menu": "Главное меню",
-    "menu": "Меню",
+    "menu": "Меню", "close": "Закрыть",
     "language": "Язык",
     "time_in_munich": "Время в Мюнхене",
     "titles": {
