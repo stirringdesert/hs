@@ -128,6 +128,7 @@ function shell(pages) {
           background: var(--bar); color: var(--fg); border: 1px solid var(--line); border-radius: 8px; padding: 10px 14px; opacity: 0; pointer-events: none; transition: opacity .2s; }
   .note.show { opacity: 1; }
   .note a { color: inherit; }
+  .note b { font-weight: 600; word-break: break-all; }
 </style>
 </head>
 <body>
@@ -149,7 +150,7 @@ function shell(pages) {
   var timer;
   function say(html) {
     note.innerHTML = html; note.classList.add('show');
-    clearTimeout(timer); timer = setTimeout(function () { note.classList.remove('show'); }, 3500);
+    clearTimeout(timer); timer = setTimeout(function () { note.classList.remove('show'); }, 5000);
   }
   function sitePath(href) {
     if (href.indexOf(base) !== 0) return null;
@@ -180,8 +181,9 @@ function shell(pages) {
       var p = sitePath(href);
       if (p === null) {
         e.preventDefault();
-        var w = null; try { w = window.open(href, '_blank', 'noopener'); } catch (err) {}
-        if (!w) say('External link, opens on the live site: <a href="' + href.replace(/"/g, '&quot;') + '" target="_blank" rel="noopener">' + href.replace(/</g, '&lt;') + '</a>');
+        // The preview can't open other sites (the viewer blocks new tabs), so say where it goes.
+        try { window.open(href, '_blank', 'noopener'); } catch (err) {}
+        say('Link to another site (works on the live site):<br><b>' + href.replace(/</g, '&lt;') + '</b>');
         return;
       }
       if (/\\.html$/.test(p) && PAGES.indexOf(p) === -1) { e.preventDefault(); say('Not in the preview yet.'); }
