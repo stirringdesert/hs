@@ -20,6 +20,13 @@
     setTimeout(function () { (on ? close : open).focus({ preventScroll: true }); }, 0);
   }
   open.addEventListener('click', function () { set(true); });
+  // The name opens the menu too (the home link is inside the menu)
+  var name = document.querySelector('.site-header > .name');
+  if (name) name.addEventListener('click', function (e) {
+    if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button) return;   // new tab still works
+    e.preventDefault();
+    set(true);
+  });
   if (close) close.addEventListener('click', function () { set(false); });
   document.addEventListener('keydown', function (e) {
     if (e.key === 'Escape' && document.body.classList.contains('menu-open')) set(false);
@@ -30,13 +37,25 @@
   });
 })();
 
-// Page transitions: when the visitor has scrolled down, the header name is off screen,
-// so it doesn't fly in from above; it just fades with the rest of the page.
-window.addEventListener('pageswap', function (e) {
-  if (!e.viewTransition || window.scrollY < 40) return;
-  var name = document.querySelector('.site-header .name');
-  if (name) name.style.viewTransitionName = 'none';
-});
+// Scrolled pages: the sticky name gets its soft background (style.css, .scrolled), and
+// the About photo fades away over the first screen, like the play page photo.
+(function () {
+  var root = document.documentElement;
+  var photo = document.querySelector('.bio-photo');
+  var queued = false;
+  function update() {
+    queued = false;
+    var y = window.scrollY;
+    root.classList.toggle('scrolled', y > 8);
+    if (photo) {
+      var end = Math.max(1, Math.min(window.innerHeight * .9, root.scrollHeight - window.innerHeight));
+      photo.style.setProperty('--fade', (1 - Math.min(1, y / end)).toFixed(3));
+    }
+  }
+  window.addEventListener('scroll', function () { if (!queued) { queued = true; requestAnimationFrame(update); } }, { passive: true });
+  window.addEventListener('resize', update);
+  update();
+})();
 
 // Background photo or video: remember it when leaving, so the next page can keep it
 // lit if it shows the same one (the check runs in <head>, see STAGE_BOOT in components.mjs).
