@@ -356,6 +356,10 @@ main {
 /* On phones and tablets the switch sits in the menu, except on the home page (no menu) */
 .site-header .top-right .lang-switch { display: none; }
 .menu .menu-langs { margin-top: 32px; gap: 24px; }
+/* With the full-screen menu, the switch sits bottom-left, level with the legal links
+   (same spot as on the phone home page); wide screens show it at the top right instead. */
+.menu-everywhere .menu .menu-langs { position: absolute; left: var(--gutter); bottom: 20px; margin: 0; gap: 12px; font-size: var(--type-small); line-height: 13px; }
+@media (min-width: 1200px) { .menu-everywhere .menu .menu-langs { display: none; } }
 
 /* First visit: full-screen language choice on black, before the home page */
 .lang-picker { display: none; }
