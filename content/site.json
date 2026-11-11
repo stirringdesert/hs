@@ -9,9 +9,10 @@
     { "label": "playwriting", "url": "/playwriting/open-relationship/" },
     { "label": "contact", "url": "/contact/" }
   ],
+  "menu_desktop": "overlay",
   "footer": [
     { "label": "Impressum", "url": "/impressum/" },
-    { "label": "Datenschutzerklärung", "url": "/datenschutzerklaerung/" }
+    { "label": "Datenschutz", "url": "/datenschutzerklaerung/" }
   ],
   "sections": {
     "theater": { "title": "Director", "page_title": "Theater", "has_index": true },

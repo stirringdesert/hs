@@ -73,10 +73,8 @@ emit('/', C.layout(site, {
   bodyClass: 'home',
   chrome: false,
   before: '  ' + C.clock(),
-  main: `<a class="home-name" href="/">${esc(site.name)}</a>
-<nav class="home-nav" aria-label="Main">
-${site.nav.map((n) => `  <a href="${attr(n.url)}">${esc(n.label)}</a>`).join('\n')}
-</nav>`,
+  mainClass: 'home-main',
+  main: C.homeView(site),
 }));
 
 // ---------- Bio ----------

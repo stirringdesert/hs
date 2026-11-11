@@ -14,14 +14,14 @@
   <link rel="canonical" href="https://harrysergeev.com/theater/">
   <link rel="icon" href="/assets/img/favicon-light.png" media="(prefers-color-scheme: light)">
   <link rel="icon" href="/assets/img/favicon-dark.png" media="(prefers-color-scheme: dark)">
-  <link rel="stylesheet" href="/assets/css/tokens.css?v=a5669fc7">
-  <link rel="stylesheet" href="/assets/css/style.css?v=fa6cb37b">
+  <link rel="stylesheet" href="/assets/css/tokens.css?v=634da582">
+  <link rel="stylesheet" href="/assets/css/style.css?v=aea22780">
   <link rel="stylesheet" href="/assets/css/fun.css?v=6010b1aa">
   <script>(function(){try{var q=location.search.match(/[?&]theme=(light|dark)/);if(q)localStorage.setItem('theme',q[1]);if(localStorage.getItem('theme')==='light')document.documentElement.setAttribute('data-theme','light')}catch(e){}})()</script>
-  <script src="/assets/js/main.js?v=20273128" defer></script>
+  <script src="/assets/js/main.js?v=677d7f0e" defer></script>
   <script src="/assets/js/fun.js?v=94185b6c" defer></script>
 </head>
-<body class="theater">
+<body class="theater menu-everywhere">
   <header class="site-header">
     <a class="name" href="/">Igor Sergeev</a>
     <nav class="header-nav" aria-label="Main">
@@ -33,13 +33,22 @@
     </nav>
     <p class="clock" aria-hidden="true">Time in Munich <b data-clock>--:--</b></p>
     <button class="menu-toggle" aria-label="Menu" aria-expanded="false" aria-controls="menu"><span></span><span></span><span></span></button>
-    <nav class="menu" id="menu" aria-label="Main">
-      <a href="/bio/">bio</a>
-      <a href="/voice/">voice acting</a>
-      <a href="/theater/">theater</a>
-      <a href="/playwriting/open-relationship/">playwriting</a>
-      <a href="/contact/">contact</a>
-    </nav>
+    <div class="menu" id="menu">
+      <div class="home-main">
+        <a class="home-name" href="/">Igor Sergeev</a>
+        <nav class="home-nav" aria-label="Main">
+          <a href="/bio/">bio</a>
+          <a href="/voice/">voice acting</a>
+          <a href="/theater/">theater</a>
+          <a href="/playwriting/open-relationship/">playwriting</a>
+          <a href="/contact/">contact</a>
+        </nav>
+      </div>
+      <footer class="site-footer">
+        <a href="/impressum/">Impressum</a>
+        <a href="/datenschutzerklaerung/">Datenschutz</a>
+      </footer>
+    </div>
   </header>
   <main>
     <h1 class="page-title">Director</h1>
@@ -56,7 +65,7 @@
   </main>
   <footer class="site-footer">
     <a href="/impressum/">Impressum</a>
-    <a href="/datenschutzerklaerung/">Datenschutzerklärung</a>
+    <a href="/datenschutzerklaerung/">Datenschutz</a>
   </footer>
   <button type="button" class="theme-toggle" aria-label="Switch to light mode" title="Light / dark"><i></i></button>
   <script type="application/json" id="hover-previews">{"/theater/sasha-why/":"/assets/media/sasha-why.mp4","/theater/bumerit/":"/assets/media/bumerit.mp4","/theater/iran-conference/":"/assets/media/iran-conference.mp4","/theater/maria-stuart/":"/assets/media/maria-stuart.mp4","/theater/billy-milligan/":"/assets/media/billy-milligan.mp4","/theater/the-charlie-gordon-effect/":"/assets/media/the-charlie-gordon-effect.mp4","/theater/":"/assets/media/sasha-why.mp4","/bio/":"/assets/img/bio.jpg","/voice/":"/assets/img/voice/leon-kennedy.jpg"}</script>
