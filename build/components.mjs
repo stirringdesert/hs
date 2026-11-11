@@ -19,7 +19,7 @@ const PLAY_ICON = 'M5.379 1.292C4.968 1.033 4.449 1.017 4.023 1.251 3.598 1.486 
 
 // Full HTML document. `chrome: false` leaves out the header (used by the home page).
 export function layout(site, { path, title, bodyClass, lang = 'en', description, main, before = '', chrome = true, noindex = false, extraCss = [], alternates = null, head = '' }) {
-  const fullTitle = title ? `${title} - ${site.name}` : site.name;
+  const fullTitle = title ? `${title} - ${site.name}` : (site.title || site.name);
   const desc = description || site.description;
   const url = site.url + path;
   // Same page in the other languages: tells search engines which version to show whom.
