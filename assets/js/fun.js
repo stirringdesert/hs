@@ -132,6 +132,7 @@
     function update() {
       queued = false;
       var y = window.scrollY;
+      root.classList.toggle('read-top', y < 100);   // light mode: play text stays white for the first 100 px
       if (bg) bg.style.setProperty('--fade', (1 - Math.min(1, Math.max(0, y / end))).toFixed(3));
       // shown from where the photo is gone until the second chapter begins; back again when scrolling up
       sw.classList.toggle('on', y >= end - 2 && y < stop);

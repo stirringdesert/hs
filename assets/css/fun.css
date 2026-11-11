@@ -22,8 +22,12 @@
    white text) exactly like dark mode, and fades into the light page as the photo fades.
    A dark photo washed onto white turned everything grey, and black text on it looked faded. */
 :root[data-theme="light"] .bg-image.scroll-fade { background: #000; opacity: var(--fade, 1); }
-:root[data-theme="light"] .bg-image.scroll-fade img { opacity: .8; }
-:root[data-theme="light"] .reading .site-header,
+:root[data-theme="light"] .bg-image.scroll-fade img { opacity: var(--bg-video-opacity); }   /* same as dark mode */
+/* The name stays white over the photo; once the page scrolls, its corner shadow turns
+   light like the page, so the name turns dark. The play text starts white too and turns
+   dark after about 100 px of scrolling (fun.js sets .read-top). */
+:root[data-theme="light"]:not(.scrolled) .reading .site-header,
+:root[data-theme="light"].read-top .reading .play-body,
 :root[data-theme="light"] .reading main > .page-title,
 :root[data-theme="light"] .reading .split {
   --color-bg: #000;
@@ -34,6 +38,8 @@
   color: var(--color-fg);
   text-shadow: 0 0 24px rgba(0, 0, 0, .3);
 }
+:root[data-theme="light"] .reading .play-body,
+:root[data-theme="light"] .reading .site-header .name { color: var(--color-fg); transition: color .5s var(--ease), text-shadow .5s var(--ease); }
 /* Menus stay black in light mode: light mode is only for reading the play */
 :root[data-theme="light"] .corner-menu,
 :root[data-theme="light"] .corner-panel,
