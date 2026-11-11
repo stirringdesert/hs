@@ -16,11 +16,12 @@
   // The big name starts exactly on top of the small one, then grows into place
   function grow(on) {
     if (!close || reduce.matches || !close.animate) return;
+    if (anim) { anim.forEach(function (x) { x.cancel(); }); anim = null; }
     var a = open.getBoundingClientRect(), b = close.getBoundingClientRect();
     if (!b.width) return;
-    var from = 'translate(' + (a.left - b.left) + 'px,' + (a.top - b.top) + 'px) scale(' + (a.width / b.width) + ')';
+    var k = a.width / b.width;   // centers lined up, so the name doesn't jump at either end
+    var from = 'translate(' + (a.left - b.left) + 'px,' + (a.top + a.height / 2 - b.top - b.height * k / 2) + 'px) scale(' + k + ')';
     var arrow = close.querySelector('svg');
-    if (anim) anim.forEach(function (x) { x.cancel(); });
     var t = { duration: ms(on ? '--menu-in' : '--menu-out'), easing: ease, fill: 'both' };
     var frames = [{ transform: from }, { transform: 'none' }];
     var turn = [{ transform: 'rotate(0deg)' }, { transform: 'rotate(180deg)' }];
@@ -28,6 +29,7 @@
     anim = [close.animate(frames, t), arrow.animate(turn, t)];
     if (on) anim[0].finished.then(function () { anim.forEach(function (x) { x.cancel(); }); anim = null; }).catch(function () {});
   }
+  var keyboard = false;   // move focus only for keyboard users (a tap must not leave a ring)
   function set(on) {
     var r = open.getBoundingClientRect();
     menu.style.setProperty('--mx', (r.left + r.width / 2) + 'px');
@@ -35,14 +37,15 @@
     document.body.classList.toggle('menu-open', on);
     open.setAttribute('aria-expanded', on ? 'true' : 'false');
     grow(on);
-    if (!on && anim) anim[0].finished.then(function () { anim.forEach(function (x) { x.cancel(); }); anim = null; }).catch(function () {});
-    setTimeout(function () { (on ? close || menu : open).focus({ preventScroll: true }); }, 0);
+    // After closing, the small big-name stays put (hidden) until the next opening:
+    // resetting it at the last moment made it flash full size.
+    if (keyboard) setTimeout(function () { (on ? close || menu : open).focus({ preventScroll: true }); }, 0);
   }
   function plainClick(e) { return !(e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button); }
-  open.addEventListener('click', function (e) { if (plainClick(e)) { e.preventDefault(); set(true); } });
-  if (close) close.addEventListener('click', function (e) { if (plainClick(e)) { e.preventDefault(); set(false); } });
+  open.addEventListener('click', function (e) { if (plainClick(e)) { e.preventDefault(); keyboard = e.detail === 0; set(true); } });
+  if (close) close.addEventListener('click', function (e) { if (plainClick(e)) { e.preventDefault(); keyboard = e.detail === 0; set(false); } });
   document.addEventListener('keydown', function (e) {
-    if (e.key === 'Escape' && document.body.classList.contains('menu-open')) set(false);
+    if (e.key === 'Escape' && document.body.classList.contains('menu-open')) { keyboard = true; set(false); }
   });
   // Coming back with the Back button can restore the page with the menu still open
   window.addEventListener('pageshow', function (e) {
@@ -60,7 +63,9 @@ window.addEventListener('pageswap', function (e) {
 window.addEventListener('pagereveal', function (e) {
   var v = '';
   try { v = sessionStorage.getItem('vt'); sessionStorage.removeItem('vt'); } catch (x) {}
-  if (!e.viewTransition || v !== 'contract' || document.body.classList.contains('home')) return;
+  if (!e.viewTransition) return;
+  // Only the menu animation plays between pages; every other page change is instant
+  if (v !== 'contract' || document.body.classList.contains('home')) { e.viewTransition.skipTransition(); return; }
   var root = document.documentElement;
   root.classList.add('vt-contract');
   e.viewTransition.finished.finally(function () { root.classList.remove('vt-contract'); });
@@ -231,14 +236,36 @@ window.addEventListener('pagereveal', function (e) {
   // While the picker is open, the page behind it can't be reached with Tab.
   var behind = [].filter.call(document.body.children, function (el) { return el !== picker && el.tagName !== 'SCRIPT'; });
   behind.forEach(function (el) { el.inert = true; });
-  // Picking the language of this page just reveals it; the others navigate.
+  // Picking a language: the big words shrink into the small switch at the bottom of the
+  // home page while the black lifts. The same language just reveals this page; another
+  // one then opens that home page, which has the switch in the same place.
+  var root = document.documentElement;
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   picker.querySelectorAll('a').forEach(function (a) {
     a.addEventListener('click', function (e) {
-      if (a.getAttribute('data-lang') !== document.documentElement.lang) return;
+      if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button) return;
       e.preventDefault();
-      document.documentElement.classList.add('lang-chosen');
-      behind.forEach(function (el) { el.inert = false; });
-      setTimeout(function () { document.documentElement.classList.remove('choose-lang', 'lang-chosen'); }, 500);
+      var code = a.getAttribute('data-lang'), href = a.getAttribute('href');
+      var same = code === root.lang;
+      var time = reduce ? 0 : 500;
+      root.classList.add('lang-chosen');
+      picker.querySelectorAll('a').forEach(function (big) {
+        var small = document.querySelector('.home-main .lang-switch a[data-lang="' + big.getAttribute('data-lang') + '"]');
+        if (!small || reduce || !big.animate) return;
+        var b = big.getBoundingClientRect(), t = small.getBoundingClientRect();
+        var k = t.height / b.height;
+        var on = big.getAttribute('data-lang') === code;
+        big.animate([
+          { transform: 'none' },
+          { transform: 'translate(' + (t.left - b.left) + 'px,' + (t.top + t.height / 2 - b.top - b.height * k / 2) + 'px) scale(' + k + ')',
+            color: getComputedStyle(root).getPropertyValue(on ? '--color-fg' : '--color-muted').trim() }
+        ], { duration: time, easing: 'cubic-bezier(.6, 0, .25, 1)', fill: 'forwards' });
+      });
+      setTimeout(function () {
+        if (!same) { location.href = href; return; }
+        behind.forEach(function (el) { el.inert = false; });
+        root.classList.remove('choose-lang', 'lang-chosen');
+      }, time);
     });
   });
 })();

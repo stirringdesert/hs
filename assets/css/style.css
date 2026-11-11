@@ -76,16 +76,18 @@ img, video { display: block; max-width: 100%; }
 .site-header::before {
   content: "";
   position: absolute;
-  left: -40px;
-  top: -60px;
+  left: 0;
+  top: 0;
   z-index: -1;
-  width: min(400px, 100vw + 40px);   /* never wider than the screen (no sideways scroll) */
-  height: 180px;
-  background: radial-gradient(closest-side at 45% 50%,
-    color-mix(in srgb, var(--color-bg) 62%, transparent),
-    color-mix(in srgb, var(--color-bg) 48%, transparent) 25%,
-    color-mix(in srgb, var(--color-bg) 28%, transparent) 50%,
-    color-mix(in srgb, var(--color-bg) 11%, transparent) 75%,
+  width: min(100vw, 640px);
+  height: 230px;
+  /* a shadow corner: darkest off screen in the top-left, still dark behind the name,
+     fading out over a long way to the right and down */
+  background: radial-gradient(ellipse 420px 200px at 60px 10px,
+    color-mix(in srgb, var(--color-bg) 88%, transparent),
+    color-mix(in srgb, var(--color-bg) 74%, transparent) 30%,
+    color-mix(in srgb, var(--color-bg) 45%, transparent) 55%,
+    color-mix(in srgb, var(--color-bg) 18%, transparent) 78%,
     transparent);
   opacity: 0;
   transition: opacity var(--page-in) var(--ease-out);
@@ -102,6 +104,7 @@ img, video { display: block; max-width: 100%; }
 /* Name + arrow: one button. The whole thing dims on hover; nothing moves. */
 .menu-toggle { display: inline-flex; align-items: center; gap: .3em; cursor: pointer; }
 .menu-toggle:hover { color: var(--color-muted); }
+.menu-toggle:focus:not(:focus-visible) { outline: none; }
 .menu-arrow { display: inline-flex; width: .62em; height: .62em; flex: none; }
 .menu-arrow svg {
   width: 100%;
@@ -145,7 +148,7 @@ img, video { display: block; max-width: 100%; }
 
 main {
   flex: 1;
-  padding: 44px var(--gutter) 0;
+  padding: 44px var(--gutter) clamp(56px, 8vw, 96px);   /* the last line never touches the bottom of the screen */
 }
 
 /* Impressum / Datenschutz: small and quiet, but on every page as German law requires */
@@ -173,7 +176,7 @@ main {
   min-height: 100vh;
   min-height: 100svh;
 }
-.home-top { display: flex; align-items: baseline; }
+.home-top { display: flex; flex-direction: column; align-items: flex-start; gap: 6px; }
 .home-name,
 .home-nav a {
   font-size: var(--type-display);
@@ -184,30 +187,19 @@ main {
 .home-nav a { line-height: var(--type-display-nav-lh); width: fit-content; }
 .home-nav a:hover { color: var(--color-muted); }
 
-/* Desktop: one row under the menu: time ... languages, legal links on the right.
-   Phones: two rows: languages on the right; time + legal links. */
+/* Under the menu: languages on the left, legal links on the right (all screens) */
 .home-foot {
-  display: grid;
-  grid-template-columns: auto auto 1fr auto auto;
-  grid-template-areas: "time mode . lang legal";
+  display: flex;
+  justify-content: space-between;
   align-items: baseline;
-  column-gap: 32px;
-  row-gap: 14px;
+  gap: 24px;
   margin-top: 32px;
   font-size: var(--type-small);
   line-height: 13px;
 }
-.home-foot .clock { grid-area: time; }
-.home-foot .lang-switch { grid-area: lang; }
-.home-foot .lang-switch { justify-self: end; }
-.home-foot .legal-links { grid-area: legal; display: flex; gap: 16px; font-size: var(--type-legal); color: var(--color-muted); }
+.home-foot .legal-links { display: flex; gap: 16px; font-size: var(--type-legal); color: var(--color-muted); }
 .legal-links a:hover { color: var(--color-fg); }
-@media (max-width: 640px) {
-  .home-foot {
-    grid-template-columns: auto 1fr auto;
-    grid-template-areas: "mode . lang" "time . legal";
-  }
-}
+.home-top .clock { font-size: var(--type-small); line-height: 13px; }
 .clock { margin: 0; white-space: nowrap; }
 .clock b { font-weight: var(--weight-bold); margin-left: 4px; }
 
@@ -452,9 +444,11 @@ main {
   align-items: center;
   justify-content: center;
   background: var(--color-bg);
-  transition: opacity .5s var(--ease);
+  transition: background-color var(--menu-out) var(--ease-in-out);
 }
-.lang-chosen .lang-picker { opacity: 0; }
+/* After the choice the black lifts while the words shrink into the small switch (main.js) */
+.lang-chosen .lang-picker { background-color: transparent; pointer-events: none; }
+.lang-picker a { transform-origin: 0 0; }
 .lang-picker nav { display: flex; gap: clamp(32px, 9vw, 140px); animation: lang-picker-in .8s var(--ease) both; }
 .lang-picker a {
   font-size: var(--type-display);
@@ -558,12 +552,11 @@ main {
 }
 
 /* ---------- Page transitions ----------
-   Browsers with view transitions (Chrome, Edge, Safari 18.2+) change pages like scenes:
-   the old page fades out quickly, the new content rises into place, the background
-   media cross-fades, and the name stays exactly where it is. Leaving the home page or
-   the open menu, the big name shrinks into the header name and the whole view shrinks
-   into the corner shadow, the reverse of opening the menu (main.js marks these with
-   .vt-contract). Other browsers just load the next page. Off for reduced motion. */
+   Pages change instantly, with one exception: leaving the home page or the open menu
+   plays the menu animation in reverse. The big name shrinks into the header name and
+   the whole view shrinks into the corner shadow (main.js marks it with .vt-contract and
+   skips every other transition). Browsers without view transitions just load the page.
+   Off for reduced motion. */
 
 @view-transition { navigation: auto; }
 
