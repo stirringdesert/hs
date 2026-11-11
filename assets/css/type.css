@@ -23,7 +23,7 @@
 .lang-picker a,                        /* en de ru on the first visit */
 .label,                                /* official russian dubs */
 .nav-list .work-links a,               /* russian  english  german / download pdf */
-.player .download,                     /* download */
+.player .download, .demo-head .download, /* download */
 .lang-switch a,                        /* en de ru */
 .site-footer a,                        /* impressum  datenschutzerklärung */
 .sound-toggle,

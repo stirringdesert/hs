@@ -209,7 +209,7 @@ ${markdown(body).map((b) => '  ' + b).join('\n')}
     const cta = inline(v.cta, { linkClass: 'accent' });
     const parts = [
       C.label(cta),
-      C.pageTitle(v.demo.title),
+      C.demoHead(v.demo.title, v.demo.file, ui),
       C.player(v.demo.file, ui),
       '',
       C.pageTitle(v.works_title, 'works-title'),

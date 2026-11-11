@@ -308,18 +308,14 @@ main {
 .player-volume::-webkit-slider-thumb { -webkit-appearance: none; width: 10px; height: 10px; margin-top: -4px; border-radius: 50%; background: var(--color-fg); border: 0; }
 .player-volume::-moz-range-thumb { width: 10px; height: 10px; border-radius: 50%; background: var(--color-fg); border: 0; }
 .no-volume .player-volume { display: none; }   /* iPhones ignore page volume; the phone's buttons do it */
-.player .download {          /* same look as the other small actions: caps, underlined, icon */
-  display: inline-flex; align-items: center; min-height: var(--player-hit);
+/* The demo's title, with the download link on the same line, on the right */
+.demo-head { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; }
+.demo-head .download {        /* same look as the other small actions: underlined, icon */
+  flex: none;
   font-size: var(--type-label); line-height: var(--type-label-lh);
+  padding: 12px 0;            /* 44 px tall click area */
 }
-
-/* Phones: time on the left and volume on the right in one row, download below */
-@media (max-width: 640px) {
-  .player-meta { display: grid; grid-template-columns: 1fr auto; align-items: center; column-gap: 16px; }
-  .player-tools { display: contents; }
-  .player .volume { grid-column: 2; grid-row: 1; }
-  .player .download { grid-column: 1 / -1; grid-row: 2; justify-self: end; }
-}
+.player-meta { flex-wrap: nowrap; }   /* time on the left, volume on the right, always one line */
 
 /* ---------- Voice role cards ---------- */
 
@@ -335,8 +331,8 @@ main {
 
 /* ---------- Voice page ---------- */
 
-.voice .label + .page-title { margin-top: 50px; }
-.voice .works-title { margin-top: 124px; }
+.voice .label + .demo-head { margin-top: 50px; }
+.voice .works-title { margin-top: 64px; }   /* its own section, but close to the demo */
 .voice .works-title + .label { margin-top: 24px; }
 .audiobooks { margin-top: 46px; }
 .audiobooks .text { max-width: 827px; margin-top: 34px; display: flex; flex-direction: column; gap: 20px; }
@@ -487,9 +483,10 @@ main {
     width: calc(50% - var(--gutter));
     text-align: right;
   }
-  .voice .label + .page-title { margin-top: 0; }
+  .voice .label + .demo-head { margin-top: 0; }
+  .voice .demo-head { width: calc(50% - var(--col-gap) / 2); }
   .voice .player { width: calc(50% - var(--col-gap) / 2); margin-top: 38px; }
-  .voice .works-title { margin-top: 117px; }
+  .voice .works-title { margin-top: 88px; }
   .works { grid-template-columns: repeat(4, 1fr); gap: 68px 26px; }
   .audiobooks { margin-top: 48px; }
   .audiobooks .text { max-width: 691px; }

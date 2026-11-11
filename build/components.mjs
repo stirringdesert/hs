@@ -210,6 +210,14 @@ export function detail(blocks) {
 
 // Audio player: play/pause, seek bar (click or drag), time, volume and download.
 // Every control has a click area of at least 44 px. Wired up in main.js.
+// The demo's title with its download link on the same line, on the right.
+export function demoHead(title, src, ui = {}) {
+  return `<div class="demo-head">
+  <h1 class="page-title">${esc(title)}</h1>
+  <a class="download" href="${attr(src)}" download>${esc(ui.download || 'DOWNLOAD')}</a>
+</div>`;
+}
+
 export function player(src, ui = {}) {
   return `<div class="player" data-src="${attr(src)}" data-play="${attr(ui.play || 'Play audio')}" data-pause="${attr(ui.pause || 'Pause audio')}">
   <audio preload="metadata" src="${attr(src)}"></audio>
@@ -224,7 +232,6 @@ export function player(src, ui = {}) {
         <button type="button" class="player-mute" aria-label="${attr(ui.mute || 'Mute')}" aria-pressed="false"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2 6h3l4-3v10l-4-3H2z"/><path class="waves" d="M11 5.5a3.5 3.5 0 0 1 0 5M12.8 3.5a6.3 6.3 0 0 1 0 9" fill="none" stroke="currentColor" stroke-width="1.4"/></svg></button>
         <input type="range" class="player-volume" min="0" max="1" step="0.05" value="1" aria-label="${attr(ui.volume || 'Volume')}">
       </span>
-      <a class="download" href="${attr(src)}" download>${esc(ui.download || 'DOWNLOAD')}</a>
     </span>
   </div>
 </div>`;
