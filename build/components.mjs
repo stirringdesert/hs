@@ -19,7 +19,7 @@ const PLAY_ICON = 'M5.379 1.292C4.968 1.033 4.449 1.017 4.023 1.251 3.598 1.486 
 
 // Full HTML document. `chrome: false` leaves out the header (used by the home page).
 export function layout(site, { path, title, bodyClass, lang = 'en', description, main, mainClass = '', before = '', chrome = true, noindex = false, extraCss = [], alternates = null, head = '' }) {
-  const fullTitle = title ? `${title} - ${site.name}` : (site.title || site.name);
+  const fullTitle = title ? `${title} - ${site.name}` : site.name;
   const desc = description || site.description;
   const url = site.url + path;
   // Same page in the other languages: tells search engines which version to show whom.
@@ -44,17 +44,17 @@ export function layout(site, { path, title, bodyClass, lang = 'en', description,
   <link rel="icon" href="/assets/img/favicon-dark.png" media="(prefers-color-scheme: dark)">
   <link rel="stylesheet" href="${v('/assets/css/tokens.css')}">
   <link rel="stylesheet" href="${v('/assets/css/style.css')}">
-  <link rel="stylesheet" href="${v('/assets/css/type.css')}">
-  <link rel="stylesheet" href="${v('/assets/css/fun.css')}">${extraCss.map((h) => `\n  <link rel="stylesheet" href="${v(h)}">`).join('')}
+  <link rel="stylesheet" href="${v('/assets/css/fun.css')}">
+  <link rel="stylesheet" href="${v('/assets/css/type.css')}">${extraCss.map((h) => `\n  <link rel="stylesheet" href="${v(h)}">`).join('')}
   <script>${THEME_BOOT}</script>${stageBoot(before + main)}
   <script src="${v('/assets/js/main.js')}" defer></script>
   <script src="${v('/assets/js/fun.js')}" defer></script>${head ? '\n' + indent(head, 2) : ''}
 </head>
-<body class="${bodyClass}${site.menu_desktop === 'inline' ? '' : ' menu-everywhere'}">
-${before ? before + '\n' : ''}${chrome ? header(site, alternates) + '\n' : ''}  <main${mainClass ? ` class="${mainClass}"` : ''}>
+<body class="${bodyClass}">
+${before ? before + '\n' : ''}${chrome ? header(site) + '\n' : ''}  <main${mainClass ? ` class="${mainClass}"` : ''}>
 ${indent(main, 4)}
   </main>
-${footer(site)}
+${footer(site)}${chrome ? '\n' + cornerMenu(site, alternates) : ''}
 </body>
 </html>
 `;
@@ -73,36 +73,44 @@ function stageBoot(html) {
 // This runs before the page paints, so there is no dark/light flash.
 const THEME_BOOT = `(function(){try{var q=location.search.match(/[?&]theme=(light|dark)/);if(q)localStorage.setItem('theme',q[1]);if(localStorage.getItem('theme')==='light')document.documentElement.setAttribute('data-theme','light')}catch(e){}})()`;
 
-export function header(site, alternates = null) {
-  const ui = site.ui || {};
+export function header(site) {
   return `  <header class="site-header">
     <a class="name" href="${attr(site.home || '/')}">${esc(site.name)}</a>
-    <nav class="header-nav" aria-label="${attr(ui.main_menu || 'Main')}">
-${site.nav.map((n) => `      <a href="${attr(n.url)}">${esc(n.label)}</a>`).join('\n')}
-    </nav>
-    ${topRight(site, alternates)}
-    <button class="menu-toggle" aria-label="${attr(ui.menu || 'Menu')}" aria-expanded="false" aria-controls="menu"><span></span><span></span><span></span></button>
-    <div class="menu" id="menu">
-      <div class="home-main">
-${indent(homeView(site), 8)}
-      </div>
-${alternates?.length > 1 ? '    ' + langSwitch(site, alternates, 'menu-langs') + '\n' : ''}${indent(footer(site), 4)}
-    </div>
   </header>`;
 }
 
-// The home page view: big name at the top, big menu at the bottom. The mobile menu
-// opens to this same view, so the two look identical.
-export function homeView(site) {
+// The home page view: big name at the top, big menu at the bottom, then the time and
+// the language switch. The corner menu on every other page is this same menu, small.
+export function homeView(site, alternates = null) {
   return `<a class="home-name" href="${attr(site.home || '/')}">${esc(site.name)}</a>
-<nav class="home-nav" aria-label="${attr((site.ui || {}).main_menu || 'Main')}">
-${site.nav.map((n) => `  <a href="${attr(n.url)}">${esc(n.label)}</a>`).join('\n')}
-</nav>`;
+<div class="home-bottom">
+  <nav class="home-nav" aria-label="${attr((site.ui || {}).main_menu || 'Main')}">
+${site.nav.map((n) => `    <a href="${attr(n.url)}">${esc(n.label)}</a>`).join('\n')}
+  </nav>
+  ${metaRow(site, alternates)}
+</div>`;
 }
 
-// Top right corner: language switch, then the "Time in Munich" clock (desktop only).
-export function topRight(site, alternates = null) {
-  return `<div class="top-right">${alternates?.length > 1 ? langSwitch(site, alternates) : ''}${clock(site)}</div>`;
+// Time in Munich, then the language switch (the light/dark switch is added after it by fun.js).
+export function metaRow(site, alternates = null) {
+  return `<div class="meta-row">${clock(site)}${alternates?.length > 1 ? langSwitch(site, alternates) : ''}</div>`;
+}
+
+// Bottom-left corner on every page except home: the word "menu". Hovering it (or tapping
+// it) raises the home page's menu, small, right there, with the time and languages.
+export function cornerMenu(site, alternates = null) {
+  const ui = site.ui || {};
+  const open = (ui.menu || 'Menu').toLowerCase();
+  const close = (ui.close || 'Close').toLowerCase();
+  return `  <nav class="corner-menu" aria-label="${attr(ui.main_menu || 'Main')}">
+    <div class="corner-panel" id="corner-panel">
+      <div class="corner-links">
+${site.nav.map((n) => `        <a href="${attr(n.url)}">${esc(n.label)}</a>`).join('\n')}
+      </div>
+      ${metaRow(site, alternates)}
+    </div>
+    <button type="button" class="corner-toggle" aria-expanded="false" aria-controls="corner-panel"><span class="when-closed">${esc(open)}</span><span class="when-open" aria-hidden="true">${esc(close)}</span></button>
+  </nav>`;
 }
 
 // "EN DE RU": the same page in each language, the current one marked.
@@ -134,7 +142,7 @@ export function langPicker(alternates) {
 </div>`;
 }
 
-// "Time in Munich" clock shown at the top right on wide screens (filled in by main.js).
+// "Time in Munich" clock (filled in by main.js).
 export function clock(site = {}) {
   return `<p class="clock" aria-hidden="true">${esc(site.ui?.time_in_munich || 'Time in Munich')} <b data-clock>--:--</b></p>`;
 }

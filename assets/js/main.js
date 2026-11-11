@@ -1,29 +1,54 @@
-// Menu toggle. The open menu looks like the home page. Where the browser supports
-// view transitions, the header name grows into the big name (and back on close).
+// Corner menu: opens while the pointer is over it (with a short grace period on the
+// way out), on tap or click, and on keyboard focus. Escape, a tap elsewhere or
+// scrolling on a touch screen closes it.
 (function () {
-  var btn = document.querySelector('.menu-toggle');
-  if (!btn) return;
-  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)');
+  var menu = document.querySelector('.corner-menu');
+  if (!menu) return;
+  var btn = menu.querySelector('.corner-toggle');
+  var hover = window.matchMedia('(hover: hover) and (pointer: fine)');
+  var timer;
   function set(open) {
-    function apply() {
-      document.body.classList.toggle('menu-open', open);
-      btn.setAttribute('aria-expanded', open ? 'true' : 'false');
-    }
-    if (!document.startViewTransition || reduce.matches) return apply();
-    var root = document.documentElement;
-    root.classList.add('vt-menu');   // menu cross-fade instead of a page change (style.css)
-    var vt = document.startViewTransition(apply);
-    vt.finished.finally(function () { root.classList.remove('vt-menu'); });
+    clearTimeout(timer);
+    menu.classList.toggle('open', open);
+    btn.setAttribute('aria-expanded', open ? 'true' : 'false');
   }
-  btn.addEventListener('click', function () { set(!document.body.classList.contains('menu-open')); });
+  var isOpen = function () { return menu.classList.contains('open'); };
+  menu.addEventListener('mouseenter', function () { if (hover.matches) set(true); });
+  menu.addEventListener('mouseleave', function () {
+    var f = document.activeElement;
+    if (!hover.matches || (menu.contains(f) && f.matches(':focus-visible'))) return;   // keep open while using the keyboard
+    timer = setTimeout(function () { set(false); }, 300);
+  });
+  btn.addEventListener('click', function () {
+    // With a mouse the menu is already open from hovering, so a click keeps it open
+    // (moving away closes it). On touch screens the word toggles open/closed.
+    if (hover.matches && isOpen()) return;
+    set(!isOpen());
+  });
+  menu.addEventListener('focusin', function (e) { if (e.target.matches(':focus-visible')) set(true); });   // keyboard only; taps use click
+  menu.addEventListener('focusout', function (e) { if (!menu.contains(e.relatedTarget)) set(false); });
   document.addEventListener('keydown', function (e) {
-    if (e.key === 'Escape' && document.body.classList.contains('menu-open')) set(false);
+    if (e.key === 'Escape' && isOpen()) { set(false); btn.focus(); }
   });
-  // Coming back with the browser's Back button can restore the page with the menu still open
-  window.addEventListener('pageshow', function (e) {
-    if (e.persisted) { document.body.classList.remove('menu-open'); btn.setAttribute('aria-expanded', 'false'); }
+  document.addEventListener('pointerdown', function (e) { if (isOpen() && !menu.contains(e.target)) set(false); });
+  window.addEventListener('scroll', function () { if (isOpen() && !hover.matches) set(false); }, { passive: true });
+  // The current page's link is marked, so the open menu shows where you are
+  var here = location.pathname;
+  menu.querySelectorAll('.corner-links a').forEach(function (a) {
+    var p = a.getAttribute('href');
+    if (p && p !== '/' && here.indexOf(p.replace(/index\.html$/, '')) === 0) a.setAttribute('aria-current', 'page');
   });
+  // Coming back with the Back button can restore the page with the menu still open
+  window.addEventListener('pageshow', function (e) { if (e.persisted) set(false); });
 })();
+
+// Page transitions: when the visitor has scrolled down, the header name is off screen,
+// so it doesn't fly in from above; it just fades with the rest of the page.
+window.addEventListener('pageswap', function (e) {
+  if (!e.viewTransition || window.scrollY < 40) return;
+  var name = document.querySelector('.site-header .name');
+  if (name) name.style.viewTransitionName = 'none';
+});
 
 // Background photo or video: remember it when leaving, so the next page can keep it
 // lit if it shows the same one (the check runs in <head>, see STAGE_BOOT in components.mjs).

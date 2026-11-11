@@ -168,10 +168,10 @@ function buildLanguage(lang) {
   page('/', {
     bodyClass: 'home',
     chrome: false,
-    before: C.topRight(s, alternatesOf('/')) + (lang === DEFAULT ? '\n' + C.langPicker(alternatesOf('/')) : ''),
+    before: lang === DEFAULT ? C.langPicker(alternatesOf('/')) : '',
     head: lang === DEFAULT ? C.langPickerHead(alternatesOf('/')) : '',
     mainClass: 'home-main',
-    main: C.homeView(s),
+    main: C.homeView(s, alternatesOf('/')),
   });
 
   // ---------- Bio ----------
