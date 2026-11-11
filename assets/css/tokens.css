@@ -31,32 +31,37 @@
   --weight-regular: 400;
   --weight-bold: 600;
 
-  /* ---- Type scale (size / line height) ---- */
-  --type-display: 100px;       /* home page name and menu */
-  --type-display-lh: 100px;
-  --type-display-nav-lh: 90px;
-  --type-display-tracking: -1px;
-  --type-title: 66px;          /* page titles: DIRECTOR, WORKS, DEMO */
-  --type-title-lh: 66px;
-  --type-contact: 66px;        /* contact page links */
-  --type-contact-lh: 72px;
+  /* ---- Type scale (size / line height) ----
+     Big sizes are fluid: clamp(smallest, grows with the screen width, largest).
+     The smallest value is used on a ~375px phone, the largest on a wide desktop,
+     and the text scales smoothly in between instead of jumping at breakpoints.
+     Unitless line heights are multiples of the font size. */
+  --type-display: clamp(44px, 18.55px + 6.788vw, 100px);   /* home page name and menu */
+  --type-display-lh: 1.02;
+  --type-display-nav-lh: .95;
+  --type-display-tracking: clamp(-1px, -.2px - .1vw, -.5px);
+  --type-title: clamp(40px, 25.21px + 3.944vw, 82px);      /* page titles: DIRECTOR, WORKS, DEMO */
+  --type-title-lh: 1.03;
+  --type-contact: clamp(40px, 25.21px + 3.944vw, 82px);    /* contact page links */
+  --type-contact-lh: 1.12;
   --type-time: 40px;           /* audio player time */
   --type-time-lh: 52px;
   --type-heading: 28px;        /* role names, section headings */
   --type-heading-lh: 36px;
   --type-card-lh: 42px;
-  --type-list: 28px;           /* production list on theater pages */
-  --type-list-lh: 36px;
+  --type-list: clamp(24px, 21.6px + .64vw, 28px);           /* production list on theater pages */
+  --type-list-lh: 1.3;
   --type-nav: 26px;            /* name in the header, menu links */
   --type-nav-lh: 36px;
   --type-nav-tracking: -0.2px;
-  --type-body: 20px;           /* running text */
-  --type-body-lh: 24px;
-  --type-label: 20px;          /* small bold uppercase labels */
-  --type-label-lh: 20px;
+  --type-body: clamp(17px, 15.2px + .48vw, 20px);           /* running text */
+  --type-body-lh: 1.25;
+  --type-label: clamp(16px, 13.6px + .64vw, 20px);          /* small bold uppercase labels */
+  --type-label-lh: 1.05;
   --type-caption: 17px;        /* DOWNLOAD link */
   --type-small: 14px;          /* footer */
   --type-small-lh: 19px;
+  --type-legal: 12px;          /* Impressum / Datenschutz links */
 
   /* ---- Layout ---- */
   --gutter: 24px;              /* space at the left/right edge of the page */
@@ -67,48 +72,12 @@
   /* ---- Motion ---- */
   --ease: ease;
   --fast: .25s;
+  --ease-out: cubic-bezier(.2, .7, .2, 1);  /* quick start, soft landing */
+  --page-in: .45s;             /* page transition: new page fades/slides in */
+  --page-out: .2s;             /* page transition: old page fades out */
+  --menu-in: .5s;              /* menu links sliding up when the menu opens */
   --bg-video-opacity: .5;
   --bg-video-fade: 3s;
 }
 
-/* Desktop (the Framer site's desktop layout) */
-@media (min-width: 1200px) {
-  :root {
-    --type-title: 82px;
-    --type-title-lh: 82px;
-    --type-contact: 82px;
-    --type-contact-lh: 92px;
-    --type-small-lh: 13px;
-  }
-}
-
-/* Tablet and small laptop */
-@media (max-width: 900px) {
-  :root {
-    --type-display: 64px;
-    --type-display-lh: 64px;
-    --type-display-nav-lh: 60px;
-    --type-title: 48px;
-    --type-title-lh: 50px;
-  }
-}
-
-/* Phone */
-@media (max-width: 640px) {
-  :root {
-    --type-display: 44px;
-    --type-display-lh: 46px;
-    --type-display-nav-lh: 44px;
-    --type-display-tracking: -.5px;
-    --type-title: 40px;
-    --type-title-lh: 42px;
-    --type-contact: 40px;
-    --type-contact-lh: 46px;
-    --type-list: 24px;
-    --type-list-lh: 32px;
-    --type-body: 17px;
-    --type-body-lh: 22px;
-    --type-label: 16px;
-    --type-label-lh: 18px;
-  }
-}
+/* No breakpoint blocks: the fluid sizes above cover every screen width. */

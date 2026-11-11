@@ -14,11 +14,11 @@
   <link rel="canonical" href="https://harrysergeev.com/theater/bumerit/">
   <link rel="icon" href="/assets/img/favicon-light.png" media="(prefers-color-scheme: light)">
   <link rel="icon" href="/assets/img/favicon-dark.png" media="(prefers-color-scheme: dark)">
-  <link rel="stylesheet" href="/assets/css/tokens.css?v=a5669fc7">
-  <link rel="stylesheet" href="/assets/css/style.css?v=fa6cb37b">
-  <script src="/assets/js/main.js?v=20273128" defer></script>
+  <link rel="stylesheet" href="/assets/css/tokens.css?v=634da582">
+  <link rel="stylesheet" href="/assets/css/style.css?v=aea22780">
+  <script src="/assets/js/main.js?v=677d7f0e" defer></script>
 </head>
-<body class="theater">
+<body class="theater menu-everywhere">
   <div class="bg-video" aria-hidden="true"><video src="/assets/media/bumerit.mp4" autoplay muted loop playsinline preload="auto"></video></div>
   <header class="site-header">
     <a class="name" href="/">Igor Sergeev</a>
@@ -31,13 +31,22 @@
     </nav>
     <p class="clock" aria-hidden="true">Time in Munich <b data-clock>--:--</b></p>
     <button class="menu-toggle" aria-label="Menu" aria-expanded="false" aria-controls="menu"><span></span><span></span><span></span></button>
-    <nav class="menu" id="menu" aria-label="Main">
-      <a href="/bio/">bio</a>
-      <a href="/voice/">voice acting</a>
-      <a href="/theater/">theater</a>
-      <a href="/playwriting/open-relationship/">playwriting</a>
-      <a href="/contact/">contact</a>
-    </nav>
+    <div class="menu" id="menu">
+      <div class="home-main">
+        <a class="home-name" href="/">Igor Sergeev</a>
+        <nav class="home-nav" aria-label="Main">
+          <a href="/bio/">bio</a>
+          <a href="/voice/">voice acting</a>
+          <a href="/theater/">theater</a>
+          <a href="/playwriting/open-relationship/">playwriting</a>
+          <a href="/contact/">contact</a>
+        </nav>
+      </div>
+      <footer class="site-footer">
+        <a href="/impressum/">Impressum</a>
+        <a href="/datenschutzerklaerung/">Datenschutz</a>
+      </footer>
+    </div>
   </header>
   <main>
     <h1 class="page-title">Director</h1>
@@ -68,7 +77,7 @@
   </main>
   <footer class="site-footer">
     <a href="/impressum/">Impressum</a>
-    <a href="/datenschutzerklaerung/">Datenschutzerklärung</a>
+    <a href="/datenschutzerklaerung/">Datenschutz</a>
   </footer>
 </body>
 </html>

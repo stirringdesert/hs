@@ -18,7 +18,7 @@ function v(url) {
 const PLAY_ICON = 'M5.379 1.292C4.968 1.033 4.449 1.017 4.023 1.251 3.598 1.486 3.334 1.933 3.333 2.419V13.581C3.334 14.067 3.598 14.514 4.023 14.749 4.449 14.983 4.968 14.967 5.379 14.708L14.215 9.127C14.602 8.883 14.836 8.457 14.836 8 14.836 7.543 14.602 7.117 14.215 6.873Z';
 
 // Full HTML document. `chrome: false` leaves out the header (used by the home page).
-export function layout(site, { path, title, bodyClass, lang = 'en', description, main, before = '', chrome = true, noindex = false, extraCss = [] }) {
+export function layout(site, { path, title, bodyClass, lang = 'en', description, main, mainClass = '', before = '', chrome = true, noindex = false, extraCss = [] }) {
   const fullTitle = title ? `${title} - ${site.name}` : site.name;
   const desc = description || site.description;
   const url = site.url + path;
@@ -43,8 +43,8 @@ export function layout(site, { path, title, bodyClass, lang = 'en', description,
   <link rel="stylesheet" href="${v('/assets/css/style.css')}">${extraCss.map((h) => `\n  <link rel="stylesheet" href="${v(h)}">`).join('')}
   <script src="${v('/assets/js/main.js')}" defer></script>
 </head>
-<body class="${bodyClass}">
-${before ? before + '\n' : ''}${chrome ? header(site) + '\n' : ''}  <main>
+<body class="${bodyClass}${site.menu_desktop === 'inline' ? '' : ' menu-everywhere'}">
+${before ? before + '\n' : ''}${chrome ? header(site) + '\n' : ''}  <main${mainClass ? ` class="${mainClass}"` : ''}>
 ${indent(main, 4)}
   </main>
 ${footer(site)}
@@ -61,10 +61,22 @@ ${site.nav.map((n) => `      <a href="${attr(n.url)}">${esc(n.label)}</a>`).join
     </nav>
     ${clock()}
     <button class="menu-toggle" aria-label="Menu" aria-expanded="false" aria-controls="menu"><span></span><span></span><span></span></button>
-    <nav class="menu" id="menu" aria-label="Main">
-${site.nav.map((n) => `      <a href="${attr(n.url)}">${esc(n.label)}</a>`).join('\n')}
-    </nav>
+    <div class="menu" id="menu">
+      <div class="home-main">
+${indent(homeView(site), 8)}
+      </div>
+${indent(footer(site), 4)}
+    </div>
   </header>`;
+}
+
+// The home page view: big name at the top, big menu at the bottom. The mobile menu
+// opens to this same view, so the two look identical.
+export function homeView(site) {
+  return `<a class="home-name" href="/">${esc(site.name)}</a>
+<nav class="home-nav" aria-label="Main">
+${site.nav.map((n) => `  <a href="${attr(n.url)}">${esc(n.label)}</a>`).join('\n')}
+</nav>`;
 }
 
 // "Time in Munich" clock shown at the top right on wide screens (filled in by main.js).

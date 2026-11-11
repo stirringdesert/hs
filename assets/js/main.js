@@ -1,15 +1,25 @@
-// Menu toggle
+// Menu toggle. The open menu looks like the home page. Where the browser supports
+// view transitions, the header name grows into the big name (and back on close).
 (function () {
   var btn = document.querySelector('.menu-toggle');
-  if (btn) {
-    btn.addEventListener('click', function () {
-      var open = document.body.classList.toggle('menu-open');
+  if (!btn) return;
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)');
+  function set(open) {
+    function apply() {
+      document.body.classList.toggle('menu-open', open);
       btn.setAttribute('aria-expanded', open ? 'true' : 'false');
-    });
-    document.addEventListener('keydown', function (e) {
-      if (e.key === 'Escape' && document.body.classList.contains('menu-open')) btn.click();
-    });
+    }
+    if (document.startViewTransition && !reduce.matches) document.startViewTransition(apply);
+    else apply();
   }
+  btn.addEventListener('click', function () { set(!document.body.classList.contains('menu-open')); });
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && document.body.classList.contains('menu-open')) set(false);
+  });
+  // Coming back with the browser's Back button can restore the page with the menu still open
+  window.addEventListener('pageshow', function (e) {
+    if (e.persisted) { document.body.classList.remove('menu-open'); btn.setAttribute('aria-expanded', 'false'); }
+  });
 })();
 
 // Demo audio player
