@@ -70,17 +70,17 @@
         "copy": "sergeevvoice@gmail.com"
       },
       {
-        "label": "Telegram",
+        "label": "telegram",
         "url": "https://t.me/harrysergeev"
       },
       {
-        "label": "Instagram",
+        "label": "instagram",
         "url": "https://www.instagram.com/harrysergeev/"
       }
     ]
   },
   "ui": {
-    "trailer": "Full play",
+    "trailer": "Trailer",
     "main_menu": "Main",
     "menu": "Menu", "close": "Close",
     "language": "Language",
@@ -94,6 +94,6 @@
     "pause": "Pause audio",
     "download": "DOWNLOAD",
     "copy_email": "Copy email address",
-    "copied": "Copied"
+    "copied": "copied"
   }
 }

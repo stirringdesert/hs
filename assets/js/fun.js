@@ -7,42 +7,10 @@
   var finePointer = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
   var lang = (root.lang || 'en').slice(0, 2);
   var T = {
-    en: { dark: 'dark', light: 'light', theme: 'Color mode', close: 'Close', play: 'Play trailer' },
-    de: { dark: 'dunkel', light: 'hell', theme: 'Farbmodus', close: 'Schließen', play: 'Trailer abspielen' },
-    ru: { dark: 'тёмная', light: 'светлая', theme: 'Тема', close: 'Закрыть', play: 'Смотреть трейлер' },
+    en: { toLight: 'switch to light', toDark: 'switch to dark', close: 'Close' },
+    de: { toLight: 'zu hell wechseln', toDark: 'zu dunkel wechseln', close: 'Schließen' },
+    ru: { toLight: 'включить светлую', toDark: 'включить тёмную', close: 'Закрыть' },
   }[lang] || {};
-
-  // ---- Light / dark switch (test) ----
-  // Two words, like the language switch next to it: "dark light", the current one white.
-  // It is added after every language switch (home page corner and the menu).
-  function isLight() { return root.getAttribute('data-theme') === 'light'; }
-  function setTheme(light) {
-    if (light) root.setAttribute('data-theme', 'light'); else root.removeAttribute('data-theme');
-    try { localStorage.setItem('theme', light ? 'light' : 'dark'); } catch (e) {}
-    document.querySelectorAll('.theme-switch button').forEach(function (b) {
-      b.setAttribute('aria-pressed', (b.dataset.theme === 'light') === light ? 'true' : 'false');
-    });
-  }
-  var spots = document.querySelectorAll('.lang-switch');
-  if (!spots.length) spots = document.querySelectorAll('.menu');
-  spots.forEach(function (spot) {
-    var box = document.createElement('div');
-    box.className = 'theme-switch';
-    box.setAttribute('role', 'group');
-    box.setAttribute('aria-label', T.theme || 'Color mode');
-    ['dark', 'light'].forEach(function (k) {
-      var b = document.createElement('button');
-      b.type = 'button';
-      b.className = 'theme-toggle-text';
-      b.dataset.theme = k;
-      b.textContent = T[k] || k;
-      b.setAttribute('aria-pressed', (k === 'light') === isLight() ? 'true' : 'false');
-      b.addEventListener('click', function () { setTheme(k === 'light'); });
-      box.appendChild(b);
-    });
-    if (spot.classList.contains('menu')) spot.appendChild(box);
-    else spot.insertAdjacentElement('afterend', box);
-  });
 
   // ---- Sound button on background videos (only shown for videos with sound) ----
   document.querySelectorAll('.sound-toggle').forEach(function (btn) {
@@ -100,7 +68,12 @@
     function close() { dlg.close(); }
     dlg.querySelector('.trailer-close').addEventListener('click', close);
     dlg.addEventListener('click', function (e) { if (e.target === dlg) close(); });  // click outside the video
-    dlg.addEventListener('close', function () { frame.textContent = ''; });          // stops the video
+    var bgv = document.querySelector('.bg-video video');
+    dlg.addEventListener('close', function () {
+      frame.textContent = '';                                   // stops the trailer
+      document.body.classList.remove('trailer-open');
+      if (bgv) bgv.play().catch(function () {});
+    });
     tiles.forEach(function (tile) {
       tile.addEventListener('click', function (e) {
         if (!dlg.showModal) return;   // very old browsers just follow the link
@@ -112,32 +85,53 @@
         f.allowFullscreen = true;
         f.title = tile.getAttribute('aria-label') || 'Trailer';
         frame.appendChild(f);
+        if (bgv) bgv.pause();                                     // the background video rests meanwhile
+        document.body.classList.add('trailer-open');
         dlg.showModal();
       });
     });
   })();
 
-  // ---- Play page photo: fixed at the top like the videos, fading out as the text starts ----
-  // It is fully gone when the first chapter number is as far from the top of the
-  // screen as it is from its first paragraph.
+  // ---- Play page: photo that fades out, then a light/dark switch for reading ----
+  // The photo is fixed at the top like the videos and is fully gone when the first
+  // chapter number is as far from the top of the screen as from its first paragraph.
+  // At that point a "switch to light" button appears in the bottom-left corner. It
+  // goes away once the visitor has scrolled one more screen. Light mode only lives
+  // on this page: nothing is remembered, so every other page (and the menu) is black.
   (function () {
-    var bg = document.querySelector('.bg-image');
     var first = document.querySelector('.play-scene h2');
-    if (!bg || !first) return;
+    if (!first) return;
+    var bg = document.querySelector('.bg-image');
     var para = first.nextElementSibling;
-    var end = 1, queued = false;
+    var end = 1, queued = false, retired = false;
+
+    var sw = document.createElement('div');
+    sw.className = 'read-mode';
+    sw.innerHTML = '<button type="button" class="theme-toggle-text"></button>';
+    var btn = sw.firstChild;
+    function label() { btn.textContent = root.getAttribute('data-theme') === 'light' ? (T.toDark || 'switch to dark') : (T.toLight || 'switch to light'); }
+    btn.addEventListener('click', function () {
+      if (root.getAttribute('data-theme') === 'light') root.removeAttribute('data-theme');
+      else root.setAttribute('data-theme', 'light');
+      label();
+    });
+    label();
+    document.body.appendChild(sw);
+
     function measure() {
       var h = first.getBoundingClientRect();
       var gap = para ? para.getBoundingClientRect().top - h.bottom : 20;
-      end = Math.max(1, h.top + window.scrollY - gap);   // scroll position where it's gone
+      end = Math.max(1, h.top + window.scrollY - gap);   // scroll position where the photo is gone
       update();
     }
     function update() {
       queued = false;
-      var t = Math.min(1, Math.max(0, window.scrollY / end));
-      bg.style.setProperty('--fade', (1 - t).toFixed(3));
+      var y = window.scrollY;
+      if (bg) bg.style.setProperty('--fade', (1 - Math.min(1, Math.max(0, y / end))).toFixed(3));
+      if (y > end + window.innerHeight) retired = true;   // one full screen scrolled: done
+      sw.classList.toggle('on', !retired && y >= end - 2);
     }
-    bg.classList.add('scroll-fade');
+    if (bg) bg.classList.add('scroll-fade');
     window.addEventListener('scroll', function () { if (!queued) { queued = true; requestAnimationFrame(update); } }, { passive: true });
     window.addEventListener('resize', measure);
     window.addEventListener('load', measure);
