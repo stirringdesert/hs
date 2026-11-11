@@ -62,7 +62,7 @@ function relLink(url, depth) {
 function walk(dir) {
   for (const name of fs.readdirSync(dir)) {
     const rel = path.relative(ROOT, path.join(dir, name));
-    if (SKIP.has(rel) || name.endsWith('.enc') || name.startsWith('.')) continue;
+    if (SKIP.has(rel) || name.endsWith('.enc') || name.endsWith('.md') || name.startsWith('.')) continue;
     const abs = path.join(ROOT, rel);
     if (fs.statSync(abs).isDirectory()) { walk(abs); continue; }
     const isAsset = rel.startsWith('assets' + path.sep);
