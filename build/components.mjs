@@ -18,6 +18,8 @@ function v(url) {
 const PLAY_ICON = 'M5.379 1.292C4.968 1.033 4.449 1.017 4.023 1.251 3.598 1.486 3.334 1.933 3.333 2.419V13.581C3.334 14.067 3.598 14.514 4.023 14.749 4.449 14.983 4.968 14.967 5.379 14.708L14.215 9.127C14.602 8.883 14.836 8.457 14.836 8 14.836 7.543 14.602 7.117 14.215 6.873Z';
 
 // Full HTML document. `chrome: false` leaves out the header (used by the home page).
+// The legal links live in the home view, so every page reaches them: on the home page
+// directly, everywhere else through the menu.
 export function layout(site, { path, title, bodyClass, lang = 'en', description, main, mainClass = '', before = '', chrome = true, noindex = false, extraCss = [], alternates = null, head = '' }) {
   const fullTitle = title ? `${title} - ${site.name}` : site.name;
   const desc = description || site.description;
@@ -53,7 +55,6 @@ export function layout(site, { path, title, bodyClass, lang = 'en', description,
 ${before ? before + '\n' : ''}${chrome ? header(site, alternates) + '\n' : ''}  <main${mainClass ? ` class="${mainClass}"` : ''}>
 ${indent(main, 4)}
   </main>
-${footer(site)}
 </body>
 </html>
 `;
@@ -68,21 +69,15 @@ function stageBoot(html) {
 }
 
 
-// Arrow next to the name: opens the full-screen menu (and, turned around, closes it).
-const ARROW = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v17M4.5 12.5 12 20l7.5-7.5"/></svg>';
-function menuArrow(site, { close = false } = {}) {
-  const ui = site.ui || {};
-  return close
-    ? `<button type="button" class="menu-arrow is-close" aria-label="${attr(ui.close || 'Close')}">${ARROW}</button>`
-    : `<button type="button" class="menu-arrow" aria-label="${attr(ui.menu || 'Menu')}" aria-expanded="false" aria-controls="menu">${ARROW}</button>`;
-}
+// The name and its arrow are one button that opens the full-screen menu. In the menu
+// the big name with the arrow turned up closes it again. Without JavaScript the name
+// is a plain link to the home page, which shows the same menu.
+const ARROW = '<span class="menu-arrow" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 3v17M4.5 12.5 12 20l7.5-7.5"/></svg></span>';
 
-// Name at the top left with the menu arrow next to it. The arrow opens the menu: a
-// full-screen copy of the home page (same big name, links, time, languages, legal links).
 export function header(site, alternates = null) {
+  const ui = site.ui || {};
   return `  <header class="site-header">
-    <a class="name" href="${attr(site.home || '/')}">${esc(site.name)}</a>
-    ${menuArrow(site)}
+    <a class="name menu-toggle" href="${attr(site.home || '/')}" aria-controls="menu" aria-expanded="false" aria-label="${attr(`${site.name}, ${ui.menu || 'Menu'}`)}">${esc(site.name)}${ARROW}</a>
     <div class="menu" id="menu">
 ${indent(homeView(site, alternates, { inMenu: true }), 6)}
     </div>
@@ -94,7 +89,9 @@ ${indent(homeView(site, alternates, { inMenu: true }), 6)}
 // other page is this same view.
 export function homeView(site, alternates = null, { inMenu = false } = {}) {
   return `<div class="home-main">
-  <div class="home-top"><a class="home-name" href="${attr(site.home || '/')}">${esc(site.name)}</a>${inMenu ? menuArrow(site, { close: true }) : ''}</div>
+  <div class="home-top">${inMenu
+    ? `<a class="home-name menu-toggle is-close" href="${attr(site.home || '/')}" aria-label="${attr((site.ui || {}).close || 'Close')}">${esc(site.name)}${ARROW}</a>`
+    : `<a class="home-name" href="${attr(site.home || '/')}">${esc(site.name)}</a>`}</div>
   <nav class="home-nav" aria-label="${attr((site.ui || {}).main_menu || 'Main')}">
 ${site.nav.map((n) => `    <a href="${attr(n.url)}">${esc(n.label)}</a>`).join('\n')}
   </nav>

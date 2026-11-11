@@ -1,33 +1,46 @@
-// Menu: the arrow next to the name opens a full-screen copy of the home page. Where the
-// browser supports view transitions, the header name grows into the big name (and
-// back on close); the menu cross-fades instead of the page rising (style.css, .vt-menu).
+// Menu: the name (with its arrow) opens a full-screen copy of the home page; the big
+// name in the menu closes it. The black of the menu spreads from the name like a
+// growing shadow (style.css, .menu), and at the same time the small name grows into
+// the big one (and shrinks back on close).
 (function () {
-  var open = document.querySelector('.site-header > .menu-arrow');
-  var close = document.querySelector('.menu .menu-arrow.is-close');
-  if (!open) return;
+  var open = document.querySelector('.site-header > .menu-toggle');
+  var menu = document.getElementById('menu');
+  if (!open || !menu) return;
+  var close = menu.querySelector('.menu-toggle.is-close');
   var reduce = window.matchMedia('(prefers-reduced-motion: reduce)');
-  function set(on) {
-    function apply() {
-      document.body.classList.toggle('menu-open', on);
-      open.setAttribute('aria-expanded', on ? 'true' : 'false');
-    }
-    if (!document.startViewTransition || reduce.matches) apply();
-    else {
-      var root = document.documentElement;
-      root.classList.add('vt-menu');
-      document.startViewTransition(apply).finished.finally(function () { root.classList.remove('vt-menu'); });
-    }
-    setTimeout(function () { (on ? close : open).focus({ preventScroll: true }); }, 0);
+  var css = getComputedStyle(document.documentElement);
+  function ms(name) { return parseFloat(css.getPropertyValue(name)) * 1000 || 500; }
+  var ease = 'cubic-bezier(.6, 0, .25, 1)';
+  var anim = null;
+
+  // The big name starts exactly on top of the small one, then grows into place
+  function grow(on) {
+    if (!close || reduce.matches || !close.animate) return;
+    var a = open.getBoundingClientRect(), b = close.getBoundingClientRect();
+    if (!b.width) return;
+    var from = 'translate(' + (a.left - b.left) + 'px,' + (a.top - b.top) + 'px) scale(' + (a.width / b.width) + ')';
+    var arrow = close.querySelector('svg');
+    if (anim) anim.forEach(function (x) { x.cancel(); });
+    var t = { duration: ms(on ? '--menu-in' : '--menu-out'), easing: ease, fill: 'both' };
+    var frames = [{ transform: from }, { transform: 'none' }];
+    var turn = [{ transform: 'rotate(0deg)' }, { transform: 'rotate(180deg)' }];
+    if (!on) { frames.reverse(); turn.reverse(); }
+    anim = [close.animate(frames, t), arrow.animate(turn, t)];
+    if (on) anim[0].finished.then(function () { anim.forEach(function (x) { x.cancel(); }); anim = null; }).catch(function () {});
   }
-  open.addEventListener('click', function () { set(true); });
-  // The name opens the menu too (the home link is inside the menu)
-  var name = document.querySelector('.site-header > .name');
-  if (name) name.addEventListener('click', function (e) {
-    if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button) return;   // new tab still works
-    e.preventDefault();
-    set(true);
-  });
-  if (close) close.addEventListener('click', function () { set(false); });
+  function set(on) {
+    var r = open.getBoundingClientRect();
+    menu.style.setProperty('--mx', (r.left + r.width / 2) + 'px');
+    menu.style.setProperty('--my', (r.top + r.height / 2) + 'px');
+    document.body.classList.toggle('menu-open', on);
+    open.setAttribute('aria-expanded', on ? 'true' : 'false');
+    grow(on);
+    if (!on && anim) anim[0].finished.then(function () { anim.forEach(function (x) { x.cancel(); }); anim = null; }).catch(function () {});
+    setTimeout(function () { (on ? close || menu : open).focus({ preventScroll: true }); }, 0);
+  }
+  function plainClick(e) { return !(e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button); }
+  open.addEventListener('click', function (e) { if (plainClick(e)) { e.preventDefault(); set(true); } });
+  if (close) close.addEventListener('click', function (e) { if (plainClick(e)) { e.preventDefault(); set(false); } });
   document.addEventListener('keydown', function (e) {
     if (e.key === 'Escape' && document.body.classList.contains('menu-open')) set(false);
   });
@@ -37,23 +50,46 @@
   });
 })();
 
-// Scrolled pages: the sticky name gets its soft background (style.css, .scrolled), and
-// the About photo fades away over the first screen, like the play page photo.
+// Leaving the home page or the open menu: the next page plays the shrinking version
+// of the menu animation (style.css, .vt-contract).
+window.addEventListener('pageswap', function (e) {
+  if (!e.viewTransition) return;
+  var from = document.body.classList.contains('home') || document.body.classList.contains('menu-open');
+  try { sessionStorage.setItem('vt', from ? 'contract' : ''); } catch (x) {}
+});
+window.addEventListener('pagereveal', function (e) {
+  var v = '';
+  try { v = sessionStorage.getItem('vt'); sessionStorage.removeItem('vt'); } catch (x) {}
+  if (!e.viewTransition || v !== 'contract' || document.body.classList.contains('home')) return;
+  var root = document.documentElement;
+  root.classList.add('vt-contract');
+  e.viewTransition.finished.finally(function () { root.classList.remove('vt-contract'); });
+});
+
+// Scrolled pages: the sticky name gets its soft shadow (style.css, .scrolled). On
+// phones the About photo stays until the text reaches the top, then fades away.
 (function () {
   var root = document.documentElement;
   var photo = document.querySelector('.bio-photo');
+  var text = document.querySelector('.bio-text .page-title') || document.querySelector('.bio-text');
+  var phone = window.matchMedia('(max-width: 900px)');
   var queued = false;
   function update() {
     queued = false;
-    var y = window.scrollY;
-    root.classList.toggle('scrolled', y > 8);
-    if (photo) {
-      var end = Math.max(1, Math.min(window.innerHeight * .9, root.scrollHeight - window.innerHeight));
-      photo.style.setProperty('--fade', (1 - Math.min(1, y / end)).toFixed(3));
+    root.classList.toggle('scrolled', window.scrollY > 8);
+    if (photo && text) {
+      var f = 1;
+      if (phone.matches) {
+        var top = text.getBoundingClientRect().top, h = window.innerHeight;
+        var start = h * .3, end = 60;   // fully gone when the text reaches the name
+        f = Math.min(1, Math.max(0, (top - end) / (start - end)));
+      }
+      photo.style.setProperty('--fade', f.toFixed(3));
     }
   }
   window.addEventListener('scroll', function () { if (!queued) { queued = true; requestAnimationFrame(update); } }, { passive: true });
   window.addEventListener('resize', update);
+  window.addEventListener('load', update);
   update();
 })();
 
