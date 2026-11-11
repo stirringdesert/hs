@@ -7,7 +7,7 @@
 :root { color-scheme: dark; }
 :root[data-theme="light"] {
   --color-bg: #f4f4f2;         /* white with the faintest warmth, not cream */
-  --color-fg: #0d0d0d;
+  --color-fg: #000;            /* true black for reading */
   --color-muted: #6b6b6b;
   --color-link: #0058c4;
   --color-accent: #0058c4;
@@ -25,7 +25,7 @@
 :root[data-theme="light"] .bg-image.scroll-fade img { opacity: var(--bg-video-opacity); }   /* same as dark mode */
 /* The name stays white over the photo; once the page scrolls, its corner shadow turns
    light like the page, so the name turns dark. The play text starts white too and turns
-   dark after about 100 px of scrolling (fun.js sets .read-top). */
+   black when the first chapter number reaches the middle of the screen (fun.js sets .read-top). */
 :root[data-theme="light"]:not(.scrolled) .reading .site-header,
 :root[data-theme="light"].read-top .reading .play-body,
 :root[data-theme="light"] .reading main > .page-title,
