@@ -25,7 +25,7 @@
 .nav-list .work-links a,               /* russian  english  german / download pdf */
 .player .download,                     /* download */
 .lang-switch a,                        /* en de ru */
-.site-footer a,                        /* impressum  datenschutzerklärung */
+.site-footer a, .legal-links a,                        /* impressum  datenschutzerklärung */
 .sound-toggle,
 .trailer-play,                         /* trailer */
 .trailer-close,                        /* close */
