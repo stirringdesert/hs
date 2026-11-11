@@ -1,0 +1,31 @@
+{
+  "nav": [
+    { "label": "био" },
+    { "label": "озвучка" },
+    { "label": "театр" },
+    { "label": "драматургия" },
+    { "label": "контакты" }
+  ],
+  "sections": {
+    "theater": { "title": "Режиссёр", "page_title": "Театр" },
+    "playwriting": { "title": "Автор", "page_title": "Драматургия" }
+  },
+  "contact": {
+    "label": "по вопросам озвучки и сотрудничества:",
+    "links": [
+      { "short": "Почта" }
+    ]
+  },
+  "ui": {
+    "main_menu": "Главное меню",
+    "menu": "Меню",
+    "language": "Язык",
+    "time_in_munich": "Время в Мюнхене",
+    "titles": { "bio": "Био", "voice": "Озвучка", "contact": "Контакты" },
+    "play": "Слушать",
+    "pause": "Пауза",
+    "download": "СКАЧАТЬ",
+    "copy_email": "Скопировать адрес",
+    "copied": "Скопировано"
+  }
+}

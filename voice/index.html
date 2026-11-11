@@ -12,11 +12,15 @@
   <meta property="og:url" content="https://harrysergeev.com/voice/">
   <meta name="twitter:card" content="summary_large_image">
   <link rel="canonical" href="https://harrysergeev.com/voice/">
+  <link rel="alternate" hreflang="en" href="https://harrysergeev.com/voice/">
+  <link rel="alternate" hreflang="de" href="https://harrysergeev.com/de/voice/">
+  <link rel="alternate" hreflang="ru" href="https://harrysergeev.com/ru/voice/">
+  <link rel="alternate" hreflang="x-default" href="https://harrysergeev.com/voice/">
   <link rel="icon" href="/assets/img/favicon-light.png" media="(prefers-color-scheme: light)">
   <link rel="icon" href="/assets/img/favicon-dark.png" media="(prefers-color-scheme: dark)">
   <link rel="stylesheet" href="/assets/css/tokens.css?v=a5669fc7">
-  <link rel="stylesheet" href="/assets/css/style.css?v=fa6cb37b">
-  <script src="/assets/js/main.js?v=20273128" defer></script>
+  <link rel="stylesheet" href="/assets/css/style.css?v=e7f15f48">
+  <script src="/assets/js/main.js?v=cdd51475" defer></script>
 </head>
 <body class="voice">
   <header class="site-header">
@@ -28,7 +32,7 @@
       <a href="/playwriting/open-relationship/">playwriting</a>
       <a href="/contact/">contact</a>
     </nav>
-    <p class="clock" aria-hidden="true">Time in Munich <b data-clock>--:--</b></p>
+    <div class="top-right"><nav class="lang-switch" aria-label="Language"><a href="/voice/" hreflang="en" lang="en" data-lang="en" aria-current="true">EN</a><a href="/de/voice/" hreflang="de" lang="de" data-lang="de">DE</a><a href="/ru/voice/" hreflang="ru" lang="ru" data-lang="ru">RU</a></nav><p class="clock" aria-hidden="true">Time in Munich <b data-clock>--:--</b></p></div>
     <button class="menu-toggle" aria-label="Menu" aria-expanded="false" aria-controls="menu"><span></span><span></span><span></span></button>
     <nav class="menu" id="menu" aria-label="Main">
       <a href="/bio/">bio</a>
@@ -36,12 +40,13 @@
       <a href="/theater/">theater</a>
       <a href="/playwriting/open-relationship/">playwriting</a>
       <a href="/contact/">contact</a>
+      <nav class="lang-switch menu-langs" aria-label="Language"><a href="/voice/" hreflang="en" lang="en" data-lang="en" aria-current="true">EN</a><a href="/de/voice/" hreflang="de" lang="de" data-lang="de">DE</a><a href="/ru/voice/" hreflang="ru" lang="ru" data-lang="ru">RU</a></nav>
     </nav>
   </header>
   <main>
     <h2 class="label">for voiceover bookings and inquiries, please <a class="accent" href="/contact/">contact</a></h2>
     <h1 class="page-title">Demo</h1>
-    <div class="player" data-src="/assets/media/demo.wav">
+    <div class="player" data-src="/assets/media/demo.wav" data-play="Play audio" data-pause="Pause audio">
       <audio preload="metadata" src="/assets/media/demo.wav"></audio>
       <div class="player-row">
         <button type="button" aria-label="Play audio"><svg viewBox="0 0 16 16" aria-hidden="true"><path class="icon-play" d="M5.379 1.292C4.968 1.033 4.449 1.017 4.023 1.251 3.598 1.486 3.334 1.933 3.333 2.419V13.581C3.334 14.067 3.598 14.514 4.023 14.749 4.449 14.983 4.968 14.967 5.379 14.708L14.215 9.127C14.602 8.883 14.836 8.457 14.836 8 14.836 7.543 14.602 7.117 14.215 6.873Z"/></svg></button>
@@ -54,7 +59,7 @@
     </div>
 
     <h1 class="page-title works-title">Works</h1>
-    <h2 class="label">Officail russian dubs</h2>
+    <h2 class="label">Official Russian dubs</h2>
     <div class="works">
       <article class="work">
         <img src="/assets/img/voice/leon-kennedy.jpg" alt="Leon Kennedy — Resident Evil 4 Remake" loading="lazy" width="1170" height="324">
