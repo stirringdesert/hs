@@ -1,7 +1,7 @@
 ---
 # Russian version of the playwriting section: the /ru/ playwriting page and the top of /open-relationship-ru/
 page_title: Автор
-title: «Открытые отношения»
+title: Открытые отношения
 summary:
   - "Первая часть завершена: июль 2024"
 links:

@@ -4,6 +4,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <meta name="theme-color" content="#000">
   <title>Igor Sergeev</title>
   <meta name="description" content="Die russische Stimme von Leon Kennedy in Resident Evil 4 Remake und Jon Snow in Game of Thrones. Über 100 synchronisierte Filme, Serien und Spiele, 126 Hörbücher. Theaterregisseur und Dramatiker in München.">
   <meta property="og:type" content="website">
@@ -18,17 +20,22 @@
   <link rel="alternate" hreflang="x-default" href="https://harrysergeev.com/">
   <link rel="icon" href="/assets/img/favicon-light.png" media="(prefers-color-scheme: light)">
   <link rel="icon" href="/assets/img/favicon-dark.png" media="(prefers-color-scheme: dark)">
-  <link rel="stylesheet" href="/assets/css/tokens.css?v=48a5253b">
-  <link rel="stylesheet" href="/assets/css/style.css?v=1f8a3238">
-  <link rel="stylesheet" href="/assets/css/fun.css?v=1f0d7987">
-  <link rel="stylesheet" href="/assets/css/type.css?v=a74bb784">
-  <script src="/assets/js/main.js?v=5293f725" defer></script>
+  <link rel="preload" href="/assets/fonts/tt-firs-neue-regular.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="/assets/fonts/tt-firs-neue-demibold.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="/assets/css/tokens.css?v=924e3275">
+  <link rel="stylesheet" href="/assets/css/style.css?v=d5961481">
+  <link rel="stylesheet" href="/assets/css/type.css?v=b5fba61d">
+  <link rel="stylesheet" href="/assets/css/fun.css?v=b2568cc5">
+  <script src="/assets/js/main.js?v=c3f7edc2" defer></script>
   <script src="/assets/js/fun.js?v=30431ad4" defer></script>
+  <script type="speculationrules">{"prefetch":[{"where":{"and":[{"href_matches":"/*"},{"not":{"href_matches":"/assets/*"}}]},"eagerness":"moderate"}]}</script>
 </head>
 <body class="home">
-  <main class="home-main">
-    <a class="home-name" href="/de/">Igor Sergeev</a>
-    <div class="home-bottom">
+  <main class="home-page">
+    <div class="home-main">
+      <div class="home-top"><a class="home-name" href="/de/">Igor Sergeev</a>
+        <p class="clock" aria-hidden="true">zeit in München <b data-clock>--:--</b></p>
+      </div>
       <nav class="home-nav" aria-label="Hauptmenü">
         <a href="/de/bio/">bio</a>
         <a href="/de/voice/">synchron</a>
@@ -36,12 +43,11 @@
         <a href="/open-relationship-de/">stücke</a>
         <a href="/de/contact/">kontakt</a>
       </nav>
-      <div class="meta-row"><p class="clock" aria-hidden="true">zeit in München <b data-clock>--:--</b></p><nav class="lang-switch" aria-label="Sprache"><a href="/de/" hreflang="en" lang="en" data-lang="en">EN</a><a href="/de/" hreflang="de" lang="de" data-lang="de" aria-current="true">DE</a><a href="/ru/" hreflang="ru" lang="ru" data-lang="ru">RU</a></nav></div>
+      <div class="home-foot">
+        <nav class="lang-switch" aria-label="Sprache"><a href="/de/" hreflang="en" lang="en" data-lang="en">EN</a><a href="/de/" hreflang="de" lang="de" data-lang="de" aria-current="true">DE</a><a href="/ru/" hreflang="ru" lang="ru" data-lang="ru">RU</a></nav>
+        <nav class="legal-links" aria-label="Legal"><a href="/impressum/">Impressum</a><a href="/datenschutzerklaerung/">Datenschutz</a></nav>
+      </div>
     </div>
   </main>
-  <footer class="site-footer">
-    <a href="/impressum/">Impressum</a>
-    <a href="/datenschutzerklaerung/">Datenschutz</a>
-  </footer>
 </body>
 </html>

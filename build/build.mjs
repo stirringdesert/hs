@@ -170,7 +170,7 @@ function buildLanguage(lang) {
     chrome: false,
     before: lang === DEFAULT ? C.langPicker(alternatesOf('/')) : '',
     head: lang === DEFAULT ? C.langPickerHead(alternatesOf('/')) : '',
-    mainClass: 'home-main',
+    mainClass: 'home-page',
     main: C.homeView(s, alternatesOf('/')),
   });
 
@@ -180,7 +180,7 @@ function buildLanguage(lang) {
     need(data.title, 'title', 'content/bio.md');
     needAsset(data.photo, 'content/bio.md');
     const photo = data.photo
-      ? `<div class="bio-photo"><img src="${attr(data.photo)}" alt="${attr(data.photo_alt || s.name)}" width="${data.photo_width || 1024}" height="${data.photo_height || 1536}"></div>\n`
+      ? `<div class="bio-photo"><img src="${attr(data.photo)}" alt="${attr(data.photo_alt || s.name)}" width="${data.photo_width || 1024}" height="${data.photo_height || 1536}" fetchpriority="high"></div>\n`
       : '';
     page('/bio/', {
       title: ui.titles.bio, bodyClass: 'bio',
@@ -200,6 +200,7 @@ ${markdown(body).map((b) => '  ' + b).join('\n')}
     v.roles = (base.roles || []).map((r) => ({ ...r, ...(tr?.roles?.[r.character] || {}) }));
     const where = 'content/voice.json';
     needAsset(v.demo?.file, where);
+    needAsset(v.demo?.stream, where);
     v.roles.forEach((r, i) => {
       need(r.character, 'character', `${where} role #${i + 1}`);
       need(r.title, 'title', `${where} role #${i + 1}`);
@@ -210,7 +211,7 @@ ${markdown(body).map((b) => '  ' + b).join('\n')}
     const parts = [
       `<section class="demo">
 ${C.demoHead(v.demo.title, v.demo.file, ui)}
-${C.player(v.demo.file, ui)}
+${C.player(v.demo.stream || v.demo.file, ui)}
   <p class="bookings">${cta}</p>
 </section>`,
       '',
@@ -327,14 +328,19 @@ for (const { f, slug, data, body: raw } of freePages) {
       }
     }
   }
-  emit(`/${slug}/`, C.layout(s, {
-    path: `/${slug}/`, title: data.title, lang, bodyClass, alternates, before,
+  // 404.html: GitHub Pages shows it (black, with the menu) for any address that doesn't exist
+  const out = slug === '404' ? { url: '/404.html', file: '404.html' } : { url: `/${slug}/` };
+  const html = C.layout(s, {
+    path: out.url, title: data.title, lang, bodyClass, alternates, before, noindex: data.noindex === true,
+    // Pages in one language only (legal pages): the menu's languages lead to the home pages
+    menuAlternates: alternates?.length > 1 ? null : alternatesOf('/'),
     description: data.description,
     // Reading pages remember "lights on" before anything is drawn, so the page doesn't flash black
     head: bodyClass === 'theater reading' ? C.READ_LIGHT_BOOT : '',
     // mailto links become copy-to-clipboard buttons (keeps the address away from spam bots)
     main: body.replace(/\s+$/, '').replace(/<a [^>]*href="mailto:([^"]+)"[^>]*>[^<]*<\/a>/g, (_, a) => C.copyEmail(a, { extraClass: 'link', ui: s.ui })),
-  }));
+  });
+  if (out.file) pages.set(out.file, html); else emit(out.url, html);
 }
 
 // ---------- Style guide (not linked from the menu, hidden from search engines) ----------

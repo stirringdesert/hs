@@ -1,57 +1,105 @@
-// Corner menu: opens while the pointer is over it (with a short grace period on the
-// way out), on tap or click, and on keyboard focus. Escape, a tap elsewhere or
-// scrolling on a touch screen closes it.
+// Menu: the name (with its arrow) opens a full-screen copy of the home page; the big
+// name in the menu closes it. The black of the menu spreads from the name like a
+// growing shadow (style.css, .menu), and at the same time the small name grows into
+// the big one (and shrinks back on close).
 (function () {
-  var menu = document.querySelector('.corner-menu');
-  if (!menu) return;
-  var btn = menu.querySelector('.corner-toggle');
-  var hover = window.matchMedia('(hover: hover) and (pointer: fine)');
-  var timer;
-  function set(open) {
-    clearTimeout(timer);
-    menu.classList.toggle('open', open);
-    btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+  var open = document.querySelector('.site-header > .menu-toggle');
+  var menu = document.getElementById('menu');
+  if (!open || !menu) return;
+  var close = menu.querySelector('.menu-toggle.is-close');
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)');
+  var css = getComputedStyle(document.documentElement);
+  function ms(name) { return parseFloat(css.getPropertyValue(name)) * 1000 || 500; }
+  var ease = 'cubic-bezier(.6, 0, .25, 1)';
+  var anim = null;
+
+  // The big name starts exactly on top of the small one, then grows into place
+  function grow(on) {
+    if (!close || reduce.matches || !close.animate) return;
+    if (anim) { anim.forEach(function (x) { x.cancel(); }); anim = null; }
+    var a = open.getBoundingClientRect(), b = close.getBoundingClientRect();
+    if (!b.width) return;
+    var k = a.width / b.width;   // centers lined up, so the name doesn't jump at either end
+    var from = 'translate(' + (a.left - b.left) + 'px,' + (a.top + a.height / 2 - b.top - b.height * k / 2) + 'px) scale(' + k + ')';
+    var arrow = close.querySelector('svg');
+    var t = { duration: ms(on ? '--menu-in' : '--menu-out'), easing: ease, fill: 'both' };
+    var frames = [{ transform: from }, { transform: 'none' }];
+    var turn = [{ transform: 'rotate(0deg)' }, { transform: 'rotate(180deg)' }];
+    if (!on) { frames.reverse(); turn.reverse(); }
+    anim = [close.animate(frames, t), arrow.animate(turn, t)];
+    if (on) anim[0].finished.then(function () { anim.forEach(function (x) { x.cancel(); }); anim = null; }).catch(function () {});
   }
-  var isOpen = function () { return menu.classList.contains('open'); };
-  menu.addEventListener('mouseenter', function () { if (hover.matches) set(true); });
-  menu.addEventListener('mouseleave', function () {
-    var f = document.activeElement;
-    if (!hover.matches || (menu.contains(f) && f.matches(':focus-visible'))) return;   // keep open while using the keyboard
-    timer = setTimeout(function () { set(false); }, 300);
-  });
-  btn.addEventListener('click', function () {
-    // With a mouse the menu is already open from hovering, so a click keeps it open
-    // (moving away closes it). On touch screens the word toggles open/closed.
-    if (hover.matches && isOpen()) return;
-    set(!isOpen());
-  });
-  menu.addEventListener('focusin', function (e) { if (e.target.matches(':focus-visible')) set(true); });   // keyboard only; taps use click
-  menu.addEventListener('focusout', function (e) { if (!menu.contains(e.relatedTarget)) set(false); });
+  var keyboard = false;   // move focus only for keyboard users (a tap must not leave a ring)
+  function set(on) {
+    var r = open.getBoundingClientRect();
+    menu.style.setProperty('--mx', (r.left + r.width / 2) + 'px');
+    menu.style.setProperty('--my', (r.top + r.height / 2) + 'px');
+    document.body.classList.toggle('menu-open', on);
+    open.setAttribute('aria-expanded', on ? 'true' : 'false');
+    grow(on);
+    // After closing, the small big-name stays put (hidden) until the next opening:
+    // resetting it at the last moment made it flash full size.
+    if (keyboard) setTimeout(function () { (on ? close || menu : open).focus({ preventScroll: true }); }, 0);
+  }
+  function plainClick(e) { return !(e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button); }
+  open.addEventListener('click', function (e) { if (plainClick(e)) { e.preventDefault(); keyboard = e.detail === 0; set(true); } });
+  if (close) close.addEventListener('click', function (e) { if (plainClick(e)) { e.preventDefault(); keyboard = e.detail === 0; set(false); } });
   document.addEventListener('keydown', function (e) {
-    if (e.key === 'Escape' && isOpen()) { set(false); btn.focus(); }
-  });
-  document.addEventListener('pointerdown', function (e) { if (isOpen() && !menu.contains(e.target)) set(false); });
-  window.addEventListener('scroll', function () { if (isOpen() && !hover.matches) set(false); }, { passive: true });
-  // The current page's link is marked, so the open menu shows where you are
-  var here = location.pathname;
-  menu.querySelectorAll('.corner-links a').forEach(function (a) {
-    var p = a.getAttribute('href');
-    if (p && p !== '/' && here.indexOf(p.replace(/index\.html$/, '')) === 0) a.setAttribute('aria-current', 'page');
+    if (e.key === 'Escape' && document.body.classList.contains('menu-open')) { keyboard = true; set(false); }
   });
   // Coming back with the Back button can restore the page with the menu still open
-  window.addEventListener('pageshow', function (e) { if (e.persisted) set(false); });
+  window.addEventListener('pageshow', function (e) {
+    if (e.persisted) { document.body.classList.remove('menu-open'); open.setAttribute('aria-expanded', 'false'); }
+  });
 })();
 
-// Page transitions: when the visitor has scrolled down, the header name is off screen,
-// so it doesn't fly in from above; it just fades with the rest of the page.
+// Leaving the home page or the open menu: the next page plays the shrinking version
+// of the menu animation (style.css, .vt-contract).
 window.addEventListener('pageswap', function (e) {
-  if (!e.viewTransition || window.scrollY < 40) return;
-  var name = document.querySelector('.site-header .name');
-  if (name) name.style.viewTransitionName = 'none';
+  if (!e.viewTransition) return;
+  var from = document.body.classList.contains('home') || document.body.classList.contains('menu-open');
+  try { sessionStorage.setItem('vt', from ? 'contract' : ''); } catch (x) {}
+});
+window.addEventListener('pagereveal', function (e) {
+  var v = '';
+  try { v = sessionStorage.getItem('vt'); sessionStorage.removeItem('vt'); } catch (x) {}
+  if (!e.viewTransition) return;
+  // Only the menu animation plays between pages; every other page change is instant
+  if (v !== 'contract' || document.body.classList.contains('home')) { e.viewTransition.skipTransition(); return; }
+  var root = document.documentElement;
+  root.classList.add('vt-contract');
+  e.viewTransition.finished.finally(function () { root.classList.remove('vt-contract'); });
 });
 
+// Scrolled pages: the sticky name gets its soft shadow (style.css, .scrolled). On
+// phones the About photo stays until the text reaches the top, then fades away.
+(function () {
+  var root = document.documentElement;
+  var photo = document.querySelector('.bio-photo');
+  var text = document.querySelector('.bio-text .page-title') || document.querySelector('.bio-text');
+  var phone = window.matchMedia('(max-width: 900px)');
+  var queued = false;
+  function update() {
+    queued = false;
+    root.classList.toggle('scrolled', window.scrollY > 8);
+    if (photo && text) {
+      var f = 1;
+      if (phone.matches) {
+        var top = text.getBoundingClientRect().top, h = window.innerHeight;
+        var start = h * .3, end = 60;   // fully gone when the text reaches the name
+        f = Math.min(1, Math.max(0, (top - end) / (start - end)));
+      }
+      photo.style.setProperty('--fade', f.toFixed(3));
+    }
+  }
+  window.addEventListener('scroll', function () { if (!queued) { queued = true; requestAnimationFrame(update); } }, { passive: true });
+  window.addEventListener('resize', update);
+  window.addEventListener('load', update);
+  update();
+})();
+
 // Background photo or video: remember it when leaving, so the next page can keep it
-// lit if it shows the same one (the check runs in <head>, see STAGE_BOOT in components.mjs).
+// lit if it shows the same one (the check runs in <head>, see stageBoot in components.mjs).
 (function () {
   var stage = document.querySelector('.bg-video video, .bg-video img, .bio-photo img');
   window.addEventListener('pagehide', function () {
@@ -188,14 +236,36 @@ window.addEventListener('pageswap', function (e) {
   // While the picker is open, the page behind it can't be reached with Tab.
   var behind = [].filter.call(document.body.children, function (el) { return el !== picker && el.tagName !== 'SCRIPT'; });
   behind.forEach(function (el) { el.inert = true; });
-  // Picking the language of this page just reveals it; the others navigate.
+  // Picking a language: the big words shrink into the small switch at the bottom of the
+  // home page while the black lifts. The same language just reveals this page; another
+  // one then opens that home page, which has the switch in the same place.
+  var root = document.documentElement;
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   picker.querySelectorAll('a').forEach(function (a) {
     a.addEventListener('click', function (e) {
-      if (a.getAttribute('data-lang') !== document.documentElement.lang) return;
+      if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button) return;
       e.preventDefault();
-      document.documentElement.classList.add('lang-chosen');
-      behind.forEach(function (el) { el.inert = false; });
-      setTimeout(function () { document.documentElement.classList.remove('choose-lang', 'lang-chosen'); }, 500);
+      var code = a.getAttribute('data-lang'), href = a.getAttribute('href');
+      var same = code === root.lang;
+      var time = reduce ? 0 : 500;
+      root.classList.add('lang-chosen');
+      picker.querySelectorAll('a').forEach(function (big) {
+        var small = document.querySelector('.home-main .lang-switch a[data-lang="' + big.getAttribute('data-lang') + '"]');
+        if (!small || reduce || !big.animate) return;
+        var b = big.getBoundingClientRect(), t = small.getBoundingClientRect();
+        var k = t.height / b.height;
+        var on = big.getAttribute('data-lang') === code;
+        big.animate([
+          { transform: 'none' },
+          { transform: 'translate(' + (t.left - b.left) + 'px,' + (t.top + t.height / 2 - b.top - b.height * k / 2) + 'px) scale(' + k + ')',
+            color: getComputedStyle(root).getPropertyValue(on ? '--color-fg' : '--color-muted').trim() }
+        ], { duration: time, easing: 'cubic-bezier(.6, 0, .25, 1)', fill: 'forwards' });
+      });
+      setTimeout(function () {
+        if (!same) { location.href = href; return; }
+        behind.forEach(function (el) { el.inert = false; });
+        root.classList.remove('choose-lang', 'lang-chosen');
+      }, time);
     });
   });
 })();

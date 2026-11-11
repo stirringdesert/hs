@@ -9,8 +9,6 @@
   --color-bg: #f4f4f2;         /* white with the faintest warmth, not cream */
   --color-fg: #000;            /* true black for reading */
   --color-muted: #6b6b6b;
-  --color-link: #0058c4;
-  --color-accent: #0058c4;
   --color-placeholder: #e4e4e1;
   --bg-video-opacity: .65;           /* same as dark mode */
   color-scheme: light;
@@ -33,16 +31,12 @@
   --color-bg: #000;
   --color-fg: #fff;
   --color-muted: #a3a3a3;
-  --color-link: #fff;
-  --color-accent: #fff;
   color: var(--color-fg);
   text-shadow: 0 0 24px rgba(0, 0, 0, .3);
 }
 :root[data-theme="light"] .reading .play-body,
-:root[data-theme="light"] .reading .site-header .name { color: var(--color-fg); transition: color .5s var(--ease), text-shadow .5s var(--ease); }
+:root[data-theme="light"] .reading .site-header .name { color: var(--color-fg); transition: color var(--page-in) var(--ease), text-shadow var(--page-in) var(--ease); }
 /* Menus stay black in light mode: light mode is only for reading the play */
-:root[data-theme="light"] .corner-menu,
-:root[data-theme="light"] .corner-panel,
 :root[data-theme="light"] .menu,
 :root[data-theme="light"] .menu-open .site-header {
   --color-bg: #000;
@@ -56,7 +50,7 @@
 .bg-video ~ main, .bg-video ~ .site-header { text-shadow: 0 0 24px rgba(0, 0, 0, .3); }
 :root[data-theme="light"] .bg-video ~ main, :root[data-theme="light"] .bg-video ~ .site-header { text-shadow: none; }
 .bg-video ~ main .trailer { text-shadow: none; }
-body { transition: background-color .4s var(--ease), color .4s var(--ease); }
+body { transition: background-color var(--page-in) var(--ease), color var(--page-in) var(--ease); }
 
 /* ---------- Play page: "turn lights on / off" in the bottom-right corner ----------
    Shown from where the photo has faded out until the second chapter begins. */
@@ -69,9 +63,9 @@ body { transition: background-color .4s var(--ease), color .4s var(--ease); }
   opacity: 0;
   visibility: hidden;
   transform: translateY(6px);
-  transition: opacity .5s var(--ease), transform .5s var(--ease), visibility 0s .5s;
+  transition: opacity var(--page-in) var(--ease), transform var(--page-in) var(--ease), visibility 0s var(--page-in);
 }
-.read-mode.on { opacity: 1; visibility: visible; transform: none; transition: opacity .5s var(--ease), transform .5s var(--ease); }
+.read-mode.on { opacity: 1; visibility: visible; transform: none; transition: opacity var(--page-in) var(--ease), transform var(--page-in) var(--ease); }
 .read-mode button {
   font: inherit;
   font-size: var(--type-small);
@@ -98,7 +92,7 @@ body { transition: background-color .4s var(--ease), color .4s var(--ease); }
     pointer-events: none;
   }
 }
-.menu-open .read-mode, .corner-open .read-mode { visibility: hidden; }
+.menu-open .read-mode { visibility: hidden; }
 
 /* While the trailer plays, the background video rests and disappears */
 .trailer-open .bg-video { opacity: 0 !important; }
@@ -115,7 +109,7 @@ body { transition: background-color .4s var(--ease), color .4s var(--ease); }
   height: 0;
   pointer-events: none;
   opacity: 0;
-  transition: opacity .6s var(--ease);
+  transition: opacity var(--page-in) var(--ease);
 }
 .spotlight::before {
   content: "";
@@ -136,7 +130,7 @@ body { transition: background-color .4s var(--ease), color .4s var(--ease); }
 /* ---------- Links that leave the site: white, underlined, with a small arrow ----------
    The same pattern marks the email button (copy icon) and downloads (arrow down). */
 main a[href^="http"]:not(.trailer),
-a.accent,
+a.accent, a.link,
 .copy-email, .copy-email.link,
 a[download] {
   color: var(--color-fg);
@@ -146,11 +140,11 @@ a[download] {
   transition: color var(--fast) var(--ease);
 }
 main a[href^="http"]:not(.trailer):hover,
-a.accent:hover,
+a.accent:hover, a.link:hover,
 .copy-email:hover, .copy-email.link:hover,
 a[download]:hover { color: var(--color-muted); }
 main a[href^="http"]:not(.trailer)::after,
-a.accent::after,
+a.accent::after, a.link::after,
 .copy-email::after,
 a[download]::after {
   content: "";
@@ -163,7 +157,7 @@ a[download]::after {
   mask: var(--icon) center / contain no-repeat;
   vertical-align: -.02em;
 }
-main a[href^="http"]:not(.trailer), a.accent {
+main a[href^="http"]:not(.trailer), a.accent, a.link {
   --icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12' fill='none' stroke='%23000' stroke-width='1.6'%3E%3Cpath d='M2.5 9.5l7-7M4 2.5h5.5V8'/%3E%3C/svg%3E");
 }
 .copy-email {
@@ -195,7 +189,7 @@ a[download] {
   background: var(--color-placeholder);
   color: #fff;
 }
-.trailer img { width: 100%; height: 100%; object-fit: cover; opacity: .82; transition: opacity .5s var(--ease), transform 1.2s cubic-bezier(.2, .7, .2, 1); }
+.trailer img { width: 100%; height: 100%; object-fit: cover; opacity: .82; transition: opacity var(--page-in) var(--ease), transform var(--menu-in) var(--ease-out); }
 .trailer:hover img, .trailer:focus-visible img { opacity: 1; transform: scale(1.03); }
 .trailer-play {
   position: absolute;
@@ -220,7 +214,7 @@ a[download] {
   overflow: visible;
 }
 .trailer-dialog::backdrop { background: rgba(0, 0, 0, .92); }
-.trailer-dialog[open] { animation: fade-in .35s var(--ease) both; }
+.trailer-dialog[open] { animation: fade-in var(--page-in) var(--ease) both; }
 @keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
 .trailer-frame { position: relative; aspect-ratio: 16 / 9; max-height: calc(100vh - 120px); margin: 0 auto; background: #000; }
 .trailer-frame iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
@@ -242,7 +236,7 @@ a[download] {
 .detail-inline .nav-list .current .summary { padding-bottom: 20px; }
 .detail-inline .nav-list .current > .detail { margin: 0 0 48px; }
 .detail-inline .split { row-gap: 0; }
-.detail { transition: opacity .6s var(--ease), transform .6s cubic-bezier(.2, .7, .2, 1); }
+.detail { transition: opacity var(--page-in) var(--ease), transform var(--page-in) var(--ease-out); }
 .detail.opening { opacity: 0; transform: translateY(-12px); transition: none; }
 
 /* ---------- Sound button for background videos (only for videos with sound) ---------- */

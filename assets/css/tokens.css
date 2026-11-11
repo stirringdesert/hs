@@ -22,8 +22,6 @@
   --color-bg: #000;            /* page background */
   --color-fg: #fff;            /* main text */
   --color-muted: #a3a3a3;      /* secondary text, hover state */
-  --color-link: #0099ff;       /* links inside text */
-  --color-accent: #4d8bdb;     /* call-to-action links (voice page) */
   --color-placeholder: #111;   /* shown while an image loads */
 
   /* ---- Font ---- */
@@ -40,7 +38,7 @@
   --type-display-lh: 1.02;
   --type-display-nav-lh: .95;
   --type-display-tracking: clamp(-1px, -.2px - .1vw, -.5px);
-  --type-title: clamp(40px, 25.21px + 3.944vw, 82px);      /* page titles: DIRECTOR, WORKS, DEMO */
+  --type-title: clamp(40px, 25.21px + 3.944vw, 82px);      /* page titles: director, works, demo */
   --type-title-lh: 1.03;
   --type-contact: clamp(40px, 25.21px + 3.944vw, 82px);    /* contact page links */
   --type-contact-lh: 1.12;
@@ -56,12 +54,18 @@
   --type-nav-tracking: -0.2px;
   --type-body: clamp(17px, 15.2px + .48vw, 20px);           /* running text */
   --type-body-lh: 1.25;
-  --type-label: clamp(16px, 13.6px + .64vw, 20px);          /* small bold uppercase labels */
+  --type-label: clamp(16px, 13.6px + .64vw, 20px);          /* small bold labels */
   --type-label-lh: 1.05;
-  --type-caption: 17px;        /* DOWNLOAD link */
+  --type-caption: 17px;        /* download link */
   --type-small: 14px;          /* footer */
   --type-small-lh: 19px;
   --type-legal: 12px;          /* Impressum / Datenschutz links */
+  /* The play text (reading pages): body size, plus these */
+  --type-play-small: 20px;     /* chapter numbers and the author line under the title */
+  --type-play-lh: clamp(23px, 22.63px + .095vw, 24px);      /* play paragraphs */
+  --play-para-gap: clamp(12px, 9.03px + .762vw, 20px);      /* between paragraphs */
+  --play-chapter-gap: clamp(8px, 3.54px + 1.143vw, 20px);   /* extra space under a chapter number */
+  --play-title-space: clamp(160px, 108px + 13.33vw, 300px);  /* above and below the title screen */
 
   /* ---- Layout ---- */
   --gutter: 24px;              /* space at the left/right edge of the page */
@@ -78,8 +82,9 @@
   --fast: .2s;                 /* hover and button feedback */
   --page-in: .55s;             /* new page / open menu arriving */
   --page-out: .25s;            /* old page leaving: always quicker than arriving */
-  --menu-in: .55s;             /* menu links rising one after another */
-  --stagger: .05s;             /* delay between items that arrive one after another */
+  --ease-in-out: cubic-bezier(.6, 0, .25, 1);  /* slow start and end: the shadow spreading over the screen */
+  --menu-in: .7s;              /* menu opening: the shadow spreads and the name grows */
+  --menu-out: .5s;             /* menu closing / leaving the home page: the shadow shrinks into the corner */
   --bg-video-opacity: .65;
   --bg-video-fade: 3s;
   --bio-photo-opacity: .8;

@@ -1,3 +1,4 @@
+404.html
 bio/index.html
 contact/index.html
 datenschutzerklaerung/index.html

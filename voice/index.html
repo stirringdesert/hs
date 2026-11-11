@@ -4,6 +4,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <meta name="theme-color" content="#000">
   <title>Voice acting - Igor Sergeev</title>
   <meta name="description" content="The Russian voice of Leon Kennedy in Resident Evil 4 Remake and Jon Snow in Game of Thrones. Over 100 dubbed films, series and games, 126 audiobooks. Theater director and playwright based in Munich.">
   <meta property="og:type" content="website">
@@ -18,16 +20,37 @@
   <link rel="alternate" hreflang="x-default" href="https://harrysergeev.com/voice/">
   <link rel="icon" href="/assets/img/favicon-light.png" media="(prefers-color-scheme: light)">
   <link rel="icon" href="/assets/img/favicon-dark.png" media="(prefers-color-scheme: dark)">
-  <link rel="stylesheet" href="/assets/css/tokens.css?v=48a5253b">
-  <link rel="stylesheet" href="/assets/css/style.css?v=1f8a3238">
-  <link rel="stylesheet" href="/assets/css/fun.css?v=1f0d7987">
-  <link rel="stylesheet" href="/assets/css/type.css?v=a74bb784">
-  <script src="/assets/js/main.js?v=5293f725" defer></script>
+  <link rel="preload" href="/assets/fonts/tt-firs-neue-regular.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="/assets/fonts/tt-firs-neue-demibold.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="/assets/css/tokens.css?v=924e3275">
+  <link rel="stylesheet" href="/assets/css/style.css?v=d5961481">
+  <link rel="stylesheet" href="/assets/css/type.css?v=b5fba61d">
+  <link rel="stylesheet" href="/assets/css/fun.css?v=b2568cc5">
+  <script src="/assets/js/main.js?v=c3f7edc2" defer></script>
   <script src="/assets/js/fun.js?v=30431ad4" defer></script>
+  <script type="speculationrules">{"prefetch":[{"where":{"and":[{"href_matches":"/*"},{"not":{"href_matches":"/assets/*"}}]},"eagerness":"moderate"}]}</script>
 </head>
 <body class="voice">
   <header class="site-header">
-    <a class="name" href="/">Igor Sergeev</a>
+    <a class="name menu-toggle" href="/" aria-controls="menu" aria-expanded="false" aria-label="Igor Sergeev, Menu">Igor Sergeev<span class="menu-arrow" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 3v17M4.5 12.5 12 20l7.5-7.5"/></svg></span></a>
+    <div class="menu" id="menu">
+      <div class="home-main">
+        <div class="home-top"><a class="home-name menu-toggle is-close" href="/" aria-label="Close">Igor Sergeev<span class="menu-arrow" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 3v17M4.5 12.5 12 20l7.5-7.5"/></svg></span></a>
+          <p class="clock" aria-hidden="true">time in Munich <b data-clock>--:--</b></p>
+        </div>
+        <nav class="home-nav" aria-label="Main">
+          <a href="/bio/">bio</a>
+          <a href="/voice/">voice acting</a>
+          <a href="/theater/">theater</a>
+          <a href="/open-relationship-en/">playwriting</a>
+          <a href="/contact/">contact</a>
+        </nav>
+        <div class="home-foot">
+          <nav class="lang-switch" aria-label="Language"><a href="/voice/" hreflang="en" lang="en" data-lang="en" aria-current="true">EN</a><a href="/de/voice/" hreflang="de" lang="de" data-lang="de">DE</a><a href="/ru/voice/" hreflang="ru" lang="ru" data-lang="ru">RU</a></nav>
+          <nav class="legal-links" aria-label="Legal"><a href="/impressum/">Impressum</a><a href="/datenschutzerklaerung/">Datenschutz</a></nav>
+        </div>
+      </div>
+    </div>
   </header>
   <main>
     <section class="demo">
@@ -35,8 +58,8 @@
       <h1 class="page-title">Demo</h1>
       <a class="download" href="/assets/media/demo.wav" download>DOWNLOAD</a>
     </div>
-    <div class="player" data-src="/assets/media/demo.wav" data-play="Play audio" data-pause="Pause audio">
-      <audio preload="metadata" src="/assets/media/demo.wav"></audio>
+    <div class="player" data-src="/assets/media/demo.mp3" data-play="Play audio" data-pause="Pause audio">
+      <audio preload="metadata" src="/assets/media/demo.mp3"></audio>
       <div class="player-row">
         <button type="button" class="player-play" aria-label="Play audio"><svg viewBox="0 0 16 16" aria-hidden="true"><path class="icon-play" d="M5.379 1.292C4.968 1.033 4.449 1.017 4.023 1.251 3.598 1.486 3.334 1.933 3.333 2.419V13.581C3.334 14.067 3.598 14.514 4.023 14.749 4.449 14.983 4.968 14.967 5.379 14.708L14.215 9.127C14.602 8.883 14.836 8.457 14.836 8 14.836 7.543 14.602 7.117 14.215 6.873Z"/></svg></button>
         <div class="bar" role="slider" aria-label="Seek" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" tabindex="0"><span class="track"><i></i></span></div>
@@ -129,22 +152,5 @@
 
     <p class="bookings bottom-cta">for voiceover bookings and inquiries, please <a class="accent" href="/contact/">contact</a></p>
   </main>
-  <footer class="site-footer">
-    <a href="/impressum/">Impressum</a>
-    <a href="/datenschutzerklaerung/">Datenschutz</a>
-  </footer>
-  <nav class="corner-menu" aria-label="Main">
-    <div class="corner-panel" id="corner-panel">
-      <div class="corner-links">
-        <a href="/bio/">bio</a>
-        <a href="/voice/">voice acting</a>
-        <a href="/theater/">theater</a>
-        <a href="/open-relationship-en/">playwriting</a>
-        <a href="/contact/">contact</a>
-      </div>
-      <div class="meta-row"><p class="clock" aria-hidden="true">time in Munich <b data-clock>--:--</b></p><nav class="lang-switch" aria-label="Language"><a href="/voice/" hreflang="en" lang="en" data-lang="en" aria-current="true">EN</a><a href="/de/voice/" hreflang="de" lang="de" data-lang="de">DE</a><a href="/ru/voice/" hreflang="ru" lang="ru" data-lang="ru">RU</a></nav></div>
-    </div>
-    <button type="button" class="corner-toggle" aria-expanded="false" aria-controls="corner-panel"><span class="when-closed">menu</span><span class="when-open" aria-hidden="true">close</span></button>
-  </nav>
 </body>
 </html>

@@ -18,7 +18,9 @@ function v(url) {
 const PLAY_ICON = 'M5.379 1.292C4.968 1.033 4.449 1.017 4.023 1.251 3.598 1.486 3.334 1.933 3.333 2.419V13.581C3.334 14.067 3.598 14.514 4.023 14.749 4.449 14.983 4.968 14.967 5.379 14.708L14.215 9.127C14.602 8.883 14.836 8.457 14.836 8 14.836 7.543 14.602 7.117 14.215 6.873Z';
 
 // Full HTML document. `chrome: false` leaves out the header (used by the home page).
-export function layout(site, { path, title, bodyClass, lang = 'en', description, main, mainClass = '', before = '', chrome = true, noindex = false, extraCss = [], alternates = null, head = '' }) {
+// The legal links live in the home view, so every page reaches them: on the home page
+// directly, everywhere else through the menu.
+export function layout(site, { path, title, bodyClass, lang = 'en', description, main, mainClass = '', before = '', chrome = true, noindex = false, extraCss = [], alternates = null, menuAlternates = null, head = '' }) {
   const fullTitle = title ? `${title} - ${site.name}` : site.name;
   const desc = description || site.description;
   const url = site.url + path;
@@ -32,6 +34,8 @@ export function layout(site, { path, title, bodyClass, lang = 'en', description,
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <meta name="theme-color" content="#000">
   <title>${esc(fullTitle)}</title>
   <meta name="description" content="${attr(desc)}">${noindex ? '\n  <meta name="robots" content="noindex">' : ''}
   <meta property="og:type" content="website">
@@ -42,22 +46,32 @@ export function layout(site, { path, title, bodyClass, lang = 'en', description,
   <link rel="canonical" href="${attr(url)}">${hreflang}
   <link rel="icon" href="/assets/img/favicon-light.png" media="(prefers-color-scheme: light)">
   <link rel="icon" href="/assets/img/favicon-dark.png" media="(prefers-color-scheme: dark)">
+${FONT_PRELOADS}
   <link rel="stylesheet" href="${v('/assets/css/tokens.css')}">
   <link rel="stylesheet" href="${v('/assets/css/style.css')}">
-  <link rel="stylesheet" href="${v('/assets/css/fun.css')}">
-  <link rel="stylesheet" href="${v('/assets/css/type.css')}">${extraCss.map((h) => `\n  <link rel="stylesheet" href="${v(h)}">`).join('')}${stageBoot(before + main)}
+  <link rel="stylesheet" href="${v('/assets/css/type.css')}">
+  <link rel="stylesheet" href="${v('/assets/css/fun.css')}">${extraCss.map((h) => `\n  <link rel="stylesheet" href="${v(h)}">`).join('')}${stageBoot(before + main)}
   <script src="${v('/assets/js/main.js')}" defer></script>
-  <script src="${v('/assets/js/fun.js')}" defer></script>${head ? '\n' + indent(head, 2) : ''}
+  <script src="${v('/assets/js/fun.js')}" defer></script>
+  ${PREFETCH}${head ? '\n' + indent(head, 2) : ''}
 </head>
 <body class="${bodyClass}">
-${before ? before + '\n' : ''}${chrome ? header(site) + '\n' : ''}  <main${mainClass ? ` class="${mainClass}"` : ''}>
+${before ? before + '\n' : ''}${chrome ? header(site, menuAlternates || alternates) + '\n' : ''}  <main${mainClass ? ` class="${mainClass}"` : ''}>
 ${indent(main, 4)}
   </main>
-${footer(site)}${chrome ? '\n' + cornerMenu(site, alternates) : ''}
 </body>
 </html>
 `;
 }
+
+// Fonts start downloading together with the HTML instead of after the CSS is read,
+// so text appears in the right font straight away (no flash of a fallback font).
+const FONT_PRELOADS = ['regular', 'demibold']
+  .map((w) => `  <link rel="preload" href="/assets/fonts/tt-firs-neue-${w}.woff2" as="font" type="font/woff2" crossorigin>`).join('\n');
+
+// Chrome and Edge fetch a page in the background while the pointer rests on its link,
+// so the click opens it at once. Files (PDFs, audio, video) are never fetched early.
+const PREFETCH = `<script type="speculationrules">{"prefetch":[{"where":{"and":[{"href_matches":"/*"},{"not":{"href_matches":"/assets/*"}}]},"eagerness":"moderate"}]}</script>`;
 
 // When the previous page showed the same background photo or video (e.g. switching
 // language), it stays lit instead of fading in again. Runs before the first paint.
@@ -68,44 +82,44 @@ function stageBoot(html) {
 }
 
 
-export function header(site) {
+// The name and its arrow are one button that opens the full-screen menu. In the menu
+// the big name with the arrow turned up closes it again. Without JavaScript the name
+// is a plain link to the home page, which shows the same menu.
+const ARROW = '<span class="menu-arrow" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 3v17M4.5 12.5 12 20l7.5-7.5"/></svg></span>';
+
+export function header(site, alternates = null) {
+  const ui = site.ui || {};
   return `  <header class="site-header">
-    <a class="name" href="${attr(site.home || '/')}">${esc(site.name)}</a>
+    <a class="name menu-toggle" href="${attr(site.home || '/')}" aria-controls="menu" aria-expanded="false" aria-label="${attr(`${site.name}, ${ui.menu || 'Menu'}`)}">${esc(site.name)}${ARROW}</a>
+    <div class="menu" id="menu">
+${indent(homeView(site, alternates, { inMenu: true }), 6)}
+    </div>
   </header>`;
 }
 
-// The home page view: big name at the top, big menu at the bottom, then the time and
-// the language switch. The corner menu on every other page is this same menu, small.
-export function homeView(site, alternates = null) {
-  return `<a class="home-name" href="${attr(site.home || '/')}">${esc(site.name)}</a>
-<div class="home-bottom">
+// The home page view: big name at the top with the time under it, big menu at the
+// bottom, and under it one row with the languages and legal links. The menu on every
+// other page is this same view.
+export function homeView(site, alternates = null, { inMenu = false } = {}) {
+  return `<div class="home-main">
+  <div class="home-top">${inMenu
+    ? `<a class="home-name menu-toggle is-close" href="${attr(site.home || '/')}" aria-label="${attr((site.ui || {}).close || 'Close')}">${esc(site.name)}${ARROW}</a>`
+    : `<a class="home-name" href="${attr(site.home || '/')}">${esc(site.name)}</a>`}
+    ${clock(site)}
+  </div>
   <nav class="home-nav" aria-label="${attr((site.ui || {}).main_menu || 'Main')}">
 ${site.nav.map((n) => `    <a href="${attr(n.url)}">${esc(n.label)}</a>`).join('\n')}
   </nav>
-  ${metaRow(site, alternates)}
+  ${homeFoot(site, alternates)}
 </div>`;
 }
 
-// Time in Munich, then the language switch (the light/dark switch is added after it by fun.js).
-export function metaRow(site, alternates = null) {
-  return `<div class="meta-row">${clock(site)}${alternates?.length > 1 ? langSwitch(site, alternates) : ''}</div>`;
-}
-
-// Bottom-left corner on every page except home: the word "menu". Hovering it (or tapping
-// it) raises the home page's menu, small, right there, with the time and languages.
-export function cornerMenu(site, alternates = null) {
-  const ui = site.ui || {};
-  const open = (ui.menu || 'Menu').toLowerCase();
-  const close = (ui.close || 'Close').toLowerCase();
-  return `  <nav class="corner-menu" aria-label="${attr(ui.main_menu || 'Main')}">
-    <div class="corner-panel" id="corner-panel">
-      <div class="corner-links">
-${site.nav.map((n) => `        <a href="${attr(n.url)}">${esc(n.label)}</a>`).join('\n')}
-      </div>
-      ${metaRow(site, alternates)}
-    </div>
-    <button type="button" class="corner-toggle" aria-expanded="false" aria-controls="corner-panel"><span class="when-closed">${esc(open)}</span><span class="when-open" aria-hidden="true">${esc(close)}</span></button>
-  </nav>`;
+// Bottom of the home view: languages on the left, legal links on the right.
+export function homeFoot(site, alternates = null) {
+  return `<div class="home-foot">
+    ${alternates?.length > 1 ? langSwitch(site, alternates) : '<span></span>'}
+    <nav class="legal-links" aria-label="Legal">${site.footer.map((n) => `<a href="${attr(n.url)}">${esc(n.label)}</a>`).join('')}</nav>
+  </div>`;
 }
 
 // "EN DE RU": the same page in each language, the current one marked.
@@ -137,23 +151,17 @@ export function langPicker(alternates) {
 </div>`;
 }
 
-// "Time in Munich" clock (filled in by main.js).
+// "time in Munich" clock (filled in by main.js).
 export function clock(site = {}) {
-  return `<p class="clock" aria-hidden="true">${esc(site.ui?.time_in_munich || 'Time in Munich')} <b data-clock>--:--</b></p>`;
+  return `<p class="clock" aria-hidden="true">${esc(site.ui?.time_in_munich || 'time in Munich')} <b data-clock>--:--</b></p>`;
 }
 
-export function footer(site) {
-  return `  <footer class="site-footer">
-${site.footer.map((n) => `    <a href="${attr(n.url)}">${esc(n.label)}</a>`).join('\n')}
-  </footer>`;
-}
-
-// Big uppercase heading, e.g. "Director", "Works".
+// Big page heading, e.g. "director", "works" (lowercase comes from type.css).
 export function pageTitle(text, extraClass = '') {
   return `<h1 class="page-title${extraClass ? ' ' + extraClass : ''}">${esc(text)}</h1>`;
 }
 
-// Small bold uppercase line. `html` is already-safe markup.
+// Small bold label line. `html` is already-safe markup.
 export function label(html, { tag = 'h2', extraClass = '' } = {}) {
   return `<${tag} class="label${extraClass ? ' ' + extraClass : ''}">${html}</${tag}>`;
 }
@@ -180,7 +188,7 @@ export function trailer({ embed, image, url, label = 'Trailer', duration = '' })
 // Fixed full-screen photo behind a page, styled like the background videos
 // (same dimming and fade-in, plus a slow drift so it feels alive).
 export function bgImage(src, alt = '') {
-  return `  <div class="bg-video bg-image"><img src="${attr(src)}" alt="${attr(alt)}"></div>`;
+  return `  <div class="bg-video bg-image"><img src="${attr(src)}" alt="${attr(alt)}" fetchpriority="high"></div>`;
 }
 
 // List of productions on the left of theater/playwriting pages. The current one opens
@@ -217,7 +225,7 @@ export const READ_LIGHT_BOOT = `<script>try{if(localStorage.getItem('hs-reading-
 export function demoHead(title, src, ui = {}) {
   return `<div class="demo-head">
   <h1 class="page-title">${esc(title)}</h1>
-  <a class="download" href="${attr(src)}" download>${esc(ui.download || 'DOWNLOAD')}</a>
+  <a class="download" href="${attr(src)}" download>${esc(ui.download || 'download')}</a>
 </div>`;
 }
 
