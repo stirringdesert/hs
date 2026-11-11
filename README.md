@@ -57,6 +57,17 @@ Put the image in `assets/img/voice/` and add an entry to `roles` in `content/voi
 { "character": "Jon Snow", "title": "Game of Thrones", "image": "/assets/img/voice/jon-snow.jpg" }
 ```
 
+## Languages
+
+The site is in English (at the root), German (`/de/`) and Russian (`/ru/`). The list is `languages` in `content/site.json`; the first one lives at the root.
+
+- Every text file can have a translation next to it, named with the language code: `bio.de.md`, `voice.ru.json`, `theater/bumerit.de.md`, `site.ru.json` (menu, page names, small labels).
+- A translation only needs what changes. In `.md` files, front matter fields replace the English ones and the text replaces the English text. In `voice.<lang>.json`, `roles` lists only translated fields, keyed by the English character name.
+- If a translation file is missing, that page shows the English text and the build lists what is untranslated.
+- Site links in text (like `[contact](/contact/)`) automatically point to the same language.
+- On the first visit to the home page, a full-screen picker (en / de / ru) asks for a language. The choice is remembered in the browser, and the EN / DE / RU switch in the corner changes it.
+- Impressum and Datenschutzerklärung exist only in German. The play reading pages (`/open-relationship-en|de|ru/`) are linked to each other by the language switch.
+
 ## Design system
 
 - **Tokens** (`assets/css/tokens.css`): every color, font size, line height, gutter and animation value. Phone and tablet sizes are set there too, in two media blocks at the bottom. Components use only `var(--...)` tokens for colors and type.
