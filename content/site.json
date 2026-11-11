@@ -80,6 +80,7 @@
     ]
   },
   "ui": {
+    "trailer": "Trailer",
     "main_menu": "Main",
     "menu": "Menu",
     "language": "Language",

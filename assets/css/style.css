@@ -215,36 +215,75 @@ main {
   mask-composite: intersect;
 }
 
-/* ---------- Audio player ---------- */
+/* ---------- Audio player ----------
+   Every control has a 44 px click area; the visible parts stay thin. */
 
-.player { margin-top: 64px; }
+.player { margin-top: 64px; --player-hit: 44px; }
 .player-row { display: flex; align-items: center; }
 .player button {
-  width: 18px; height: 18px; margin-right: 18px; padding: 0;
+  display: grid; place-items: center;
+  width: var(--player-hit); height: var(--player-hit); padding: 0;
   border: 0; background: none; cursor: pointer; color: var(--color-fg);
+  transition: color var(--fast) var(--ease);
 }
-.player button svg { width: 100%; height: 100%; fill: currentColor; }
-.player .bar {
+.player button:hover { color: var(--color-muted); }
+.player button svg { width: 18px; height: 18px; fill: currentColor; }
+.player-play { margin-left: -13px; margin-right: 5px; }
+.player .bar {               /* tall invisible hit area around a thin track */
   position: relative;
   flex: 1;
+  height: var(--player-hit);
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  touch-action: none;
+}
+.player .track {
+  position: relative;
+  width: 100%;
   height: 4px;
   border-radius: 5px;
   background: var(--color-muted);
-  overflow: hidden;
-  cursor: pointer;
+  transition: height .2s var(--ease);
 }
-.player .bar i {
+.player .bar:hover .track, .player .bar.dragging .track, .player .bar:focus-visible .track { height: 6px; }
+.player .track i {
   position: absolute; inset: 0 auto 0 0;
-  width: 0; background: var(--color-fg);
-  transition: width .1s linear;
+  width: 0; border-radius: inherit; background: var(--color-fg);
 }
+.player .track i::after {     /* knob at the play position, shown on hover and drag */
+  content: "";
+  position: absolute; right: -7px; top: 50%;
+  width: 14px; height: 14px; margin-top: -7px;
+  border-radius: 50%; background: var(--color-fg);
+  transform: scale(0); transition: transform .2s var(--ease);
+}
+.player .bar:hover .track i::after, .player .bar.dragging .track i::after, .player .bar:focus-visible .track i::after { transform: scale(1); }
 .player-meta {
-  display: flex; justify-content: space-between; align-items: flex-end;
-  padding-left: 36px; margin-top: 4px;
+  display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;
+  padding-left: 36px; gap: 8px 24px;
 }
 .player .time { font-size: var(--type-time); line-height: var(--type-time-lh); font-variant-numeric: tabular-nums; }
-.player .download { font-size: var(--type-caption); line-height: var(--type-caption); padding-bottom: 12px; }
-.player .download:hover { color: var(--color-muted); }
+.player .time .total { color: var(--color-muted); font-size: var(--type-body); margin-left: 10px; }
+.player-tools { display: flex; align-items: center; gap: 20px; }
+.player .volume { display: flex; align-items: center; }
+.player-mute[aria-pressed="true"] .waves { opacity: 0; }
+.player-volume {           /* thin line slider, 80 px wide, 44 px tall to grab */
+  -webkit-appearance: none; appearance: none;
+  width: 80px; height: var(--player-hit); margin: 0;
+  background: none; cursor: pointer;
+  --v: 100%;
+}
+.player-volume::-webkit-slider-runnable-track { height: 2px; background: linear-gradient(var(--color-fg), var(--color-fg)) 0 / var(--v) 100% no-repeat, var(--color-muted); }
+.player-volume::-moz-range-track { height: 2px; background: var(--color-muted); }
+.player-volume::-moz-range-progress { height: 2px; background: var(--color-fg); }
+.player-volume::-webkit-slider-thumb { -webkit-appearance: none; width: 10px; height: 10px; margin-top: -4px; border-radius: 50%; background: var(--color-fg); border: 0; }
+.player-volume::-moz-range-thumb { width: 10px; height: 10px; border-radius: 50%; background: var(--color-fg); border: 0; }
+.no-volume .player-volume { display: none; }   /* iPhones ignore page volume; the phone's buttons do it */
+.player .download {          /* same look as the other small actions: caps, underlined, icon */
+  display: inline-flex; align-items: center; min-height: var(--player-hit);
+  font-size: var(--type-label); line-height: var(--type-label-lh);
+}
 
 /* ---------- Voice role cards ---------- */
 
