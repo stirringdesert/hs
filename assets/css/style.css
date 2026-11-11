@@ -415,7 +415,7 @@ main {
 /* ---------- Play text (open-relationship-ru) ---------- */
 
 .play main { padding-top: 100px; }
-.play-body { width: 50%; display: flex; flex-direction: column; gap: 40px; }
+.play-body { width: 100%; max-width: 696px; margin: 0 auto; display: flex; flex-direction: column; gap: 40px; }   /* centred at the desktop width until it meets the page padding */
 .play-scene { display: flex; flex-direction: column; gap: 12px; }
 .play-scene h2 { font-size: 20px; line-height: 20px; text-align: center; margin-bottom: 8px; }
 .play-scene p { line-height: 1.35; }
