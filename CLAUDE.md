@@ -4,6 +4,8 @@ This repository is the source of a personal portfolio website (the domain is in 
 
 The technical details (where every piece of content lives, how to add a production or a voice role, the design system) are in `README.md`. Read it before your first change.
 
+Before any visual decision (layout, type, color, motion, a new block), read `DESIGN-PHILOSOPHY.md`: it explains how the site should feel and the reasons behind past design feedback. When the person says what they like or dislike, or asks for a visual change, work out why and add it to that file's feedback log in the same pull request.
+
 ## How a change goes live
 
 1. Start from the latest `main` (`git pull origin main`). Other people edit this site too.
