@@ -96,14 +96,16 @@
   // The photo is fixed at the top like the videos and is fully gone when the first
   // chapter number is as far from the top of the screen as from its first paragraph.
   // At that point a "switch to light" button appears in the bottom-right corner. It
-  // goes away after one more screen of scrolling and comes back when scrolling up. Light mode only lives
+  // goes away when the second chapter begins and comes back when scrolling up. Light mode only lives
   // on this page: nothing is remembered, so every other page (and the menu) is black.
   (function () {
     var first = document.querySelector('.play-scene h2');
     if (!first) return;
     var bg = document.querySelector('.bg-image');
     var para = first.nextElementSibling;
-    var end = 1, queued = false;
+    // the second chapter: the next heading that is a number, like "2."
+    var second = [].filter.call(document.querySelectorAll('.play-scene h2'), function (h) { return h !== first && /^\s*\d+\.?\s*$/.test(h.textContent); })[0];
+    var end = 1, stop = 1, queued = false;
 
     var sw = document.createElement('div');
     sw.className = 'read-mode';
@@ -122,14 +124,16 @@
       var h = first.getBoundingClientRect();
       var gap = para ? para.getBoundingClientRect().top - h.bottom : 20;
       end = Math.max(1, h.top + window.scrollY - gap);   // scroll position where the photo is gone
+      // the switch leaves when the second chapter number reaches the top of the screen
+      stop = second ? second.getBoundingClientRect().top + window.scrollY : end + window.innerHeight;
       update();
     }
     function update() {
       queued = false;
       var y = window.scrollY;
       if (bg) bg.style.setProperty('--fade', (1 - Math.min(1, Math.max(0, y / end))).toFixed(3));
-      // shown from where the photo is gone until one more screen down; back again when scrolling up
-      sw.classList.toggle('on', y >= end - 2 && y <= end + window.innerHeight);
+      // shown from where the photo is gone until the second chapter begins; back again when scrolling up
+      sw.classList.toggle('on', y >= end - 2 && y < stop);
     }
     if (bg) bg.classList.add('scroll-fade');
     window.addEventListener('scroll', function () { if (!queued) { queued = true; requestAnimationFrame(update); } }, { passive: true });

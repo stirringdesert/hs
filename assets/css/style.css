@@ -318,7 +318,7 @@ main {
   .player-meta { display: grid; grid-template-columns: 1fr auto; align-items: center; column-gap: 16px; }
   .player-tools { display: contents; }
   .player .volume { grid-column: 2; grid-row: 1; }
-  .player .download { grid-column: 1 / -1; grid-row: 2; justify-self: start; }
+  .player .download { grid-column: 1 / -1; grid-row: 2; justify-self: end; }
 }
 
 /* ---------- Voice role cards ---------- */

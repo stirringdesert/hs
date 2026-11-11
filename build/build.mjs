@@ -311,7 +311,7 @@ for (const { f, slug, data, body: raw } of freePages) {
         } : {};
         // The other languages' reading pages, shown on the right of the title row
         const others = (alternates || []).filter((a) => a.code !== lang)
-          .map((a) => `<a href="${attr(a.href)}" hreflang="${a.code}" lang="${a.code}">${esc(a.label)}</a>`).join('');
+          .map((a) => `<a href="${attr(a.href)}" hreflang="${a.code}" lang="${a.code}">${esc(a.label.toLowerCase())}</a>`).join('');
         return { ...it, ...tr, url: `/${slug}/`, asideHtml: others, linksHtml: `<a class="play-dl-btn" href="${attr(data.pdf)}" download>${esc(label)}</a>` };
       });
       const cur = items.find((it) => it.slug === playSlug);

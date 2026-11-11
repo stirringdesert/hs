@@ -38,7 +38,7 @@
 body { transition: background-color .4s var(--ease), color .4s var(--ease); }
 
 /* ---------- Play page: "switch to light / dark" in the bottom-right corner ----------
-   Shown from where the photo has faded out until one more screen of scrolling. */
+   Shown from where the photo has faded out until the second chapter begins. */
 .read-mode {
   position: fixed;
   right: 0;
@@ -107,6 +107,9 @@ body { transition: background-color .4s var(--ease), color .4s var(--ease); }
   background: radial-gradient(closest-side, rgba(255, 255, 255, .12), rgba(255, 255, 255, .05) 55%, transparent);
 }
 .spotlight.on { opacity: 1; }
+/* The open menu covers the page with black, so the light moves on top of it there.
+   "screen" only brightens, so the white menu words stay as they are. */
+.menu-open .spotlight { z-index: 70; mix-blend-mode: screen; }
 :root[data-theme="light"] .spotlight::before { background: radial-gradient(closest-side, rgba(0, 0, 0, .05), rgba(0, 0, 0, .02) 55%, transparent); }
 
 /* ---------- Links that leave the site: white, underlined, with a small arrow ----------
