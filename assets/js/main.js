@@ -1,45 +1,33 @@
-// Corner menu: opens while the pointer is over it (with a short grace period on the
-// way out), on tap or click, and on keyboard focus. Escape, a tap elsewhere or
-// scrolling on a touch screen closes it.
+// Menu: the arrow next to the name opens a full-screen copy of the home page. Where the
+// browser supports view transitions, the header name grows into the big name (and
+// back on close); the menu cross-fades instead of the page rising (style.css, .vt-menu).
 (function () {
-  var menu = document.querySelector('.corner-menu');
-  if (!menu) return;
-  var btn = menu.querySelector('.corner-toggle');
-  var hover = window.matchMedia('(hover: hover) and (pointer: fine)');
-  var timer;
-  function set(open) {
-    clearTimeout(timer);
-    menu.classList.toggle('open', open);
-    btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+  var open = document.querySelector('.site-header > .menu-arrow');
+  var close = document.querySelector('.menu .menu-arrow.is-close');
+  if (!open) return;
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)');
+  function set(on) {
+    function apply() {
+      document.body.classList.toggle('menu-open', on);
+      open.setAttribute('aria-expanded', on ? 'true' : 'false');
+    }
+    if (!document.startViewTransition || reduce.matches) apply();
+    else {
+      var root = document.documentElement;
+      root.classList.add('vt-menu');
+      document.startViewTransition(apply).finished.finally(function () { root.classList.remove('vt-menu'); });
+    }
+    setTimeout(function () { (on ? close : open).focus({ preventScroll: true }); }, 0);
   }
-  var isOpen = function () { return menu.classList.contains('open'); };
-  menu.addEventListener('mouseenter', function () { if (hover.matches) set(true); });
-  menu.addEventListener('mouseleave', function () {
-    var f = document.activeElement;
-    if (!hover.matches || (menu.contains(f) && f.matches(':focus-visible'))) return;   // keep open while using the keyboard
-    timer = setTimeout(function () { set(false); }, 300);
-  });
-  btn.addEventListener('click', function () {
-    // With a mouse the menu is already open from hovering, so a click keeps it open
-    // (moving away closes it). On touch screens the word toggles open/closed.
-    if (hover.matches && isOpen()) return;
-    set(!isOpen());
-  });
-  menu.addEventListener('focusin', function (e) { if (e.target.matches(':focus-visible')) set(true); });   // keyboard only; taps use click
-  menu.addEventListener('focusout', function (e) { if (!menu.contains(e.relatedTarget)) set(false); });
+  open.addEventListener('click', function () { set(true); });
+  if (close) close.addEventListener('click', function () { set(false); });
   document.addEventListener('keydown', function (e) {
-    if (e.key === 'Escape' && isOpen()) { set(false); btn.focus(); }
-  });
-  document.addEventListener('pointerdown', function (e) { if (isOpen() && !menu.contains(e.target)) set(false); });
-  window.addEventListener('scroll', function () { if (isOpen() && !hover.matches) set(false); }, { passive: true });
-  // The current page's link is marked, so the open menu shows where you are
-  var here = location.pathname;
-  menu.querySelectorAll('.corner-links a').forEach(function (a) {
-    var p = a.getAttribute('href');
-    if (p && p !== '/' && here.indexOf(p.replace(/index\.html$/, '')) === 0) a.setAttribute('aria-current', 'page');
+    if (e.key === 'Escape' && document.body.classList.contains('menu-open')) set(false);
   });
   // Coming back with the Back button can restore the page with the menu still open
-  window.addEventListener('pageshow', function (e) { if (e.persisted) set(false); });
+  window.addEventListener('pageshow', function (e) {
+    if (e.persisted) { document.body.classList.remove('menu-open'); open.setAttribute('aria-expanded', 'false'); }
+  });
 })();
 
 // Page transitions: when the visitor has scrolled down, the header name is off screen,

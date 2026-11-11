@@ -170,7 +170,7 @@ function buildLanguage(lang) {
     chrome: false,
     before: lang === DEFAULT ? C.langPicker(alternatesOf('/')) : '',
     head: lang === DEFAULT ? C.langPickerHead(alternatesOf('/')) : '',
-    mainClass: 'home-main',
+    mainClass: 'home-page',
     main: C.homeView(s, alternatesOf('/')),
   });
 

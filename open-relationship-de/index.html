@@ -19,18 +19,35 @@
   <link rel="icon" href="/assets/img/favicon-light.png" media="(prefers-color-scheme: light)">
   <link rel="icon" href="/assets/img/favicon-dark.png" media="(prefers-color-scheme: dark)">
   <link rel="stylesheet" href="/assets/css/tokens.css?v=48a5253b">
-  <link rel="stylesheet" href="/assets/css/style.css?v=e3f085b0">
+  <link rel="stylesheet" href="/assets/css/style.css?v=b44ba5d3">
   <link rel="stylesheet" href="/assets/css/type.css?v=4dfba4ad">
   <link rel="stylesheet" href="/assets/css/fun.css?v=603790aa">
   <script>(function(){try{var q=location.search.match(/[?&]theme=(light|dark)/);if(q)localStorage.setItem('theme',q[1]);if(localStorage.getItem('theme')==='light')document.documentElement.setAttribute('data-theme','light')}catch(e){}})()</script>
   <script>try{if(sessionStorage.getItem('stage')==="assets/img/open-relationship.jpg")document.documentElement.classList.add('stage-lit')}catch(e){}</script>
-  <script src="/assets/js/main.js?v=5293f725" defer></script>
+  <script src="/assets/js/main.js?v=df63c12e" defer></script>
   <script src="/assets/js/fun.js?v=efc9e357" defer></script>
 </head>
 <body class="theater reading">
   <div class="bg-video bg-image"><img src="/assets/img/open-relationship.jpg" alt="Igor Sergeev and Rostislav Godlevsky"></div>
   <header class="site-header">
     <a class="name" href="/de/">Igor Sergeev</a>
+    <button type="button" class="menu-arrow" aria-label="Menü" aria-expanded="false" aria-controls="menu"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v17M4.5 12.5 12 20l7.5-7.5"/></svg></button>
+    <div class="menu" id="menu">
+      <div class="home-main">
+        <div class="home-top"><a class="home-name" href="/de/">Igor Sergeev</a><button type="button" class="menu-arrow is-close" aria-label="Schließen"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v17M4.5 12.5 12 20l7.5-7.5"/></svg></button></div>
+        <nav class="home-nav" aria-label="Hauptmenü">
+          <a href="/de/bio/">bio</a>
+          <a href="/de/voice/">synchron</a>
+          <a href="/de/theater/">theater</a>
+          <a href="/open-relationship-de/">stücke</a>
+          <a href="/de/contact/">kontakt</a>
+        </nav>
+        <div class="home-foot">
+          <p class="clock" aria-hidden="true">zeit in München <b data-clock>--:--</b></p><nav class="lang-switch" aria-label="Sprache"><a href="/open-relationship-en/" hreflang="en" lang="en" data-lang="en">EN</a><a href="/open-relationship-de/" hreflang="de" lang="de" data-lang="de" aria-current="true">DE</a><a href="/open-relationship-ru/" hreflang="ru" lang="ru" data-lang="ru">RU</a></nav>
+          <nav class="legal-links" aria-label="Legal"><a href="/impressum/">Impressum</a><a href="/datenschutzerklaerung/">Datenschutz</a></nav>
+        </div>
+      </div>
+    </div>
   </header>
   <main>
     <h1 class="page-title">Autor</h1>
@@ -413,18 +430,5 @@
     <a href="/impressum/">Impressum</a>
     <a href="/datenschutzerklaerung/">Datenschutz</a>
   </footer>
-  <nav class="corner-menu" aria-label="Hauptmenü">
-    <div class="corner-panel" id="corner-panel">
-      <div class="corner-links">
-        <a href="/de/bio/">bio</a>
-        <a href="/de/voice/">synchron</a>
-        <a href="/de/theater/">theater</a>
-        <a href="/open-relationship-de/">stücke</a>
-        <a href="/de/contact/">kontakt</a>
-      </div>
-      <div class="meta-row"><p class="clock" aria-hidden="true">zeit in München <b data-clock>--:--</b></p><nav class="lang-switch" aria-label="Sprache"><a href="/open-relationship-en/" hreflang="en" lang="en" data-lang="en">EN</a><a href="/open-relationship-de/" hreflang="de" lang="de" data-lang="de" aria-current="true">DE</a><a href="/open-relationship-ru/" hreflang="ru" lang="ru" data-lang="ru">RU</a></nav></div>
-    </div>
-    <button type="button" class="corner-toggle" aria-expanded="false" aria-controls="corner-panel"><span class="when-closed">menü</span><span class="when-open" aria-hidden="true">schließen</span></button>
-  </nav>
 </body>
 </html>
