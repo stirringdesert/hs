@@ -37,11 +37,11 @@
 .bg-video ~ main .trailer { text-shadow: none; }
 body { transition: background-color .4s var(--ease), color .4s var(--ease); }
 
-/* ---------- Play page: "switch to light / dark" in the bottom-left corner ----------
-   Appears where the photo has faded out, leaves after one more screen of scrolling. */
+/* ---------- Play page: "switch to light / dark" in the bottom-right corner ----------
+   Shown from where the photo has faded out until one more screen of scrolling. */
 .read-mode {
   position: fixed;
-  left: 0;
+  right: 0;
   bottom: 0;
   z-index: 25;
   padding: 0 var(--gutter) 18px;
@@ -68,12 +68,12 @@ body { transition: background-color .4s var(--ease), color .4s var(--ease); }
   .read-mode::before {
     content: "";
     position: absolute;
-    left: -60px;
+    right: -60px;
     bottom: -60px;
     z-index: -1;
     width: 340px;
     height: 200px;
-    background: radial-gradient(48% 52% at 34% 62%, color-mix(in srgb, var(--color-bg) 88%, transparent), color-mix(in srgb, var(--color-bg) 55%, transparent) 45%, transparent 100%);
+    background: radial-gradient(48% 52% at 66% 62%, color-mix(in srgb, var(--color-bg) 94%, transparent), color-mix(in srgb, var(--color-bg) 78%, transparent) 50%, transparent 100%);
     pointer-events: none;
   }
 }
