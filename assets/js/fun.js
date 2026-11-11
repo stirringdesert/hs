@@ -148,16 +148,26 @@
   }
   function hide() { preview.classList.remove('on'); }
 
+  // The map uses site-root paths ("/theater/x/"). Work out where the site root is
+  // from the stylesheet URL, so this also works in the preview copy, which isn't
+  // served from a domain root.
+  var css = document.querySelector('link[href*="assets/css/tokens.css"]');
+  var base = css ? css.href.split('assets/css/')[0] : location.origin + '/';
+  function siteKey(href) {
+    if (href.indexOf(base) !== 0) return null;
+    return '/' + href.slice(base.length).split(/[?#]/)[0].replace(/index\.html$/, '');
+  }
+  function media(src) { return base + src.replace(/^\//, ''); }
   document.querySelectorAll('.home-nav a, .nav-list a, .menu a, .header-nav a').forEach(function (a) {
-    var path = a.getAttribute('href');
-    if (!data[path]) return;
+    var key = siteKey(a.href);
+    if (!key || !data[key]) return;
     if (a.getAttribute('aria-current') === 'page') return;  // no preview of the page you're on
-    a.addEventListener('mouseenter', function () { show(data[path]); });
+    a.addEventListener('mouseenter', function () { show(media(data[key])); });
     a.addEventListener('mouseleave', hide);
   });
   // preload the images so the first hover isn't empty
   Object.keys(data).forEach(function (k) {
-    if (!/\.(mp4|webm|mov)$/i.test(data[k])) { var i = new Image(); i.src = data[k]; }
+    if (!/\.(mp4|webm|mov)$/i.test(data[k])) { var i = new Image(); i.src = media(data[k]); }
   });
 
   // One animation loop moves both the cursor and the preview, with a little lag.
