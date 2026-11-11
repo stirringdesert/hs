@@ -55,6 +55,8 @@
 .clock,                                /* TIME IN MUNICH 13:28 */
 .lang-switch a,                        /* EN DE RU */
 .sound-toggle,
+.trailer-play,                         /* TRAILER 2:37 */
+.trailer-close,                        /* CLOSE */
 .theme-toggle-text {
   text-transform: uppercase;
   letter-spacing: var(--caps-tracking);
