@@ -45,8 +45,7 @@ export function layout(site, { path, title, bodyClass, lang = 'en', description,
   <link rel="stylesheet" href="${v('/assets/css/tokens.css')}">
   <link rel="stylesheet" href="${v('/assets/css/style.css')}">
   <link rel="stylesheet" href="${v('/assets/css/fun.css')}">
-  <link rel="stylesheet" href="${v('/assets/css/type.css')}">${extraCss.map((h) => `\n  <link rel="stylesheet" href="${v(h)}">`).join('')}
-  <script>${THEME_BOOT}</script>${stageBoot(before + main)}
+  <link rel="stylesheet" href="${v('/assets/css/type.css')}">${extraCss.map((h) => `\n  <link rel="stylesheet" href="${v(h)}">`).join('')}${stageBoot(before + main)}
   <script src="${v('/assets/js/main.js')}" defer></script>
   <script src="${v('/assets/js/fun.js')}" defer></script>${head ? '\n' + indent(head, 2) : ''}
 </head>
@@ -68,10 +67,6 @@ function stageBoot(html) {
   return `\n  <script>try{if(sessionStorage.getItem('stage')===${JSON.stringify(m[1].replace(/^\//, '')).replace(/</g, '\\u003c')})document.documentElement.classList.add('stage-lit')}catch(e){}</script>`;
 }
 
-// Light mode is a test: the site stays dark unless a visitor picks light with the
-// dark/light switch next to the language switch (remembered in the browser) or opens a page with ?theme=light.
-// This runs before the page paints, so there is no dark/light flash.
-const THEME_BOOT = `(function(){try{var q=location.search.match(/[?&]theme=(light|dark)/);if(q)localStorage.setItem('theme',q[1]);if(localStorage.getItem('theme')==='light')document.documentElement.setAttribute('data-theme','light')}catch(e){}})()`;
 
 export function header(site) {
   return `  <header class="site-header">
