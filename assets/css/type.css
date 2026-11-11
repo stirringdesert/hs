@@ -1,0 +1,61 @@
+/* harrysergeev.com — typography system: which letter case each kind of text uses.
+   This file is the one place that decides case. Sizes live in tokens.css (plus the one below). The reasons
+   are in DESIGN-PHILOSOPHY.md ("Typography system").
+
+   Three tiers:
+   1. Big text speaks: lowercase, like the home page (page titles, menu, contact).
+   2. Middle text is written as it is: production titles, role names, body text.
+   3. Small text labels: UPPERCASE with a little extra letter spacing
+      (labels, buttons, language switch, clock).
+   Fine print (Impressum, Datenschutz) stays as written: it should stay quiet.
+   Names of people and works keep their normal capitals in tiers 1 and 2. Write them
+   that way in the content: tier 1 only lowercases the words that aren't names. */
+
+:root {
+  --caps-tracking: .04em;      /* extra letter spacing for small UPPERCASE text */
+  --type-statement: clamp(28px, 14.27px + 3.662vw, 67px);   /* contact sentence: big on every screen */
+}
+
+/* ---------- 1. Big: lowercase ---------- */
+
+.page-title,                           /* director, works, demo, about, биография */
+.home-nav a,                           /* bio, voice acting ... */
+.contact-list > *,                     /* e-mail, telegram, instagram */
+.contact main > .label,                /* for voiceover bookings and inquiries ... */
+.lang-picker a {                       /* en de ru on the first visit */
+  text-transform: lowercase;
+  letter-spacing: var(--type-display-tracking, -1px);
+}
+/* The contact sentence is big text, not a label: regular weight, big on phones too */
+.contact main > .label {
+  font-weight: var(--weight-regular);
+  font-size: var(--type-statement);
+  line-height: 1.02;
+}
+
+/* ---------- 2. Middle: as written (names keep their capitals) ---------- */
+
+.home-name,                            /* Igor Sergeev */
+.site-header .name,
+.nav-list a,                           /* Mary Stuart, Iran Conference */
+.work h3,                              /* Leon Kennedy */
+.play-title h1,                        /* Open Relationship */
+.play-title h2,
+.play-scene h2,
+.legal h2,
+.legal h3 {
+  text-transform: none;
+}
+
+/* ---------- 3. Small: UPPERCASE ---------- */
+
+.label,                                /* OFFICIAL RUSSIAN DUBS */
+.nav-list .work-links a,               /* RUSSIAN  ENGLISH  GERMAN / DOWNLOAD PDF */
+.player .download,                     /* DOWNLOAD */
+.clock,                                /* TIME IN MUNICH 13:28 */
+.lang-switch a,                        /* EN DE RU */
+.sound-toggle,
+.theme-toggle-text {
+  text-transform: uppercase;
+  letter-spacing: var(--caps-tracking);
+}
