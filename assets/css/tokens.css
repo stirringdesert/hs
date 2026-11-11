@@ -40,7 +40,7 @@
   --type-display-lh: 1.02;
   --type-display-nav-lh: .95;
   --type-display-tracking: clamp(-1px, -.2px - .1vw, -.5px);
-  --type-title: clamp(40px, 25.21px + 3.944vw, 82px);      /* page titles: DIRECTOR, WORKS, DEMO */
+  --type-title: clamp(40px, 25.21px + 3.944vw, 82px);      /* page titles: director, works, demo */
   --type-title-lh: 1.03;
   --type-contact: clamp(40px, 25.21px + 3.944vw, 82px);    /* contact page links */
   --type-contact-lh: 1.12;
@@ -56,9 +56,9 @@
   --type-nav-tracking: -0.2px;
   --type-body: clamp(17px, 15.2px + .48vw, 20px);           /* running text */
   --type-body-lh: 1.25;
-  --type-label: clamp(16px, 13.6px + .64vw, 20px);          /* small bold uppercase labels */
+  --type-label: clamp(16px, 13.6px + .64vw, 20px);          /* small bold labels */
   --type-label-lh: 1.05;
-  --type-caption: 17px;        /* DOWNLOAD link */
+  --type-caption: 17px;        /* download link */
   --type-small: 14px;          /* footer */
   --type-small-lh: 19px;
   --type-legal: 12px;          /* Impressum / Datenschutz links */

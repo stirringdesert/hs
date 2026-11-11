@@ -180,7 +180,7 @@ function buildLanguage(lang) {
     need(data.title, 'title', 'content/bio.md');
     needAsset(data.photo, 'content/bio.md');
     const photo = data.photo
-      ? `<div class="bio-photo"><img src="${attr(data.photo)}" alt="${attr(data.photo_alt || s.name)}" width="${data.photo_width || 1024}" height="${data.photo_height || 1536}"></div>\n`
+      ? `<div class="bio-photo"><img src="${attr(data.photo)}" alt="${attr(data.photo_alt || s.name)}" width="${data.photo_width || 1024}" height="${data.photo_height || 1536}" fetchpriority="high"></div>\n`
       : '';
     page('/bio/', {
       title: ui.titles.bio, bodyClass: 'bio',
