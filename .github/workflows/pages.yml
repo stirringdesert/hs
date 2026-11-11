@@ -49,7 +49,8 @@ jobs:
           mkdir _site
           tar cf - --exclude=./.git --exclude=./.github --exclude=./_site \
             --exclude=./build --exclude=./content --exclude=./tools \
-            --exclude=./README.md --exclude=./.gitignore --exclude='*.enc' . | tar xf - -C _site
+            --exclude=./README.md --exclude=./CLAUDE.md --exclude=./.claude \
+            --exclude=./.gitignore --exclude='*.enc' . | tar xf - -C _site
           # Before the custom domain is connected, the site lives under
           # /<repo>/, so root links get that prefix. With the domain, BASE is empty.
           if [ -n "$BASE" ]; then
