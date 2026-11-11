@@ -88,7 +88,20 @@ function readMd(file, lang) {
 // Site settings in one language, with menu links pointing into that language.
 function siteIn(lang) {
   const s = merge(site, lang === DEFAULT ? undefined : translationJson('site.json', lang));
-  return { ...s, lang, home: prefix(lang) + '/', nav: s.nav.map((n) => ({ ...n, url: localUrl(n.url, lang) })) };
+  return { ...s, lang, home: prefix(lang) + '/', nav: s.nav.map((n) => ({ ...n, url: readingUrl(n.url, lang) || localUrl(n.url, lang) })) };
+}
+
+// A play with a reading page (content/pages/*.html with `play:` in its front matter):
+// its menu link goes straight to the text in the visitor's language.
+const readingPages = fs.readdirSync(path.join(CONTENT, 'pages')).filter((f) => f.endsWith('.html')).map((f) => {
+  const { data } = parseFrontMatter(readText(`pages/${f}`), `content/pages/${f}`);
+  return data.play ? { play: data.play, lang: data.lang || 'en', url: `/${f.replace(/\.html$/, '')}/` } : null;
+}).filter(Boolean);
+function readingUrl(url, lang) {
+  const m = url.match(/^\/([a-z0-9-]+\/[a-z0-9-]+)\/$/);
+  if (!m) return null;
+  const pages = readingPages.filter((r) => r.play === m[1]);
+  return (pages.find((r) => r.lang === lang) || pages.find((r) => r.lang === 'en') || {}).url || null;
 }
 
 // Pages that exist in every language. Filled in below, before any page is built.
@@ -115,6 +128,8 @@ function loadSection(dir, lang) {
       const { data, body } = readMd(`${dir}/${f}`, lang);
       need(data.title, 'title', where);
       needAsset(data.video, where);
+      needAsset(data.image, where);
+      if (data.trailer) { need(data.trailer_image, 'trailer_image', where); needAsset(data.trailer_image, where); }
       if (data.hidden) return null;
       return {
         slug,
@@ -122,6 +137,10 @@ function loadSection(dir, lang) {
         title: data.title,
         order: data.order ?? 999,
         video: data.video,
+        sound: data.sound === true || data.sound === 'true',
+        image: data.image,
+        imageAlt: data.image_alt || '',
+        trailer: data.trailer ? { embed: data.trailer, image: data.trailer_image, url: data.trailer_url, duration: data.trailer_duration } : null,
         summaryHtml: (data.summary || []).map((s) => inline(String(s))),
         linksHtml: (data.links || []).map((s) => inline(String(s), { linkClass: '' })).join(''),
         bodyHtml: markdown(body),
@@ -149,12 +168,10 @@ function buildLanguage(lang) {
   page('/', {
     bodyClass: 'home',
     chrome: false,
-    before: C.topRight(s, alternatesOf('/')) + (lang === DEFAULT ? '\n' + C.langPicker(alternatesOf('/')) : ''),
+    before: lang === DEFAULT ? C.langPicker(alternatesOf('/')) : '',
     head: lang === DEFAULT ? C.langPickerHead(alternatesOf('/')) : '',
-    main: `<a class="home-name" href="${attr(s.home)}">${esc(s.name)}</a>
-<nav class="home-nav" aria-label="${attr(ui.main_menu)}">
-${s.nav.map((n) => `  <a href="${attr(n.url)}">${esc(n.label)}</a>`).join('\n')}
-</nav>`,
+    mainClass: 'home-main',
+    main: C.homeView(s, alternatesOf('/')),
   });
 
   // ---------- Bio ----------
@@ -191,9 +208,11 @@ ${markdown(body).map((b) => '  ' + b).join('\n')}
     });
     const cta = inline(v.cta, { linkClass: 'accent' });
     const parts = [
-      C.label(cta),
-      C.pageTitle(v.demo.title),
-      C.player(v.demo.file, ui),
+      `<section class="demo">
+${C.demoHead(v.demo.title, v.demo.file, ui)}
+${C.player(v.demo.file, ui)}
+  <p class="bookings">${cta}</p>
+</section>`,
       '',
       C.pageTitle(v.works_title, 'works-title'),
       C.label(esc(v.works_label)),
@@ -207,7 +226,7 @@ ${v.audiobooks.text.map((t) => `    <p>${inline(t, { linkClass: 'accent' })}</p>
   </div>
 </section>`);
     }
-    parts.push('', C.label(cta, { extraClass: 'bottom-cta' }));
+    parts.push('', `<p class="bookings bottom-cta">${cta}</p>`);   // same paragraph style as the line under the player
     page('/voice/', { title: ui.titles.voice, bodyClass: 'voice', main: parts.join('\n') });
   }
 
@@ -224,8 +243,10 @@ ${v.audiobooks.text.map((t) => `    <p>${inline(t, { linkClass: 'accent' })}</p>
     for (const it of items) {
       page(`/${dir}/${it.slug}/`, {
         title: it.title, bodyClass: 'theater',
-        before: it.video ? C.bgVideo(it.video) : '',
-        main: `${C.pageTitle(cfg.title)}\n${C.split(C.workList(items, it.slug), C.detail(it.bodyHtml))}`,
+        before: it.video ? C.bgVideo(it.video, { sound: it.sound }) : it.image ? C.bgImage(it.image, it.imageAlt) : '',
+        main: `${C.pageTitle(cfg.title)}\n${C.split(C.workList(items, it.slug), C.detail(it.trailer
+          ? [C.trailer({ ...it.trailer, label: ui.trailer || 'Trailer' }), ...it.bodyHtml]
+          : it.bodyHtml))}`,
       });
     }
   }
@@ -261,6 +282,7 @@ const freePages = fs.readdirSync(path.join(CONTENT, 'pages')).filter((f) => f.en
 for (const { f, slug, data, body: raw } of freePages) {
   let body = raw;
   let bodyClass = data.body_class || 'page';
+  let before = '';
   const lang = data.lang || DEFAULT;
   const isReading = Boolean(data.play);
   const s = isReading && LANGS.some((l) => l.code === lang) ? siteIn(lang) : siteIn(DEFAULT);
@@ -289,7 +311,10 @@ for (const { f, slug, data, body: raw } of freePages) {
           summaryHtml: (t.data.summary || []).map((x) => inline(String(x))),
           bodyHtml: markdown(t.body),
         } : {};
-        return { ...it, ...tr, url: `/${slug}/`, linksHtml: `<a class="play-dl-btn" href="${attr(data.pdf)}" download>${esc(label)}</a>` };
+        // The other languages' reading pages, shown on the right of the title row
+        const others = (alternates || []).filter((a) => a.code !== lang)
+          .map((a) => `<a href="${attr(a.href)}" hreflang="${a.code}" lang="${a.code}">${esc(a.label.toLowerCase())}</a>`).join('');
+        return { ...it, ...tr, url: `/${slug}/`, asideHtml: others, linksHtml: `<a class="play-dl-btn" href="${attr(data.pdf)}" download>${esc(label)}</a>` };
       });
       const cur = items.find((it) => it.slug === playSlug);
       if (!cur) problems.push(`content/pages/${f}: play "${data.play}" not found`);
@@ -297,12 +322,16 @@ for (const { f, slug, data, body: raw } of freePages) {
         const pageTitle = (t && t.data.page_title) || cfg.title;
         body = `${C.pageTitle(pageTitle)}\n${C.split(C.workList(items, playSlug), C.detail(cur.bodyHtml))}\n${body}`;
         bodyClass = 'theater reading';
+        // The play's photo sits behind the top of the page and fades out as the text begins (fun.js)
+        if (cur.image) before = C.bgImage(cur.image, cur.imageAlt);
       }
     }
   }
   emit(`/${slug}/`, C.layout(s, {
-    path: `/${slug}/`, title: data.title, lang, bodyClass, alternates,
+    path: `/${slug}/`, title: data.title, lang, bodyClass, alternates, before,
     description: data.description,
+    // Reading pages remember "lights on" before anything is drawn, so the page doesn't flash black
+    head: bodyClass === 'theater reading' ? C.READ_LIGHT_BOOT : '',
     // mailto links become copy-to-clipboard buttons (keeps the address away from spam bots)
     main: body.replace(/\s+$/, '').replace(/<a [^>]*href="mailto:([^"]+)"[^>]*>[^<]*<\/a>/g, (_, a) => C.copyEmail(a, { extraClass: 'link', ui: s.ui })),
   }));

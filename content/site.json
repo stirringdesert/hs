@@ -45,7 +45,7 @@
       "url": "/impressum/"
     },
     {
-      "label": "Datenschutzerklärung",
+      "label": "Datenschutz",
       "url": "/datenschutzerklaerung/"
     }
   ],
@@ -70,18 +70,19 @@
         "copy": "sergeevvoice@gmail.com"
       },
       {
-        "label": "Telegram",
+        "label": "telegram",
         "url": "https://t.me/harrysergeev"
       },
       {
-        "label": "Instagram",
+        "label": "instagram",
         "url": "https://www.instagram.com/harrysergeev/"
       }
     ]
   },
   "ui": {
+    "trailer": "Trailer",
     "main_menu": "Main",
-    "menu": "Menu",
+    "menu": "Menu", "close": "Close",
     "language": "Language",
     "time_in_munich": "time in Munich",
     "titles": {
@@ -93,6 +94,6 @@
     "pause": "Pause audio",
     "download": "DOWNLOAD",
     "copy_email": "Copy email address",
-    "copied": "Copied"
+    "copied": "copied"
   }
 }

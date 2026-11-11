@@ -57,7 +57,7 @@ img, video { display: block; max-width: 100%; }
   text-transform: uppercase;
 }
 
-/* ---------- Header + menu ---------- */
+/* ---------- Header ---------- */
 
 .site-header {
   position: relative;
@@ -69,61 +69,93 @@ img, video { display: block; max-width: 100%; }
   height: var(--header-height);
 }
 .site-header .name {
-  position: relative;
-  z-index: 11;
   font-size: var(--type-nav);
   line-height: var(--type-nav);
   letter-spacing: var(--type-nav-tracking);
   padding: 4px 0;
 }
-.menu-toggle {
-  position: relative;
-  z-index: 11;               /* stays above the open menu, so it works as the close button */
-  width: 27px;
-  height: 27px;
-  padding: 0;
-  border: 0;
-  background: none;
-  cursor: pointer;
-  color: var(--color-fg);
-}
-.menu-toggle span {
-  position: absolute;
-  left: 0;
-  width: 27px;
-  height: 2px;
-  background: currentColor;
-  transition: transform var(--fast) var(--ease), opacity .2s var(--ease), top var(--fast) var(--ease);
-}
-.menu-toggle span:nth-child(1) { top: 7px; }
-.menu-toggle span:nth-child(2) { top: 13px; }
-.menu-toggle span:nth-child(3) { top: 20px; }
-.menu-open .menu-toggle span:nth-child(1) { top: 13px; transform: rotate(45deg) scaleX(.75); }
-.menu-open .menu-toggle span:nth-child(2) { opacity: 0; }
-.menu-open .menu-toggle span:nth-child(3) { top: 13px; transform: rotate(-45deg) scaleX(.75); }
 
-.menu {
+/* ---------- Corner menu (every page except home) ----------
+   The home page's menu, small, in the bottom-left corner. Closed it shows one word,
+   "menu". Hovering it (or tapping it, or tabbing to it) raises the links right there,
+   one after another, with the time and the language switch underneath. */
+
+.corner-menu {
   position: fixed;
-  inset: 0;
-  z-index: 10;
-  background: var(--color-bg);
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
-  padding: 0 var(--gutter) 20px;
-  opacity: 0;
-  visibility: hidden;
-  transition: opacity var(--fast) var(--ease), visibility var(--fast);
-}
-.menu-open .menu { opacity: 1; visibility: visible; }
-.menu a {
+  left: 0;
+  bottom: 0;
+  z-index: 40;
+  padding: 32px 48px 16px var(--gutter);   /* a generous hover area around the word */
   font-size: var(--type-nav);
   line-height: var(--type-nav-lh);
   letter-spacing: var(--type-nav-tracking);
-  width: fit-content;
+  --corner-bg: var(--color-bg);   /* solid: see-through backgrounds made the page text bleed in */
 }
-.menu a:hover, .nav-list a:hover { color: var(--color-muted); }
-.menu-open { overflow: hidden; }
+.corner-panel {
+  position: absolute;
+  left: 0;
+  bottom: calc(16px + var(--type-nav-lh));
+  padding: 16px 48px 12px var(--gutter);
+  width: max-content;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  background: var(--corner-bg);
+  visibility: hidden;
+  opacity: 0;
+  transition: opacity var(--fast) var(--ease), visibility 0s linear var(--fast);
+}
+.corner-links { display: flex; flex-direction: column; }
+.corner-links a { width: fit-content; }
+.corner-links a, .corner-panel .meta-row {
+  opacity: 0;
+  transform: translateY(12px);
+  transition: opacity var(--fast) var(--ease), transform var(--fast) var(--ease);
+}
+.corner-menu.open .corner-panel { visibility: visible; opacity: 1; transition: opacity var(--fast) var(--ease), visibility 0s; }
+.corner-menu.open .corner-links a, .corner-menu.open .corner-panel .meta-row {
+  opacity: 1;
+  transform: none;
+  transition: opacity var(--menu-in) var(--ease-out), transform var(--menu-in) var(--ease-out);
+}
+/* The link nearest the word rises first, the rest follow upward */
+.corner-menu.open .corner-links a:nth-last-child(1) { transition-delay: calc(var(--stagger) * 1); }
+.corner-menu.open .corner-links a:nth-last-child(2) { transition-delay: calc(var(--stagger) * 2); }
+.corner-menu.open .corner-links a:nth-last-child(3) { transition-delay: calc(var(--stagger) * 3); }
+.corner-menu.open .corner-links a:nth-last-child(4) { transition-delay: calc(var(--stagger) * 4); }
+.corner-menu.open .corner-links a:nth-last-child(5) { transition-delay: calc(var(--stagger) * 5); }
+.corner-menu.open .corner-links a:nth-last-child(6) { transition-delay: calc(var(--stagger) * 6); }
+.corner-links a:hover, .corner-links a[aria-current] { color: var(--color-muted); }
+.corner-toggle {
+  display: block;
+  margin-left: -10px;
+  padding: 0 10px;
+  border: 0;
+  background: var(--corner-bg);   /* stays readable over text and video */
+  color: var(--color-fg);
+  font: inherit;
+  letter-spacing: inherit;
+  cursor: pointer;
+}
+.corner-toggle .when-open, .corner-menu.open .corner-toggle .when-closed { display: none; }
+.corner-menu.open .corner-toggle .when-open { display: inline; }
+.corner-toggle:hover { color: var(--color-muted); }
+/* the page's last lines can scroll clear of the word */
+body:has(.corner-menu) .site-footer { padding-bottom: calc(24px + var(--type-nav-lh)); }
+
+/* Time in Munich + EN DE RU (+ dark light): under the menu, on home and in the corner */
+.meta-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 8px 24px;
+  font-size: var(--type-small);
+  line-height: 13px;
+  letter-spacing: 0;
+}
+.meta-row .lang-switch + .theme-switch { margin-left: 0; }
+.clock { margin: 0; }
+.clock b { font-weight: var(--weight-bold); margin-left: 4px; }
 
 /* ---------- Main + footer ---------- */
 
@@ -132,40 +164,41 @@ main {
   padding: 44px var(--gutter) 0;
 }
 
+/* Impressum / Datenschutz: small and quiet, but on every page as German law requires */
 .site-footer {
   display: flex;
   justify-content: flex-end;
-  gap: 24px;
-  padding: 60px var(--gutter) 20px;
-  font-size: var(--type-small);
-  line-height: var(--type-small-lh);
+  gap: 16px;
+  padding: 60px var(--gutter) 16px;
+  font-size: var(--type-legal);
+  line-height: var(--type-legal);
+  color: var(--color-muted);
 }
-.site-footer a:hover { color: var(--color-muted); }
+.site-footer a:hover { color: var(--color-fg); }
 
 /* ---------- Home ---------- */
 
-/* The home page fits one screen: name at the top, menu at the bottom. */
-.home main { min-height: 0; }
-
-.home main {
+/* Fits one screen: name at the top; menu, then time and languages at the bottom. */
+.home-main {
+  flex: 1;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  padding-top: 24px;
+  padding: 24px var(--gutter) 16px;
 }
-.home .home-name,
-.home .home-nav a {
+.home-name,
+.home-nav a {
   font-size: var(--type-display);
   letter-spacing: var(--type-display-tracking);
 }
-.home .home-name { line-height: var(--type-display-lh); width: fit-content; }
-.home .home-nav { display: flex; flex-direction: column; padding-top: 40px; }
-.home .home-nav a { line-height: var(--type-display-nav-lh); width: fit-content; }
-.home .home-nav a:hover { color: var(--color-muted); }
-.home main { padding-bottom: 24px; }   /* room for the descenders of the last menu line */
+.home-name { line-height: var(--type-display-lh); width: fit-content; }
+.home-nav { display: flex; flex-direction: column; padding-top: 40px; }
+.home-nav a { line-height: var(--type-display-nav-lh); width: fit-content; }
+.home-nav a:hover { color: var(--color-muted); }
+.home-bottom .meta-row { margin-top: 32px; }
 .home .site-footer { padding-top: 0; }
 @media (min-width: 641px) {
-  /* footer sits in the bottom-right corner next to the menu instead of adding height */
+  /* legal links sit in the bottom-right corner, level with the time and languages */
   body.home { position: relative; }
   .home .site-footer { position: absolute; right: 0; bottom: 0; }
 }
@@ -182,49 +215,107 @@ main {
   gap: 20px;
 }
 .bio-text .page-title { margin-bottom: 16px; }
+/* The portrait is a fixed background, like the videos on production pages: it never
+   scrolls and never makes the page longer. It fades in slowly, and its left and bottom
+   edges dissolve into the black so no cut edge shows. Only the text scrolls over it. */
 .bio-photo {
-  position: absolute;
-  top: calc(var(--header-height) * -1);
-  right: 0;
-  width: 55%;
-  max-width: 685px;
-  height: calc(100% + var(--header-height));
-  min-height: 100vh;
-  opacity: .7;
+  position: fixed;
+  inset: 0 0 0 auto;
+  z-index: -1;
+  width: 58vw;
+  overflow: hidden;
   pointer-events: none;
+  opacity: var(--bio-photo-opacity);
+  animation: stage-in var(--bg-video-fade) var(--ease-out) both;
 }
-.bio-photo img { width: 100%; height: 100%; object-fit: cover; }
+/* Desktop: the top of his head lines up with the first paragraph.
+   The hood starts 32% down the photo, and the photo is 1.5 times as tall as it is wide. */
+.bio-photo img {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  max-width: none;
+  height: auto;
+  top: calc(var(--header-height) + 44px + var(--type-title) * 1.03 + 36px - 58vw * .48);
+  -webkit-mask-image: linear-gradient(to right, transparent, #000 38%), linear-gradient(to bottom, #000 70%, transparent);
+  -webkit-mask-composite: source-in;
+  mask-image: linear-gradient(to right, transparent, #000 38%), linear-gradient(to bottom, #000 70%, transparent);
+  mask-composite: intersect;
+}
 
-/* ---------- Audio player ---------- */
+/* ---------- Audio player ----------
+   Every control has a 44 px click area; the visible parts stay thin. */
 
-.player { margin-top: 64px; }
+.player { margin-top: 64px; --player-hit: 44px; }
 .player-row { display: flex; align-items: center; }
 .player button {
-  width: 18px; height: 18px; margin-right: 18px; padding: 0;
+  display: grid; place-items: center;
+  width: var(--player-hit); height: var(--player-hit); padding: 0;
   border: 0; background: none; cursor: pointer; color: var(--color-fg);
+  transition: color var(--fast) var(--ease);
 }
-.player button svg { width: 100%; height: 100%; fill: currentColor; }
-.player .bar {
+.player button:hover { color: var(--color-muted); }
+.player button svg { width: 18px; height: 18px; fill: currentColor; }
+.player-play { margin-left: -13px; margin-right: 5px; }
+.player .bar {               /* tall invisible hit area around a thin track */
   position: relative;
   flex: 1;
+  height: var(--player-hit);
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  touch-action: none;
+}
+.player .track {
+  position: relative;
+  width: 100%;
   height: 4px;
   border-radius: 5px;
   background: var(--color-muted);
-  overflow: hidden;
-  cursor: pointer;
+  transition: height .2s var(--ease);
 }
-.player .bar i {
+.player .bar:hover .track, .player .bar.dragging .track, .player .bar:focus-visible .track { height: 6px; }
+.player .track i {
   position: absolute; inset: 0 auto 0 0;
-  width: 0; background: var(--color-fg);
-  transition: width .1s linear;
+  width: 0; border-radius: inherit; background: var(--color-fg);
 }
+.player .track i::after {     /* knob at the play position, shown on hover and drag */
+  content: "";
+  position: absolute; right: -7px; top: 50%;
+  width: 14px; height: 14px; margin-top: -7px;
+  border-radius: 50%; background: var(--color-fg);
+  transform: scale(0); transition: transform .2s var(--ease);
+}
+.player .bar:hover .track i::after, .player .bar.dragging .track i::after, .player .bar:focus-visible .track i::after { transform: scale(1); }
 .player-meta {
-  display: flex; justify-content: space-between; align-items: flex-end;
-  padding-left: 36px; margin-top: 4px;
+  display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;
+  padding-left: 36px; gap: 8px 24px;
 }
 .player .time { font-size: var(--type-time); line-height: var(--type-time-lh); font-variant-numeric: tabular-nums; }
-.player .download { font-size: var(--type-caption); line-height: var(--type-caption); padding-bottom: 12px; }
-.player .download:hover { color: var(--color-muted); }
+.player .time .total { color: var(--color-muted); font-size: var(--type-body); margin-left: 10px; }
+.player-tools { display: flex; align-items: center; gap: 20px; }
+.player .volume { display: flex; align-items: center; }
+.player-mute[aria-pressed="true"] .waves { opacity: 0; }
+.player-volume {           /* thin line slider, 80 px wide, 44 px tall to grab */
+  -webkit-appearance: none; appearance: none;
+  width: 80px; height: var(--player-hit); margin: 0;
+  background: none; cursor: pointer;
+  --v: 100%;
+}
+.player-volume::-webkit-slider-runnable-track { height: 2px; background: linear-gradient(var(--color-fg), var(--color-fg)) 0 / var(--v) 100% no-repeat, var(--color-muted); }
+.player-volume::-moz-range-track { height: 2px; background: var(--color-muted); }
+.player-volume::-moz-range-progress { height: 2px; background: var(--color-fg); }
+.player-volume::-webkit-slider-thumb { -webkit-appearance: none; width: 10px; height: 10px; margin-top: -4px; border-radius: 50%; background: var(--color-fg); border: 0; }
+.player-volume::-moz-range-thumb { width: 10px; height: 10px; border-radius: 50%; background: var(--color-fg); border: 0; }
+.no-volume .player-volume { display: none; }   /* iPhones ignore page volume; the phone's buttons do it */
+/* The demo's title, with the download link on the same line, on the right */
+.demo-head { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; }
+.demo-head .download {        /* same look as the other small actions: underlined, icon */
+  flex: none;
+  font-size: var(--type-label); line-height: var(--type-label-lh);
+  padding: 12px 0;            /* 44 px tall click area */
+}
+.player-meta { flex-wrap: nowrap; }   /* time on the left, volume on the right, always one line */
 
 /* ---------- Voice role cards ---------- */
 
@@ -240,12 +331,15 @@ main {
 
 /* ---------- Voice page ---------- */
 
-.voice .label + .page-title { margin-top: 50px; }
-.voice .works-title { margin-top: 124px; }
+.voice .works-title { margin-top: 64px; }   /* its own section, but close to the demo */
 .voice .works-title + .label { margin-top: 24px; }
+/* The demo title is as far from the player as "works" is from "official russian dubs".
+   The player's 44 px click areas reach above the visible line, hence the smaller margin. */
+.voice .demo-head + .player { margin-top: 2px; }
+.voice .bookings { margin-top: 40px; }   /* phones: right after the player */
 .audiobooks { margin-top: 46px; }
 .audiobooks .text { max-width: 827px; margin-top: 34px; display: flex; flex-direction: column; gap: 20px; }
-.voice .bottom-cta { margin-top: 100px; }
+.voice .bottom-cta { margin-top: 100px; text-align: center; }
 
 /* ---------- Theater / playwriting: list + detail ---------- */
 
@@ -258,6 +352,7 @@ main {
 .nav-list { display: flex; flex-direction: column; gap: 14px; padding: 0; margin: 0; }
 .nav-list > li { list-style: none; }
 .nav-list a { font-size: var(--type-list); line-height: var(--type-list-lh); display: inline-block; }
+.nav-list a:hover { color: var(--color-muted); }
 .nav-list .current a { color: var(--color-fg); }
 .nav-list .summary {
   border-top: 2px solid var(--color-fg);
@@ -278,6 +373,15 @@ main {
   text-underline-offset: 3px;
 }
 .nav-list .work-links a:hover { color: var(--color-muted); }
+/* Reading pages: the other languages sit on the right of the play's title row */
+.nav-list .work-head { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; }
+.nav-list .work-aside { display: flex; gap: 16px; }
+.nav-list .work-aside a {
+  font-size: var(--type-body);
+  line-height: var(--type-body-lh);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
 /* Reading pages: the play text starts below the playwriting section */
 .reading .split + .play-body { margin-top: 120px; }
 
@@ -288,18 +392,21 @@ main {
   z-index: -1;
   opacity: var(--bg-video-opacity);
   pointer-events: none;
-  animation: bg-fade var(--bg-video-fade) ease-in-out both;
+  animation: stage-in var(--bg-video-fade) var(--ease-out) both;
 }
-@keyframes bg-fade { from { opacity: 0; } to { opacity: var(--bg-video-opacity); } }
+/* Background media lights up slowly, like a stage: from dark and slightly closer.
+   When the next page shows the same picture, it stays lit instead (main.js adds .stage-lit). */
+@keyframes stage-in { from { opacity: 0; transform: scale(1.03); } }
+.stage-lit .bg-video, .stage-lit .bio-photo { animation: none; }
 @media (prefers-reduced-motion: reduce) { .bg-video { animation: none; } }
 .bg-video video { width: 100%; height: 100%; object-fit: cover; }
 
 /* ---------- Play text (open-relationship-ru) ---------- */
 
 .play main { padding-top: 100px; }
-.play-body { width: 50%; display: flex; flex-direction: column; gap: 40px; }
+.play-body { width: 100%; max-width: 696px; margin: 0 auto; display: flex; flex-direction: column; gap: 40px; }   /* centred at the desktop width until it meets the page padding */
 .play-scene { display: flex; flex-direction: column; gap: 12px; }
-.play-scene h2 { font-size: var(--type-heading); line-height: var(--type-heading-lh); }
+.play-scene h2 { font-size: 20px; line-height: 20px; text-align: center; margin-bottom: 8px; }
 .play-scene p { line-height: 1.35; }
 .play-title { padding: 300px 0; display: flex; flex-direction: column; gap: 20px; text-align: center; }
 .play-title h1 { font-size: var(--type-title); line-height: var(--type-title-lh); text-transform: uppercase; }
@@ -321,32 +428,12 @@ main {
 .legal p { margin-bottom: 12px; }
 .legal .page-title { margin-bottom: 20px; }
 
-/* ---------- Header extras: inline nav + clock (desktop only) ---------- */
-
-.header-nav, .clock { display: none; }
-/* Top right corner: language switch + clock */
-.top-right {
-  position: absolute;
-  top: 24px;
-  right: var(--gutter);
-  z-index: 20;
-  display: flex;
-  align-items: center;
-  gap: 32px;
-  font-size: var(--type-small);
-  line-height: 13px;
-}
-.clock { margin: 0; }
-.clock b { font-weight: var(--weight-bold); margin-left: 4px; }
 /* ---------- Languages ---------- */
 
 /* EN DE RU switch: the current language is white, the others muted */
 .lang-switch { display: flex; gap: 12px; }
 .lang-switch a { color: var(--color-muted); transition: color var(--fast) var(--ease); }
 .lang-switch a:hover, .lang-switch a[aria-current] { color: var(--color-fg); }
-/* On phones and tablets the switch sits in the menu, except on the home page (no menu) */
-.site-header .top-right .lang-switch { display: none; }
-.menu .menu-langs { margin-top: 32px; gap: 24px; }
 
 /* First visit: full-screen language choice on black, before the home page */
 .lang-picker { display: none; }
@@ -381,18 +468,6 @@ main {
 /* ---------- Desktop layout ---------- */
 
 @media (min-width: 1200px) {
-  .site-header { gap: 50px; }
-  .menu-toggle, .menu { display: none; }
-  .header-nav { display: flex; gap: 50px; }
-  .header-nav a {
-    font-size: var(--type-nav);
-    line-height: var(--type-nav);
-    letter-spacing: var(--type-nav-tracking);
-    padding: 4px 0;
-  }
-  .header-nav a:hover { color: var(--color-muted); }
-  .clock { display: block; }
-  .site-header .top-right .lang-switch { display: flex; }
 
   /* theater / playwriting */
   .nav-list { gap: 8px; }
@@ -401,20 +476,17 @@ main {
 
   /* bio */
   .bio-text { max-width: calc(50% - var(--col-gap) / 2); }
-  .bio-photo { top: -36px; width: 47.6%; max-width: none; height: 1140px; min-height: 0; opacity: 1; }
 
   /* voice */
-  .voice main { position: relative; }
-  .voice main > .label:first-child {
-    position: absolute;
-    top: 44px;
-    right: var(--gutter);
-    width: calc(50% - var(--gutter));
-    text-align: right;
+  /* the bookings line sits in the right half, on the same line as the volume slider */
+  .voice .demo { display: grid; grid-template-columns: 1fr 1fr; column-gap: var(--col-gap); }
+  .voice .demo > .demo-head, .voice .demo > .player { grid-column: 1; }
+  .voice .demo-head + .player { margin-top: 8px; }
+  .voice .demo > .bookings {
+    grid-column: 2; grid-row: 1 / span 2; align-self: end; text-align: right;
+    margin: 0 0 calc((var(--type-time-lh) - 1.25em) / 2 + 3px);   /* centred on the time row */
   }
-  .voice .label + .page-title { margin-top: 0; }
-  .voice .player { width: calc(50% - var(--col-gap) / 2); margin-top: 38px; }
-  .voice .works-title { margin-top: 117px; }
+  .voice .works-title { margin-top: 88px; }
   .works { grid-template-columns: repeat(4, 1fr); gap: 68px 26px; }
   .audiobooks { margin-top: 48px; }
   .audiobooks .text { max-width: 691px; }
@@ -438,7 +510,7 @@ main {
   .play main { padding-top: 120px; }
   .play-body { width: 696px; margin: 0 auto; gap: 40px; }
   .play-scene { gap: 20px; }
-  .play-scene h2 { font-size: 20px; line-height: 20px; text-align: center; text-transform: uppercase; margin-bottom: 20px; }
+  .play-scene h2 { margin-bottom: 20px; }
   .play-scene p { line-height: 24px; text-align: justify; }
   .play-title h2 { font-size: 20px; line-height: 20px; }
   .play-note { text-align: center; }
@@ -448,7 +520,25 @@ main {
 
 @media (max-width: 900px) {
   .split { grid-template-columns: 1fr; row-gap: 40px; }
-  .bio-photo { position: relative; top: 0; width: 100%; max-width: none; height: auto; min-height: 0; margin-top: 40px; }
+  /* About page on phones and tablets: a close crop of the face that bleeds off the right
+     edge, with the title and text running over it. */
+  .bio { --u: min(1vw, 5.2px); }   /* photo unit: 1% of a phone screen, capped on tablets */
+  .bio-photo { width: calc(var(--u) * 100); height: calc(var(--u) * 112); bottom: auto; }
+  /* Face center sits at about 63% across and 48% down the photo */
+  .bio-photo img {
+    width: calc(var(--u) * 150);
+    left: calc(var(--u) * -28);
+    top: calc(var(--u) * -56);
+    -webkit-mask-image: none;
+    mask-image: none;
+  }
+  .bio-photo {
+    -webkit-mask-image: linear-gradient(to bottom, #000 62%, transparent), linear-gradient(to right, transparent, #000 50%);
+    -webkit-mask-composite: source-in;
+    mask-image: linear-gradient(to bottom, #000 62%, transparent), linear-gradient(to right, transparent, #000 50%);
+    mask-composite: intersect;
+  }
+  .bio-text { padding-top: calc(var(--u) * 62); }
   .play-body { width: 100%; }
   .play-title { padding: 160px 0; }
   .play-title h1 { font-size: 40px; line-height: 44px; }
@@ -456,7 +546,47 @@ main {
 
 @media (max-width: 640px) {
   .home .site-footer { margin-top: 0; }
-  /* the big name fills the top on phones, so the language switch moves next to the footer */
-  .home .top-right { top: auto; bottom: 20px; left: var(--gutter); right: auto; }
   .works { grid-template-columns: 1fr; }
+}
+
+/* ---------- Page transitions ----------
+   Browsers with view transitions (Chrome, Edge, Safari 18.2+) change pages like scenes:
+   the old page fades out quickly, the new content rises into place, the background
+   media cross-fades, and what exists on both pages (the name, the corner menu) stays
+   exactly where it is. The big name on the home page shrinks into the
+   header name. Other browsers just
+   load the next page. Off for visitors who ask for reduced motion. */
+
+@view-transition { navigation: auto; }
+
+.site-header .name, .home-name { view-transition-name: site-name; }
+.corner-menu { view-transition-name: site-corner; }
+.cursor { view-transition-name: site-cursor; }
+.bg-video, .bio-photo { view-transition-name: stage; }
+
+::view-transition-group(*) { animation-duration: var(--page-in); animation-timing-function: var(--ease-out); }
+::view-transition-old(root) { animation: fade-out var(--page-out) var(--ease) both; }
+/* The new page arrives by rising a little, just after the old one is gone */
+::view-transition-new(root) { animation: rise-in var(--page-in) var(--ease-out) calc(var(--page-out) * .6) both; }
+/* Background media cross-fades slowly and never moves */
+::view-transition-group(stage) { animation: none; }
+::view-transition-old(stage) { animation: fade-out var(--page-in) var(--ease) both; }
+::view-transition-new(stage) { animation: none; }
+/* Big-to-small name: keep the sharp old picture until late, then swap */
+::view-transition-old(site-name) { animation: name-out var(--page-in) var(--ease) both; }
+::view-transition-new(site-name) { animation: name-in var(--page-in) var(--ease) both; }
+/* The custom cursor hides while the page changes instead of freezing in place */
+::view-transition-group(site-cursor) { display: none; }
+
+@keyframes fade-out { to { opacity: 0; } }
+@keyframes fade-in { from { opacity: 0; } }
+@keyframes rise-in { from { opacity: 0; transform: translateY(24px); } }
+/* the two pictures of the name overlap at full strength, so it never dims halfway */
+@keyframes name-out { 0%, 55% { opacity: 1; } 80%, 100% { opacity: 0; } }
+@keyframes name-in { 0%, 30% { opacity: 0; } 55%, 100% { opacity: 1; } }
+
+@media (prefers-reduced-motion: reduce) {
+  @view-transition { navigation: none; }
+  .corner-links a, .corner-panel .meta-row { transition: none !important; transform: none; }
+  .bg-video, .bio-photo { animation: none; }
 }

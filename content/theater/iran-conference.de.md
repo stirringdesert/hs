@@ -5,7 +5,7 @@ summary:
   - Nominierung für die Goldene Maske 2021 in der Kategorie „Beste Regie“
 ---
 
-[Auf Vimeo ansehen](https://vimeo.com/ondemand/iranconferenceplay)
+[Das ganze Stück auf Vimeo ansehen](https://vimeo.com/ondemand/iranconferenceplay)
 
 Produktion: Takoy Teatr, Sankt Petersburg
 

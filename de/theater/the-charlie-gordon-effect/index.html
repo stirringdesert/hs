@@ -18,31 +18,18 @@
   <link rel="alternate" hreflang="x-default" href="https://harrysergeev.com/theater/the-charlie-gordon-effect/">
   <link rel="icon" href="/assets/img/favicon-light.png" media="(prefers-color-scheme: light)">
   <link rel="icon" href="/assets/img/favicon-dark.png" media="(prefers-color-scheme: dark)">
-  <link rel="stylesheet" href="/assets/css/tokens.css?v=a5669fc7">
-  <link rel="stylesheet" href="/assets/css/style.css?v=e7f15f48">
-  <script src="/assets/js/main.js?v=cdd51475" defer></script>
+  <link rel="stylesheet" href="/assets/css/tokens.css?v=48a5253b">
+  <link rel="stylesheet" href="/assets/css/style.css?v=1f8a3238">
+  <link rel="stylesheet" href="/assets/css/fun.css?v=1f0d7987">
+  <link rel="stylesheet" href="/assets/css/type.css?v=a74bb784">
+  <script>try{if(sessionStorage.getItem('stage')==="assets/media/the-charlie-gordon-effect.mp4")document.documentElement.classList.add('stage-lit')}catch(e){}</script>
+  <script src="/assets/js/main.js?v=5293f725" defer></script>
+  <script src="/assets/js/fun.js?v=30431ad4" defer></script>
 </head>
 <body class="theater">
   <div class="bg-video" aria-hidden="true"><video src="/assets/media/the-charlie-gordon-effect.mp4" autoplay muted loop playsinline preload="auto"></video></div>
   <header class="site-header">
     <a class="name" href="/de/">Igor Sergeev</a>
-    <nav class="header-nav" aria-label="Hauptmenü">
-      <a href="/de/bio/">bio</a>
-      <a href="/de/voice/">synchron</a>
-      <a href="/de/theater/">theater</a>
-      <a href="/de/playwriting/open-relationship/">stücke</a>
-      <a href="/de/contact/">kontakt</a>
-    </nav>
-    <div class="top-right"><nav class="lang-switch" aria-label="Sprache"><a href="/theater/the-charlie-gordon-effect/" hreflang="en" lang="en" data-lang="en">EN</a><a href="/de/theater/the-charlie-gordon-effect/" hreflang="de" lang="de" data-lang="de" aria-current="true">DE</a><a href="/ru/theater/the-charlie-gordon-effect/" hreflang="ru" lang="ru" data-lang="ru">RU</a></nav><p class="clock" aria-hidden="true">zeit in München <b data-clock>--:--</b></p></div>
-    <button class="menu-toggle" aria-label="Menü" aria-expanded="false" aria-controls="menu"><span></span><span></span><span></span></button>
-    <nav class="menu" id="menu" aria-label="Hauptmenü">
-      <a href="/de/bio/">bio</a>
-      <a href="/de/voice/">synchron</a>
-      <a href="/de/theater/">theater</a>
-      <a href="/de/playwriting/open-relationship/">stücke</a>
-      <a href="/de/contact/">kontakt</a>
-      <nav class="lang-switch menu-langs" aria-label="Sprache"><a href="/theater/the-charlie-gordon-effect/" hreflang="en" lang="en" data-lang="en">EN</a><a href="/de/theater/the-charlie-gordon-effect/" hreflang="de" lang="de" data-lang="de" aria-current="true">DE</a><a href="/ru/theater/the-charlie-gordon-effect/" hreflang="ru" lang="ru" data-lang="ru">RU</a></nav>
-    </nav>
   </header>
   <main>
     <h1 class="page-title">Regie</h1>
@@ -50,7 +37,7 @@
       <ul class="nav-list">
         <li><a href="/de/theater/sasha-why/">Sascha, warum?</a></li>
         <li><a href="/de/theater/bumerit/">Boomerit</a></li>
-        <li><a href="/de/theater/iran-conference/">Iranische Konferenz</a></li>
+        <li class="has-film"><a href="/de/theater/iran-conference/">Iranische Konferenz</a></li>
         <li><a href="/de/theater/maria-stuart/">Maria Stuart</a></li>
         <li><a href="/de/theater/billy-milligan/">Billy Milligan</a></li>
         <li class="current"><a href="/de/theater/the-charlie-gordon-effect/" aria-current="page">Der Charlie-Gordon-Effekt</a>
@@ -70,7 +57,20 @@
   </main>
   <footer class="site-footer">
     <a href="/impressum/">Impressum</a>
-    <a href="/datenschutzerklaerung/">Datenschutzerklärung</a>
+    <a href="/datenschutzerklaerung/">Datenschutz</a>
   </footer>
+  <nav class="corner-menu" aria-label="Hauptmenü">
+    <div class="corner-panel" id="corner-panel">
+      <div class="corner-links">
+        <a href="/de/bio/">bio</a>
+        <a href="/de/voice/">synchron</a>
+        <a href="/de/theater/">theater</a>
+        <a href="/open-relationship-de/">stücke</a>
+        <a href="/de/contact/">kontakt</a>
+      </div>
+      <div class="meta-row"><p class="clock" aria-hidden="true">zeit in München <b data-clock>--:--</b></p><nav class="lang-switch" aria-label="Sprache"><a href="/theater/the-charlie-gordon-effect/" hreflang="en" lang="en" data-lang="en">EN</a><a href="/de/theater/the-charlie-gordon-effect/" hreflang="de" lang="de" data-lang="de" aria-current="true">DE</a><a href="/ru/theater/the-charlie-gordon-effect/" hreflang="ru" lang="ru" data-lang="ru">RU</a></nav></div>
+    </div>
+    <button type="button" class="corner-toggle" aria-expanded="false" aria-controls="corner-panel"><span class="when-closed">menü</span><span class="when-open" aria-hidden="true">schließen</span></button>
+  </nav>
 </body>
 </html>

@@ -18,36 +18,25 @@
   <link rel="alternate" hreflang="x-default" href="https://harrysergeev.com/open-relationship-en/">
   <link rel="icon" href="/assets/img/favicon-light.png" media="(prefers-color-scheme: light)">
   <link rel="icon" href="/assets/img/favicon-dark.png" media="(prefers-color-scheme: dark)">
-  <link rel="stylesheet" href="/assets/css/tokens.css?v=a5669fc7">
-  <link rel="stylesheet" href="/assets/css/style.css?v=e7f15f48">
-  <script src="/assets/js/main.js?v=cdd51475" defer></script>
+  <link rel="stylesheet" href="/assets/css/tokens.css?v=48a5253b">
+  <link rel="stylesheet" href="/assets/css/style.css?v=1f8a3238">
+  <link rel="stylesheet" href="/assets/css/fun.css?v=1f0d7987">
+  <link rel="stylesheet" href="/assets/css/type.css?v=a74bb784">
+  <script>try{if(sessionStorage.getItem('stage')==="assets/img/open-relationship.jpg")document.documentElement.classList.add('stage-lit')}catch(e){}</script>
+  <script src="/assets/js/main.js?v=5293f725" defer></script>
+  <script src="/assets/js/fun.js?v=30431ad4" defer></script>
+  <script>try{if(localStorage.getItem('hs-reading-lights')==='on')document.documentElement.setAttribute('data-theme','light')}catch(e){}</script>
 </head>
 <body class="theater reading">
+  <div class="bg-video bg-image"><img src="/assets/img/open-relationship.jpg" alt="Igor Sergeev and Rostislav Godlevsky"></div>
   <header class="site-header">
     <a class="name" href="/ru/">Игорь Сергеев</a>
-    <nav class="header-nav" aria-label="Главное меню">
-      <a href="/ru/bio/">био</a>
-      <a href="/ru/voice/">озвучка</a>
-      <a href="/ru/theater/">театр</a>
-      <a href="/ru/playwriting/open-relationship/">драматургия</a>
-      <a href="/ru/contact/">контакты</a>
-    </nav>
-    <div class="top-right"><nav class="lang-switch" aria-label="Язык"><a href="/open-relationship-en/" hreflang="en" lang="en" data-lang="en">EN</a><a href="/open-relationship-de/" hreflang="de" lang="de" data-lang="de">DE</a><a href="/open-relationship-ru/" hreflang="ru" lang="ru" data-lang="ru" aria-current="true">RU</a></nav><p class="clock" aria-hidden="true">время в Мюнхене <b data-clock>--:--</b></p></div>
-    <button class="menu-toggle" aria-label="Меню" aria-expanded="false" aria-controls="menu"><span></span><span></span><span></span></button>
-    <nav class="menu" id="menu" aria-label="Главное меню">
-      <a href="/ru/bio/">био</a>
-      <a href="/ru/voice/">озвучка</a>
-      <a href="/ru/theater/">театр</a>
-      <a href="/ru/playwriting/open-relationship/">драматургия</a>
-      <a href="/ru/contact/">контакты</a>
-      <nav class="lang-switch menu-langs" aria-label="Язык"><a href="/open-relationship-en/" hreflang="en" lang="en" data-lang="en">EN</a><a href="/open-relationship-de/" hreflang="de" lang="de" data-lang="de">DE</a><a href="/open-relationship-ru/" hreflang="ru" lang="ru" data-lang="ru" aria-current="true">RU</a></nav>
-    </nav>
   </header>
   <main>
     <h1 class="page-title">Автор</h1>
     <div class="split">
       <ul class="nav-list">
-        <li class="current"><a href="/open-relationship-ru/" aria-current="page">«Открытые отношения»</a>
+        <li class="current"><div class="work-head"><a href="/open-relationship-ru/" aria-current="page">«Открытые отношения»</a><span class="work-aside"><a href="/open-relationship-en/" hreflang="en" lang="en">en</a><a href="/open-relationship-de/" hreflang="de" lang="de">de</a></span></div>
           <div class="summary">
             <p>Первая часть завершена: июль 2024</p>
             <p class="work-links"><a class="play-dl-btn" href="/assets/docs/igor-sergeev-open-relationship-ru.pdf" download>Скачать PDF</a></p>
@@ -82,7 +71,7 @@
       </section>
     </div>
     <div class="play-title">
-      <h1>"Открытые отношения"</h1>
+      <h1>Открытые отношения</h1>
       <h2>Игорь Сергеев</h2>
     </div>
     <div class="play-body">
@@ -429,7 +418,20 @@
   </main>
   <footer class="site-footer">
     <a href="/impressum/">Impressum</a>
-    <a href="/datenschutzerklaerung/">Datenschutzerklärung</a>
+    <a href="/datenschutzerklaerung/">Datenschutz</a>
   </footer>
+  <nav class="corner-menu" aria-label="Главное меню">
+    <div class="corner-panel" id="corner-panel">
+      <div class="corner-links">
+        <a href="/ru/bio/">био</a>
+        <a href="/ru/voice/">озвучка</a>
+        <a href="/ru/theater/">театр</a>
+        <a href="/open-relationship-ru/">драматургия</a>
+        <a href="/ru/contact/">контакты</a>
+      </div>
+      <div class="meta-row"><p class="clock" aria-hidden="true">время в Мюнхене <b data-clock>--:--</b></p><nav class="lang-switch" aria-label="Язык"><a href="/open-relationship-en/" hreflang="en" lang="en" data-lang="en">EN</a><a href="/open-relationship-de/" hreflang="de" lang="de" data-lang="de">DE</a><a href="/open-relationship-ru/" hreflang="ru" lang="ru" data-lang="ru" aria-current="true">RU</a></nav></div>
+    </div>
+    <button type="button" class="corner-toggle" aria-expanded="false" aria-controls="corner-panel"><span class="when-closed">меню</span><span class="when-open" aria-hidden="true">закрыть</span></button>
+  </nav>
 </body>
 </html>

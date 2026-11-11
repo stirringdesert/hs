@@ -18,8 +18,8 @@ function v(url) {
 const PLAY_ICON = 'M5.379 1.292C4.968 1.033 4.449 1.017 4.023 1.251 3.598 1.486 3.334 1.933 3.333 2.419V13.581C3.334 14.067 3.598 14.514 4.023 14.749 4.449 14.983 4.968 14.967 5.379 14.708L14.215 9.127C14.602 8.883 14.836 8.457 14.836 8 14.836 7.543 14.602 7.117 14.215 6.873Z';
 
 // Full HTML document. `chrome: false` leaves out the header (used by the home page).
-export function layout(site, { path, title, bodyClass, lang = 'en', description, main, before = '', chrome = true, noindex = false, extraCss = [], alternates = null, head = '' }) {
-  const fullTitle = title ? `${title} - ${site.name}` : (site.title || site.name);
+export function layout(site, { path, title, bodyClass, lang = 'en', description, main, mainClass = '', before = '', chrome = true, noindex = false, extraCss = [], alternates = null, head = '' }) {
+  const fullTitle = title ? `${title} - ${site.name}` : site.name;
   const desc = description || site.description;
   const url = site.url + path;
   // Same page in the other languages: tells search engines which version to show whom.
@@ -43,37 +43,69 @@ export function layout(site, { path, title, bodyClass, lang = 'en', description,
   <link rel="icon" href="/assets/img/favicon-light.png" media="(prefers-color-scheme: light)">
   <link rel="icon" href="/assets/img/favicon-dark.png" media="(prefers-color-scheme: dark)">
   <link rel="stylesheet" href="${v('/assets/css/tokens.css')}">
-  <link rel="stylesheet" href="${v('/assets/css/style.css')}">${extraCss.map((h) => `\n  <link rel="stylesheet" href="${v(h)}">`).join('')}
-  <script src="${v('/assets/js/main.js')}" defer></script>${head ? '\n' + indent(head, 2) : ''}
+  <link rel="stylesheet" href="${v('/assets/css/style.css')}">
+  <link rel="stylesheet" href="${v('/assets/css/fun.css')}">
+  <link rel="stylesheet" href="${v('/assets/css/type.css')}">${extraCss.map((h) => `\n  <link rel="stylesheet" href="${v(h)}">`).join('')}${stageBoot(before + main)}
+  <script src="${v('/assets/js/main.js')}" defer></script>
+  <script src="${v('/assets/js/fun.js')}" defer></script>${head ? '\n' + indent(head, 2) : ''}
 </head>
 <body class="${bodyClass}">
-${before ? before + '\n' : ''}${chrome ? header(site, alternates) + '\n' : ''}  <main>
+${before ? before + '\n' : ''}${chrome ? header(site) + '\n' : ''}  <main${mainClass ? ` class="${mainClass}"` : ''}>
 ${indent(main, 4)}
   </main>
-${footer(site)}
+${footer(site)}${chrome ? '\n' + cornerMenu(site, alternates) : ''}
 </body>
 </html>
 `;
 }
 
-export function header(site, alternates = null) {
-  const ui = site.ui || {};
+// When the previous page showed the same background photo or video (e.g. switching
+// language), it stays lit instead of fading in again. Runs before the first paint.
+function stageBoot(html) {
+  const m = html.match(/class="(?:bg-video[^"]*|bio-photo)"[^>]*>\s*<(?:video|img) src="([^"]+)"/);
+  if (!m) return '';
+  return `\n  <script>try{if(sessionStorage.getItem('stage')===${JSON.stringify(m[1].replace(/^\//, '')).replace(/</g, '\\u003c')})document.documentElement.classList.add('stage-lit')}catch(e){}</script>`;
+}
+
+
+export function header(site) {
   return `  <header class="site-header">
     <a class="name" href="${attr(site.home || '/')}">${esc(site.name)}</a>
-    <nav class="header-nav" aria-label="${attr(ui.main_menu || 'Main')}">
-${site.nav.map((n) => `      <a href="${attr(n.url)}">${esc(n.label)}</a>`).join('\n')}
-    </nav>
-    ${topRight(site, alternates)}
-    <button class="menu-toggle" aria-label="${attr(ui.menu || 'Menu')}" aria-expanded="false" aria-controls="menu"><span></span><span></span><span></span></button>
-    <nav class="menu" id="menu" aria-label="${attr(ui.main_menu || 'Main')}">
-${site.nav.map((n) => `      <a href="${attr(n.url)}">${esc(n.label)}</a>`).join('\n')}
-${alternates?.length > 1 ? '      ' + langSwitch(site, alternates, 'menu-langs') + '\n' : ''}    </nav>
   </header>`;
 }
 
-// Top right corner: language switch, then the "Time in Munich" clock (desktop only).
-export function topRight(site, alternates = null) {
-  return `<div class="top-right">${alternates?.length > 1 ? langSwitch(site, alternates) : ''}${clock(site)}</div>`;
+// The home page view: big name at the top, big menu at the bottom, then the time and
+// the language switch. The corner menu on every other page is this same menu, small.
+export function homeView(site, alternates = null) {
+  return `<a class="home-name" href="${attr(site.home || '/')}">${esc(site.name)}</a>
+<div class="home-bottom">
+  <nav class="home-nav" aria-label="${attr((site.ui || {}).main_menu || 'Main')}">
+${site.nav.map((n) => `    <a href="${attr(n.url)}">${esc(n.label)}</a>`).join('\n')}
+  </nav>
+  ${metaRow(site, alternates)}
+</div>`;
+}
+
+// Time in Munich, then the language switch (the light/dark switch is added after it by fun.js).
+export function metaRow(site, alternates = null) {
+  return `<div class="meta-row">${clock(site)}${alternates?.length > 1 ? langSwitch(site, alternates) : ''}</div>`;
+}
+
+// Bottom-left corner on every page except home: the word "menu". Hovering it (or tapping
+// it) raises the home page's menu, small, right there, with the time and languages.
+export function cornerMenu(site, alternates = null) {
+  const ui = site.ui || {};
+  const open = (ui.menu || 'Menu').toLowerCase();
+  const close = (ui.close || 'Close').toLowerCase();
+  return `  <nav class="corner-menu" aria-label="${attr(ui.main_menu || 'Main')}">
+    <div class="corner-panel" id="corner-panel">
+      <div class="corner-links">
+${site.nav.map((n) => `        <a href="${attr(n.url)}">${esc(n.label)}</a>`).join('\n')}
+      </div>
+      ${metaRow(site, alternates)}
+    </div>
+    <button type="button" class="corner-toggle" aria-expanded="false" aria-controls="corner-panel"><span class="when-closed">${esc(open)}</span><span class="when-open" aria-hidden="true">${esc(close)}</span></button>
+  </nav>`;
 }
 
 // "EN DE RU": the same page in each language, the current one marked.
@@ -105,7 +137,7 @@ export function langPicker(alternates) {
 </div>`;
 }
 
-// "Time in Munich" clock shown at the top right on wide screens (filled in by main.js).
+// "Time in Munich" clock (filled in by main.js).
 export function clock(site = {}) {
   return `<p class="clock" aria-hidden="true">${esc(site.ui?.time_in_munich || 'Time in Munich')} <b data-clock>--:--</b></p>`;
 }
@@ -126,20 +158,43 @@ export function label(html, { tag = 'h2', extraClass = '' } = {}) {
   return `<${tag} class="label${extraClass ? ' ' + extraClass : ''}">${html}</${tag}>`;
 }
 
-// Fixed full-screen looping video behind a production page.
-export function bgVideo(src) {
-  return `  <div class="bg-video" aria-hidden="true"><video src="${attr(src)}" autoplay muted loop playsinline preload="auto"></video></div>`;
+// Fixed full-screen looping video behind a production page. It always starts muted
+// (browsers block autoplay with sound). With `sound: true` a button lets visitors
+// turn the sound on; only use it for videos that have an audio track.
+export function bgVideo(src, { sound = false } = {}) {
+  const video = `  <div class="bg-video" aria-hidden="true"><video src="${attr(src)}" autoplay muted loop playsinline preload="auto"></video></div>`;
+  if (!sound) return video;
+  return `${video}
+  <button type="button" class="sound-toggle" aria-pressed="false" aria-label="Turn sound on"><span class="eq" aria-hidden="true"><i></i><i></i><i></i><i></i></span><span class="sound-label">Sound</span></button>`;
+}
+
+// Still picture of a production's trailer. A click opens the player in a window the
+// width of the page content (fun.js); without JavaScript it is a normal link.
+export function trailer({ embed, image, url, label = 'Trailer', duration = '' }) {
+  return `<a class="trailer" href="${attr(url || embed)}" data-embed="${attr(embed)}" aria-label="${attr(label)}" target="_blank" rel="noopener">
+  <img src="${attr(image)}" alt="" loading="lazy">
+  <span class="trailer-play"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="${PLAY_ICON}"/></svg>${esc(label)}${duration ? ` <span class="trailer-time">${esc(duration)}</span>` : ''}</span>
+</a>`;
+}
+
+// Fixed full-screen photo behind a page, styled like the background videos
+// (same dimming and fade-in, plus a slow drift so it feels alive).
+export function bgImage(src, alt = '') {
+  return `  <div class="bg-video bg-image"><img src="${attr(src)}" alt="${attr(alt)}"></div>`;
 }
 
 // List of productions on the left of theater/playwriting pages. The current one opens
 // and shows its summary lines.
 export function workList(items, currentSlug) {
   const li = items.map((it) => {
-    if (it.slug !== currentSlug) return `  <li><a href="${attr(it.url)}">${esc(it.title)}</a></li>`;
+    const film = it.trailer ? ' class="has-film"' : '';
+    if (it.slug !== currentSlug) return `  <li${film}><a href="${attr(it.url)}">${esc(it.title)}</a></li>`;
     const lines = it.summaryHtml.map((p) => `      <p>${p}</p>`);
     if (it.linksHtml) lines.push(`      <p class="work-links">${it.linksHtml}</p>`);
     const summary = lines.length ? `\n    <div class="summary">\n${lines.join('\n')}\n    </div>\n  ` : '';
-    return `  <li class="current"><a href="${attr(it.url)}" aria-current="page">${esc(it.title)}</a>${summary}</li>`;
+    const title = `<a href="${attr(it.url)}" aria-current="page">${esc(it.title)}</a>`;
+    const head = it.asideHtml ? `<div class="work-head">${title}<span class="work-aside">${it.asideHtml}</span></div>` : title;
+    return `  <li class="current${it.trailer ? ' has-film' : ''}">${head}${summary}</li>`;
   });
   return `<ul class="nav-list">\n${li.join('\n')}\n</ul>`;
 }
@@ -153,17 +208,34 @@ export function detail(blocks) {
   return `<div class="detail">\n${blocks.map((b) => '  ' + b).join('\n')}\n</div>`;
 }
 
-// Audio player with play/pause, seek bar, time and download link.
+// Audio player: play/pause, seek bar (click or drag), time, volume and download.
+// Every control has a click area of at least 44 px. Wired up in main.js.
+// Reading pages: turn the lights on before the page is drawn if the reader left them on.
+export const READ_LIGHT_BOOT = `<script>try{if(localStorage.getItem('hs-reading-lights')==='on')document.documentElement.setAttribute('data-theme','light')}catch(e){}</script>`;
+
+// The demo's title with its download link on the same line, on the right.
+export function demoHead(title, src, ui = {}) {
+  return `<div class="demo-head">
+  <h1 class="page-title">${esc(title)}</h1>
+  <a class="download" href="${attr(src)}" download>${esc(ui.download || 'DOWNLOAD')}</a>
+</div>`;
+}
+
 export function player(src, ui = {}) {
   return `<div class="player" data-src="${attr(src)}" data-play="${attr(ui.play || 'Play audio')}" data-pause="${attr(ui.pause || 'Pause audio')}">
   <audio preload="metadata" src="${attr(src)}"></audio>
   <div class="player-row">
-    <button type="button" aria-label="${attr(ui.play || 'Play audio')}"><svg viewBox="0 0 16 16" aria-hidden="true"><path class="icon-play" d="${PLAY_ICON}"/></svg></button>
-    <div class="bar" role="slider" aria-label="Seek" tabindex="0"><i></i></div>
+    <button type="button" class="player-play" aria-label="${attr(ui.play || 'Play audio')}"><svg viewBox="0 0 16 16" aria-hidden="true"><path class="icon-play" d="${PLAY_ICON}"/></svg></button>
+    <div class="bar" role="slider" aria-label="${attr(ui.seek || 'Seek')}" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" tabindex="0"><span class="track"><i></i></span></div>
   </div>
   <div class="player-meta">
-    <span class="time">0:00</span>
-    <a class="download" href="${attr(src)}" download>${esc(ui.download || 'DOWNLOAD')}</a>
+    <span class="time"><span class="now">0:00</span><span class="total"></span></span>
+    <span class="player-tools">
+      <span class="volume">
+        <button type="button" class="player-mute" aria-label="${attr(ui.mute || 'Mute')}" aria-pressed="false"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2 6h3l4-3v10l-4-3H2z"/><path class="waves" d="M11 5.5a3.5 3.5 0 0 1 0 5M12.8 3.5a6.3 6.3 0 0 1 0 9" fill="none" stroke="currentColor" stroke-width="1.4"/></svg></button>
+        <input type="range" class="player-volume" min="0" max="1" step="0.05" value="1" aria-label="${attr(ui.volume || 'Volume')}">
+      </span>
+    </span>
   </div>
 </div>`;
 }

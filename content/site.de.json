@@ -32,8 +32,9 @@
     "label": "für Synchronaufnahmen und Anfragen:"
   },
   "ui": {
+    "trailer": "Trailer",
     "main_menu": "Hauptmenü",
-    "menu": "Menü",
+    "menu": "Menü", "close": "Schließen",
     "language": "Sprache",
     "time_in_munich": "zeit in München",
     "titles": {
@@ -45,6 +46,6 @@
     "pause": "Pause",
     "download": "HERUNTERLADEN",
     "copy_email": "E-Mail-Adresse kopieren",
-    "copied": "Kopiert"
+    "copied": "kopiert"
   }
 }
