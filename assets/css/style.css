@@ -69,8 +69,6 @@ img, video { display: block; max-width: 100%; }
   height: var(--header-height);
 }
 .site-header .name {
-  position: relative;
-  z-index: 11;
   font-size: var(--type-nav);
   line-height: var(--type-nav);
   letter-spacing: var(--type-nav-tracking);
@@ -79,6 +77,7 @@ img, video { display: block; max-width: 100%; }
 .menu-toggle {
   position: relative;
   z-index: 11;               /* stays above the open menu, so it works as the close button */
+  margin-left: auto;         /* top-right corner, clear of the big name in the open menu */
   width: 27px;
   height: 27px;
   padding: 0;
@@ -102,6 +101,7 @@ img, video { display: block; max-width: 100%; }
 .menu-open .menu-toggle span:nth-child(2) { opacity: 0; }
 .menu-open .menu-toggle span:nth-child(3) { top: 13px; transform: rotate(-45deg) scaleX(.75); }
 
+/* The open menu is a copy of the home page: same big name, same big links, same footer. */
 .menu {
   position: fixed;
   inset: 0;
@@ -109,21 +109,26 @@ img, video { display: block; max-width: 100%; }
   background: var(--color-bg);
   display: flex;
   flex-direction: column;
-  justify-content: flex-end;
-  padding: 0 var(--gutter) 20px;
   opacity: 0;
   visibility: hidden;
   transition: opacity var(--fast) var(--ease), visibility var(--fast);
 }
-.menu-open .menu { opacity: 1; visibility: visible; }
-.menu a {
-  font-size: var(--type-nav);
-  line-height: var(--type-nav-lh);
-  letter-spacing: var(--type-nav-tracking);
-  width: fit-content;
-}
-.menu a:hover, .nav-list a:hover { color: var(--color-muted); }
+.menu-open .menu { opacity: 1; visibility: visible; transition: opacity var(--fast) var(--ease), visibility 0s; }
 .menu-open { overflow: hidden; }
+
+/* Links slide up one after another as the menu opens */
+.menu .home-name, .menu .home-nav a {
+  transform: translateY(24px);
+  opacity: 0;
+  transition: transform var(--menu-in) var(--ease-out), opacity var(--menu-in) var(--ease-out);
+}
+.menu-open .menu .home-name, .menu-open .menu .home-nav a { transform: none; opacity: 1; }
+.menu-open .menu .home-nav a:nth-child(1) { transition-delay: .04s; }
+.menu-open .menu .home-nav a:nth-child(2) { transition-delay: .08s; }
+.menu-open .menu .home-nav a:nth-child(3) { transition-delay: .12s; }
+.menu-open .menu .home-nav a:nth-child(4) { transition-delay: .16s; }
+.menu-open .menu .home-nav a:nth-child(5) { transition-delay: .2s; }
+.menu-open .menu .home-nav a:nth-child(6) { transition-delay: .24s; }
 
 /* ---------- Main + footer ---------- */
 
@@ -132,42 +137,42 @@ main {
   padding: 44px var(--gutter) 0;
 }
 
+/* Impressum / Datenschutz: small and quiet, but on every page as German law requires */
 .site-footer {
   display: flex;
   justify-content: flex-end;
-  gap: 24px;
-  padding: 60px var(--gutter) 20px;
-  font-size: var(--type-small);
-  line-height: var(--type-small-lh);
+  gap: 16px;
+  padding: 60px var(--gutter) 16px;
+  font-size: var(--type-legal);
+  line-height: var(--type-legal);
+  color: var(--color-muted);
 }
-.site-footer a:hover { color: var(--color-muted); }
+.site-footer a:hover { color: var(--color-fg); }
 
-/* ---------- Home ---------- */
+/* ---------- Home view (home page and the open menu) ---------- */
 
-/* The home page fits one screen: name at the top, menu at the bottom. */
-.home main { min-height: 0; }
-
-.home main {
+/* Fits one screen: name at the top, menu at the bottom. */
+.home-main {
+  flex: 1;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  padding-top: 24px;
+  padding: 24px var(--gutter);   /* bottom: room for the descenders of the last menu line */
 }
-.home .home-name,
-.home .home-nav a {
+.home-name,
+.home-nav a {
   font-size: var(--type-display);
   letter-spacing: var(--type-display-tracking);
 }
-.home .home-name { line-height: var(--type-display-lh); width: fit-content; }
-.home .home-nav { display: flex; flex-direction: column; padding-top: 40px; }
-.home .home-nav a { line-height: var(--type-display-nav-lh); width: fit-content; }
-.home .home-nav a:hover { color: var(--color-muted); }
-.home main { padding-bottom: 24px; }   /* room for the descenders of the last menu line */
-.home .site-footer { padding-top: 0; }
+.home-name { line-height: var(--type-display-lh); width: fit-content; }
+.home-nav { display: flex; flex-direction: column; padding-top: 40px; }
+.home-nav a { line-height: var(--type-display-nav-lh); width: fit-content; }
+.home-nav a:hover { color: var(--color-muted); }
+.home .site-footer, .menu .site-footer { padding-top: 0; }
 @media (min-width: 641px) {
   /* footer sits in the bottom-right corner next to the menu instead of adding height */
   body.home { position: relative; }
-  .home .site-footer { position: absolute; right: 0; bottom: 0; }
+  .home .site-footer, .menu .site-footer { position: absolute; right: 0; bottom: 0; }
 }
 
 /* ---------- Bio ---------- */
@@ -194,6 +199,9 @@ main {
   pointer-events: none;
 }
 .bio-photo img { width: 100%; height: 100%; object-fit: cover; }
+
+@keyframes bio-photo-in { from { transform: translateX(30%); opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .bio-photo { animation: none !important; } }
 
 /* ---------- Audio player ---------- */
 
@@ -258,6 +266,7 @@ main {
 .nav-list { display: flex; flex-direction: column; gap: 14px; padding: 0; margin: 0; }
 .nav-list > li { list-style: none; }
 .nav-list a { font-size: var(--type-list); line-height: var(--type-list-lh); display: inline-block; }
+.nav-list a:hover { color: var(--color-muted); }
 .nav-list .current a { color: var(--color-fg); }
 .nav-list .summary {
   border-top: 2px solid var(--color-fg);
@@ -343,8 +352,10 @@ main {
 
 @media (min-width: 1200px) {
   .site-header { gap: 50px; }
-  .menu-toggle, .menu { display: none; }
-  .header-nav { display: flex; gap: 50px; }
+  /* Inline menu in the header ("menu_desktop": "inline" in content/site.json) */
+  body:not(.menu-everywhere) .menu-toggle,
+  body:not(.menu-everywhere) .menu { display: none; }
+  body:not(.menu-everywhere) .header-nav { display: flex; gap: 50px; }
   .header-nav a {
     font-size: var(--type-nav);
     line-height: var(--type-nav);
@@ -353,6 +364,8 @@ main {
   }
   .header-nav a:hover { color: var(--color-muted); }
   .clock { display: block; }
+  /* Same full-screen menu as on phones ("menu_desktop": "overlay"): the clock moves left of the button */
+  .menu-everywhere .site-header .clock { right: calc(var(--gutter) + 27px + 32px); top: 31px; }
 
   /* theater / playwriting */
   .nav-list { gap: 8px; }
@@ -408,7 +421,27 @@ main {
 
 @media (max-width: 900px) {
   .split { grid-template-columns: 1fr; row-gap: 40px; }
-  .bio-photo { position: relative; top: 0; width: 100%; max-width: none; height: auto; min-height: 0; margin-top: 40px; }
+  /* About page on phones and tablets: a close crop of the face that bleeds off the right
+     edge, with the title and text running over it. The photo slides in from the right. */
+  .bio { --u: min(1vw, 5.2px); }   /* photo unit: 1% of a phone screen, capped on tablets */
+  .bio-photo {
+    top: calc(var(--header-height) * -1);
+    right: 0;
+    width: calc(var(--u) * 100);
+    max-width: none;
+    height: calc(var(--u) * 112);
+    min-height: 0;
+    opacity: .85;
+    overflow: hidden;
+    -webkit-mask-image: linear-gradient(to bottom, #000 62%, transparent), linear-gradient(to right, transparent, #000 50%);
+    -webkit-mask-composite: source-in;
+    mask-image: linear-gradient(to bottom, #000 62%, transparent), linear-gradient(to right, transparent, #000 50%);
+    mask-composite: intersect;
+    animation: bio-photo-in 1.2s var(--ease-out) both;
+  }
+  /* Face center sits at about 63% across and 48% down the photo */
+  .bio-photo img { position: absolute; max-width: none; width: calc(var(--u) * 150); height: auto; left: calc(var(--u) * -28); top: calc(var(--u) * -56); }
+  .bio-text { padding-top: calc(var(--u) * 62); }
   .play-body { width: 100%; }
   .play-title { padding: 160px 0; }
   .play-title h1 { font-size: 40px; line-height: 44px; }
@@ -417,4 +450,39 @@ main {
 @media (max-width: 640px) {
   .home .site-footer { margin-top: 0; }
   .works { grid-template-columns: 1fr; }
+}
+
+/* ---------- Page transitions ----------
+   Browsers with cross-page view transitions (Chrome, Edge, Safari 18.2+) fade the old page
+   out and slide the new one in. The name, menu button, header links and clock stay in place,
+   and the big name on the home page (or in the open menu) shrinks into the header name.
+   Other browsers simply load the next page as before. */
+
+@view-transition { navigation: auto; }
+
+.site-header .name, .home-name { view-transition-name: site-name; }
+.header-nav { view-transition-name: site-nav; }
+.clock { view-transition-name: site-clock; }
+.menu-toggle { view-transition-name: site-toggle; }
+.site-footer { view-transition-name: site-footer; }
+/* A name may be used once per page: with the menu open, the big name in the menu takes it */
+.menu .home-name, .menu .site-footer { view-transition-name: none; }
+.menu-open .site-header .name { view-transition-name: none; }
+.menu-open .menu .home-name { view-transition-name: site-name; }
+
+::view-transition-group(*) { animation-duration: var(--page-in); animation-timing-function: var(--ease-out); }
+::view-transition-old(root) { animation: page-out var(--page-out) var(--ease) both; }
+::view-transition-new(root) { animation: page-in var(--page-in) var(--ease-out) both; }
+/* Big-to-small name: keep the sharp old picture until late, then swap */
+::view-transition-old(site-name) { animation: name-out var(--page-in) var(--ease) both; }
+::view-transition-new(site-name) { animation: name-in var(--page-in) var(--ease) both; }
+
+@keyframes page-out { to { opacity: 0; } }
+@keyframes page-in { from { opacity: 0; transform: translateY(16px); } }
+@keyframes name-out { 0%, 50% { opacity: 1; } 100% { opacity: 0; } }
+@keyframes name-in { 0%, 50% { opacity: 0; } 100% { opacity: 1; } }
+
+@media (prefers-reduced-motion: reduce) {
+  @view-transition { navigation: none; }
+  .menu .home-name, .menu .home-nav a { transition: none; transform: none; }
 }
