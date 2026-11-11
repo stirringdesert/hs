@@ -130,6 +130,7 @@ Each entry: what was said → the likely reason → the rule that follows.
 | 61 | The light mode setting should be kept between pages. It's now remembered for the reading pages only; other pages and the menu stay black. | A reader's choice should still hold when they come back. | Remember what the visitor chose, within the scope where the choice applies. |
 | 62 | The play text over the photo in light mode "still looks weird, I think it's all just actually grey". The text was black; the photo had been lightened and softened to suit the light background, which greyed the whole page. It now keeps its real colours. | On a light page, a washed-out photo makes everything look dull and faded. | Don't bleach media to fit a mode. Show it as it is, and keep the text crisp. |
 | 63 | The bookings line should use the same style and size as paragraph text. | It's a sentence, not a label, so small bold text made it shout. | Sentences use the paragraph style. The bold label style is only for short tags. |
+| 64 | In light mode on the play page, "keep this whole part of the page on white text and increase photo opacity": the name, title, info and description over the photo. The photo now sits on black at strong opacity, and the dark top fades into the light page as the photo fades. | The photo is a dark, theatrical image, and on white it turns into grey mud. Light mode is for reading the play, not for restyling the title area. | Light mode changes only the reading surface. Media and the text over it look the same as in dark mode. Refines #62. |
 
 ## Do and don't
 
