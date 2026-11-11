@@ -75,87 +75,65 @@ img, video { display: block; max-width: 100%; }
   padding: 4px 0;
 }
 
-/* ---------- Corner menu (every page except home) ----------
-   The home page's menu, small, in the bottom-left corner. Closed it shows one word,
-   "menu". Hovering it (or tapping it, or tabbing to it) raises the links right there,
-   one after another, with the time and the language switch underneath. */
-
-.corner-menu {
-  position: fixed;
-  left: 0;
-  bottom: 0;
-  z-index: 40;
-  padding: 32px 48px 16px var(--gutter);   /* a generous hover area around the word */
-  font-size: var(--type-nav);
-  line-height: var(--type-nav-lh);
-  letter-spacing: var(--type-nav-tracking);
-  --corner-bg: var(--color-bg);   /* solid: see-through backgrounds made the page text bleed in */
-}
-.corner-panel {
-  position: absolute;
-  left: 0;
-  bottom: calc(16px + var(--type-nav-lh));
-  padding: 16px 48px 12px var(--gutter);
-  width: max-content;
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-  background: var(--corner-bg);
-  visibility: hidden;
-  opacity: 0;
-  transition: opacity var(--fast) var(--ease), visibility 0s linear var(--fast);
-}
-.corner-links { display: flex; flex-direction: column; }
-.corner-links a { width: fit-content; }
-.corner-links a, .corner-panel .meta-row {
-  opacity: 0;
-  transform: translateY(12px);
-  transition: opacity var(--fast) var(--ease), transform var(--fast) var(--ease);
-}
-.corner-menu.open .corner-panel { visibility: visible; opacity: 1; transition: opacity var(--fast) var(--ease), visibility 0s; }
-.corner-menu.open .corner-links a, .corner-menu.open .corner-panel .meta-row {
-  opacity: 1;
-  transform: none;
-  transition: opacity var(--menu-in) var(--ease-out), transform var(--menu-in) var(--ease-out);
-}
-/* The link nearest the word rises first, the rest follow upward */
-.corner-menu.open .corner-links a:nth-last-child(1) { transition-delay: calc(var(--stagger) * 1); }
-.corner-menu.open .corner-links a:nth-last-child(2) { transition-delay: calc(var(--stagger) * 2); }
-.corner-menu.open .corner-links a:nth-last-child(3) { transition-delay: calc(var(--stagger) * 3); }
-.corner-menu.open .corner-links a:nth-last-child(4) { transition-delay: calc(var(--stagger) * 4); }
-.corner-menu.open .corner-links a:nth-last-child(5) { transition-delay: calc(var(--stagger) * 5); }
-.corner-menu.open .corner-links a:nth-last-child(6) { transition-delay: calc(var(--stagger) * 6); }
-.corner-links a:hover, .corner-links a[aria-current] { color: var(--color-muted); }
-.corner-toggle {
-  display: block;
-  margin-left: -10px;
-  padding: 0 10px;
+/* Arrow next to the name: opens the menu. Same size as the text it sits next to. */
+.menu-arrow {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: .8em;
+  height: 1em;
+  padding: 0;
   border: 0;
-  background: var(--corner-bg);   /* stays readable over text and video */
+  background: none;
   color: var(--color-fg);
   font: inherit;
-  letter-spacing: inherit;
   cursor: pointer;
 }
-.corner-toggle .when-open, .corner-menu.open .corner-toggle .when-closed { display: none; }
-.corner-menu.open .corner-toggle .when-open { display: inline; }
-.corner-toggle:hover { color: var(--color-muted); }
-/* the page's last lines can scroll clear of the word */
-body:has(.corner-menu) .site-footer { padding-bottom: calc(24px + var(--type-nav-lh)); }
-
-/* Time in Munich + EN DE RU (+ dark light): under the menu, on home and in the corner */
-.meta-row {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: baseline;
-  gap: 8px 24px;
-  font-size: var(--type-small);
-  line-height: 13px;
-  letter-spacing: 0;
+.site-header > .menu-arrow { font-size: var(--type-nav); }
+.menu-arrow svg {
+  width: .72em;
+  height: .72em;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  vector-effect: non-scaling-stroke;   /* same line weight at every size */
+  transition: transform var(--fast) var(--ease-out);
 }
-.meta-row .lang-switch + .theme-switch { margin-left: 0; }
-.clock { margin: 0; }
-.clock b { font-weight: var(--weight-bold); margin-left: 4px; }
+.menu-arrow:hover { color: var(--color-muted); }
+.menu-arrow:hover svg { transform: translateY(.08em); }     /* a small nod toward the menu */
+.menu-arrow.is-close svg { transform: rotate(180deg); }
+.menu-arrow.is-close:hover svg { transform: rotate(180deg) translateY(.08em); }
+
+/* The open menu is the home page itself: same big name, links, time, languages, legal. */
+.menu {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  background: var(--color-bg);
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity var(--fast) var(--ease), visibility 0s linear var(--fast);
+}
+.menu-open .menu { opacity: 1; visibility: visible; transition: opacity var(--fast) var(--ease), visibility 0s; }
+.menu-open { overflow: hidden; }
+.menu-open .site-header { z-index: 60; }   /* above the sound button and other fixed extras */
+/* Links rise one after another as the menu opens */
+.menu .home-nav a, .menu .home-foot {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity var(--menu-in) var(--ease-out), transform var(--menu-in) var(--ease-out);
+}
+.menu-open .menu .home-nav a, .menu-open .menu .home-foot { opacity: 1; transform: none; }
+.menu-open .menu .home-nav a:nth-child(1) { transition-delay: calc(var(--stagger) * 1); }
+.menu-open .menu .home-nav a:nth-child(2) { transition-delay: calc(var(--stagger) * 2); }
+.menu-open .menu .home-nav a:nth-child(3) { transition-delay: calc(var(--stagger) * 3); }
+.menu-open .menu .home-nav a:nth-child(4) { transition-delay: calc(var(--stagger) * 4); }
+.menu-open .menu .home-nav a:nth-child(5) { transition-delay: calc(var(--stagger) * 5); }
+.menu-open .menu .home-nav a:nth-child(6) { transition-delay: calc(var(--stagger) * 6); }
+.menu-open .menu .home-foot { transition-delay: calc(var(--stagger) * 7); }
 
 /* ---------- Main + footer ---------- */
 
@@ -176,32 +154,57 @@ main {
 }
 .site-footer a:hover { color: var(--color-fg); }
 
-/* ---------- Home ---------- */
+/* ---------- Home view (home page and the open menu) ---------- */
 
-/* Fits one screen: name at the top; menu, then time and languages at the bottom. */
+/* Fits one screen: name at the top; the menu, then time, languages and legal links
+   at the bottom. */
+.home-page { display: flex; flex-direction: column; padding: 0; }
+.home .site-footer { display: none; }   /* the legal links are part of the home view */
 .home-main {
   flex: 1;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
   padding: 24px var(--gutter) 16px;
+  min-height: 100vh;
+  min-height: 100svh;
 }
+.home-top { display: flex; align-items: baseline; gap: .2em; font-size: var(--type-display); }
 .home-name,
 .home-nav a {
   font-size: var(--type-display);
   letter-spacing: var(--type-display-tracking);
 }
 .home-name { line-height: var(--type-display-lh); width: fit-content; }
-.home-nav { display: flex; flex-direction: column; padding-top: 40px; }
+.home-top .menu-arrow { align-self: center; }
+.home-nav { display: flex; flex-direction: column; margin-top: auto; padding-top: 40px; }
 .home-nav a { line-height: var(--type-display-nav-lh); width: fit-content; }
 .home-nav a:hover { color: var(--color-muted); }
-.home-bottom .meta-row { margin-top: 32px; }
-.home .site-footer { padding-top: 0; }
-@media (min-width: 641px) {
-  /* legal links sit in the bottom-right corner, level with the time and languages */
-  body.home { position: relative; }
-  .home .site-footer { position: absolute; right: 0; bottom: 0; }
+
+/* Desktop: one row under the menu: time, languages ... legal links on the right.
+   Phones: two rows: languages (light/dark on the right if present); time + legal links. */
+.home-foot {
+  display: grid;
+  grid-template-columns: auto auto auto 1fr auto;
+  grid-template-areas: "time lang mode . legal";
+  align-items: baseline;
+  column-gap: 32px;
+  row-gap: 14px;
+  margin-top: 32px;
+  font-size: var(--type-small);
+  line-height: 13px;
 }
+.home-foot .clock { grid-area: time; }
+.home-foot .lang-switch { grid-area: lang; }
+.home-foot .legal-links { grid-area: legal; display: flex; gap: 16px; font-size: var(--type-legal); color: var(--color-muted); }
+.legal-links a:hover { color: var(--color-fg); }
+@media (max-width: 640px) {
+  .home-foot {
+    grid-template-columns: auto 1fr auto;
+    grid-template-areas: "lang . mode" "time . legal";
+  }
+}
+.clock { margin: 0; white-space: nowrap; }
+.clock b { font-weight: var(--weight-bold); margin-left: 4px; }
 
 /* ---------- Bio ---------- */
 
@@ -540,22 +543,28 @@ main {
 }
 
 @media (max-width: 640px) {
-  .home .site-footer { margin-top: 0; }
   .works { grid-template-columns: 1fr; }
 }
 
 /* ---------- Page transitions ----------
    Browsers with view transitions (Chrome, Edge, Safari 18.2+) change pages like scenes:
    the old page fades out quickly, the new content rises into place, the background
-   media cross-fades, and what exists on both pages (the name, the corner menu) stays
-   exactly where it is. The big name on the home page shrinks into the
-   header name. Other browsers just
+   media cross-fades, and the name stays exactly where it is. The big name on the home
+   page (or in the open menu) shrinks into the header name, and back when the menu opens. Other browsers just
    load the next page. Off for visitors who ask for reduced motion. */
 
 @view-transition { navigation: auto; }
 
 .site-header .name, .home-name { view-transition-name: site-name; }
-.corner-menu { view-transition-name: site-corner; }
+.site-header .menu-arrow { view-transition-name: site-arrow; }
+/* A name may be used once per page. With the menu open, the menu's big name and arrow
+   take them, and the page underneath stays part of the background picture. */
+.menu .home-name, .menu .menu-arrow { view-transition-name: none; }
+.menu-open .site-header .name, .menu-open .site-header > .menu-arrow { view-transition-name: none; }
+.menu-open .menu .home-name { view-transition-name: site-name; }
+.menu-open .menu .menu-arrow { view-transition-name: site-arrow; }
+.menu-open .bg-video, .menu-open .bio-photo,
+.vt-menu .bg-video, .vt-menu .bio-photo { view-transition-name: none; }
 .cursor { view-transition-name: site-cursor; }
 .bg-video, .bio-photo { view-transition-name: stage; }
 
@@ -573,6 +582,9 @@ main {
 /* The custom cursor hides while the page changes instead of freezing in place */
 ::view-transition-group(site-cursor) { display: none; }
 
+/* Opening and closing the menu: a plain quick cross-fade, nothing rises */
+.vt-menu::view-transition-new(root) { animation: fade-in var(--page-out) var(--ease) both; }
+
 @keyframes fade-out { to { opacity: 0; } }
 @keyframes fade-in { from { opacity: 0; } }
 @keyframes rise-in { from { opacity: 0; transform: translateY(24px); } }
@@ -582,6 +594,6 @@ main {
 
 @media (prefers-reduced-motion: reduce) {
   @view-transition { navigation: none; }
-  .corner-links a, .corner-panel .meta-row { transition: none !important; transform: none; }
+  .menu .home-nav a, .menu .home-foot { transition: none !important; transform: none; }
   .bg-video, .bio-photo { animation: none; }
 }

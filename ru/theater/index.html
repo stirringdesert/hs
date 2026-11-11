@@ -19,15 +19,32 @@
   <link rel="icon" href="/assets/img/favicon-light.png" media="(prefers-color-scheme: light)">
   <link rel="icon" href="/assets/img/favicon-dark.png" media="(prefers-color-scheme: dark)">
   <link rel="stylesheet" href="/assets/css/tokens.css?v=48a5253b">
-  <link rel="stylesheet" href="/assets/css/style.css?v=e3f085b0">
-  <link rel="stylesheet" href="/assets/css/fun.css?v=827fc2ea">
+  <link rel="stylesheet" href="/assets/css/style.css?v=b44ba5d3">
   <link rel="stylesheet" href="/assets/css/type.css?v=d8c5e17d">
-  <script src="/assets/js/main.js?v=5293f725" defer></script>
+  <link rel="stylesheet" href="/assets/css/fun.css?v=827fc2ea">
+  <script src="/assets/js/main.js?v=df63c12e" defer></script>
   <script src="/assets/js/fun.js?v=040c1a1b" defer></script>
 </head>
 <body class="theater">
   <header class="site-header">
     <a class="name" href="/ru/">Игорь Сергеев</a>
+    <button type="button" class="menu-arrow" aria-label="Меню" aria-expanded="false" aria-controls="menu"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v17M4.5 12.5 12 20l7.5-7.5"/></svg></button>
+    <div class="menu" id="menu">
+      <div class="home-main">
+        <div class="home-top"><a class="home-name" href="/ru/">Игорь Сергеев</a><button type="button" class="menu-arrow is-close" aria-label="Закрыть"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v17M4.5 12.5 12 20l7.5-7.5"/></svg></button></div>
+        <nav class="home-nav" aria-label="Главное меню">
+          <a href="/ru/bio/">био</a>
+          <a href="/ru/voice/">озвучка</a>
+          <a href="/ru/theater/">театр</a>
+          <a href="/open-relationship-ru/">драматургия</a>
+          <a href="/ru/contact/">контакты</a>
+        </nav>
+        <div class="home-foot">
+          <p class="clock" aria-hidden="true">время в Мюнхене <b data-clock>--:--</b></p><nav class="lang-switch" aria-label="Язык"><a href="/theater/" hreflang="en" lang="en" data-lang="en">EN</a><a href="/de/theater/" hreflang="de" lang="de" data-lang="de">DE</a><a href="/ru/theater/" hreflang="ru" lang="ru" data-lang="ru" aria-current="true">RU</a></nav>
+          <nav class="legal-links" aria-label="Legal"><a href="/impressum/">Impressum</a><a href="/datenschutzerklaerung/">Datenschutz</a></nav>
+        </div>
+      </div>
+    </div>
   </header>
   <main>
     <h1 class="page-title">Режиссёр</h1>
@@ -46,18 +63,5 @@
     <a href="/impressum/">Impressum</a>
     <a href="/datenschutzerklaerung/">Datenschutz</a>
   </footer>
-  <nav class="corner-menu" aria-label="Главное меню">
-    <div class="corner-panel" id="corner-panel">
-      <div class="corner-links">
-        <a href="/ru/bio/">био</a>
-        <a href="/ru/voice/">озвучка</a>
-        <a href="/ru/theater/">театр</a>
-        <a href="/open-relationship-ru/">драматургия</a>
-        <a href="/ru/contact/">контакты</a>
-      </div>
-      <div class="meta-row"><p class="clock" aria-hidden="true">время в Мюнхене <b data-clock>--:--</b></p><nav class="lang-switch" aria-label="Язык"><a href="/theater/" hreflang="en" lang="en" data-lang="en">EN</a><a href="/de/theater/" hreflang="de" lang="de" data-lang="de">DE</a><a href="/ru/theater/" hreflang="ru" lang="ru" data-lang="ru" aria-current="true">RU</a></nav></div>
-    </div>
-    <button type="button" class="corner-toggle" aria-expanded="false" aria-controls="corner-panel"><span class="when-closed">меню</span><span class="when-open" aria-hidden="true">закрыть</span></button>
-  </nav>
 </body>
 </html>

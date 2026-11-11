@@ -44,16 +44,16 @@ export function layout(site, { path, title, bodyClass, lang = 'en', description,
   <link rel="icon" href="/assets/img/favicon-dark.png" media="(prefers-color-scheme: dark)">
   <link rel="stylesheet" href="${v('/assets/css/tokens.css')}">
   <link rel="stylesheet" href="${v('/assets/css/style.css')}">
-  <link rel="stylesheet" href="${v('/assets/css/fun.css')}">
-  <link rel="stylesheet" href="${v('/assets/css/type.css')}">${extraCss.map((h) => `\n  <link rel="stylesheet" href="${v(h)}">`).join('')}${stageBoot(before + main)}
+  <link rel="stylesheet" href="${v('/assets/css/type.css')}">
+  <link rel="stylesheet" href="${v('/assets/css/fun.css')}">${extraCss.map((h) => `\n  <link rel="stylesheet" href="${v(h)}">`).join('')}${stageBoot(before + main)}
   <script src="${v('/assets/js/main.js')}" defer></script>
   <script src="${v('/assets/js/fun.js')}" defer></script>${head ? '\n' + indent(head, 2) : ''}
 </head>
 <body class="${bodyClass}">
-${before ? before + '\n' : ''}${chrome ? header(site) + '\n' : ''}  <main${mainClass ? ` class="${mainClass}"` : ''}>
+${before ? before + '\n' : ''}${chrome ? header(site, alternates) + '\n' : ''}  <main${mainClass ? ` class="${mainClass}"` : ''}>
 ${indent(main, 4)}
   </main>
-${footer(site)}${chrome ? '\n' + cornerMenu(site, alternates) : ''}
+${footer(site)}
 </body>
 </html>
 `;
@@ -68,44 +68,47 @@ function stageBoot(html) {
 }
 
 
-export function header(site) {
+// Arrow next to the name: opens the full-screen menu (and, turned around, closes it).
+const ARROW = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v17M4.5 12.5 12 20l7.5-7.5"/></svg>';
+function menuArrow(site, { close = false } = {}) {
+  const ui = site.ui || {};
+  return close
+    ? `<button type="button" class="menu-arrow is-close" aria-label="${attr(ui.close || 'Close')}">${ARROW}</button>`
+    : `<button type="button" class="menu-arrow" aria-label="${attr(ui.menu || 'Menu')}" aria-expanded="false" aria-controls="menu">${ARROW}</button>`;
+}
+
+// Name at the top left with the menu arrow next to it. The arrow opens the menu: a
+// full-screen copy of the home page (same big name, links, time, languages, legal links).
+export function header(site, alternates = null) {
   return `  <header class="site-header">
     <a class="name" href="${attr(site.home || '/')}">${esc(site.name)}</a>
+    ${menuArrow(site)}
+    <div class="menu" id="menu">
+${indent(homeView(site, alternates, { inMenu: true }), 6)}
+    </div>
   </header>`;
 }
 
-// The home page view: big name at the top, big menu at the bottom, then the time and
-// the language switch. The corner menu on every other page is this same menu, small.
-export function homeView(site, alternates = null) {
-  return `<a class="home-name" href="${attr(site.home || '/')}">${esc(site.name)}</a>
-<div class="home-bottom">
+// The home page view: big name at the top, big menu at the bottom, and under it one
+// row (two on phones) with the time, languages and legal links. The menu on every
+// other page is this same view.
+export function homeView(site, alternates = null, { inMenu = false } = {}) {
+  return `<div class="home-main">
+  <div class="home-top"><a class="home-name" href="${attr(site.home || '/')}">${esc(site.name)}</a>${inMenu ? menuArrow(site, { close: true }) : ''}</div>
   <nav class="home-nav" aria-label="${attr((site.ui || {}).main_menu || 'Main')}">
 ${site.nav.map((n) => `    <a href="${attr(n.url)}">${esc(n.label)}</a>`).join('\n')}
   </nav>
-  ${metaRow(site, alternates)}
+  ${homeFoot(site, alternates)}
 </div>`;
 }
 
-// time in Munich, then the language switch (the light/dark switch is added after it by fun.js).
-export function metaRow(site, alternates = null) {
-  return `<div class="meta-row">${clock(site)}${alternates?.length > 1 ? langSwitch(site, alternates) : ''}</div>`;
-}
-
-// Bottom-left corner on every page except home: the word "menu". Hovering it (or tapping
-// it) raises the home page's menu, small, right there, with the time and languages.
-export function cornerMenu(site, alternates = null) {
-  const ui = site.ui || {};
-  const open = (ui.menu || 'Menu').toLowerCase();
-  const close = (ui.close || 'Close').toLowerCase();
-  return `  <nav class="corner-menu" aria-label="${attr(ui.main_menu || 'Main')}">
-    <div class="corner-panel" id="corner-panel">
-      <div class="corner-links">
-${site.nav.map((n) => `        <a href="${attr(n.url)}">${esc(n.label)}</a>`).join('\n')}
-      </div>
-      ${metaRow(site, alternates)}
-    </div>
-    <button type="button" class="corner-toggle" aria-expanded="false" aria-controls="corner-panel"><span class="when-closed">${esc(open)}</span><span class="when-open" aria-hidden="true">${esc(close)}</span></button>
-  </nav>`;
+// Bottom of the home view. Desktop: time, languages ... legal links, in one row.
+// Phones: languages on top; time and legal links underneath. (Grid areas in style.css.)
+export function homeFoot(site, alternates = null) {
+  return `<div class="home-foot">
+    ${clock(site)}${alternates?.length > 1 ? langSwitch(site, alternates) : ''}
+    <nav class="legal-links" aria-label="Legal">${site.footer.map((n) => `<a href="${attr(n.url)}">${esc(n.label)}</a>`).join('')}</nav>
+  </div>`;
 }
 
 // "EN DE RU": the same page in each language, the current one marked.
