@@ -59,36 +59,39 @@ img, video { display: block; max-width: 100%; }
 
 /* ---------- Header ---------- */
 
-/* The name and arrow stay at the top while the page scrolls. Once scrolled, a soft dark
-   patch fades in behind them (like the one behind the reading switch on the play page),
-   so they stay readable over text and photos without a visible bar. */
+/* The name and arrow stay at the top while the page scrolls. Once scrolled, a faint
+   shadow fades in behind them, darkest at the name and fading out over a long way,
+   so they stay readable over text and photos without a visible patch. */
 .site-header {
   position: sticky;
   top: 0;
   z-index: 20;
   display: flex;
   align-items: center;
-  gap: 12px;
   padding: 20px var(--gutter) 0;
   height: var(--header-height);
-  pointer-events: none;   /* only the name and arrow catch clicks, not the empty strip */
+  pointer-events: none;   /* only the name catches clicks, not the empty strip */
 }
-.site-header > .name, .site-header > .menu-arrow, .site-header .menu { pointer-events: auto; }
+.site-header > .name, .site-header .menu { pointer-events: auto; }
 .site-header::before {
   content: "";
   position: absolute;
-  left: -80px;
-  top: -90px;
+  left: -40px;
+  top: -60px;
   z-index: -1;
-  width: min(560px, 100vw + 70px);   /* never wider than the screen (no sideways scroll) */
-  height: 260px;
-  background: radial-gradient(50% 50% at 44% 52%, var(--color-bg) 45%, color-mix(in srgb, var(--color-bg) 80%, transparent) 68%, transparent 100%);
+  width: min(400px, 100vw + 40px);   /* never wider than the screen (no sideways scroll) */
+  height: 180px;
+  background: radial-gradient(closest-side at 45% 50%,
+    color-mix(in srgb, var(--color-bg) 62%, transparent),
+    color-mix(in srgb, var(--color-bg) 48%, transparent) 25%,
+    color-mix(in srgb, var(--color-bg) 28%, transparent) 50%,
+    color-mix(in srgb, var(--color-bg) 11%, transparent) 75%,
+    transparent);
   opacity: 0;
   transition: opacity var(--page-in) var(--ease-out);
   pointer-events: none;
 }
 .scrolled .site-header::before { opacity: 1; }
-.menu-open .site-header::before { opacity: 0; }
 .site-header .name {
   font-size: var(--type-nav);
   line-height: var(--type-nav);
@@ -96,36 +99,25 @@ img, video { display: block; max-width: 100%; }
   padding: 4px 0;
 }
 
-/* Arrow next to the name: opens the menu. Same size as the text it sits next to. */
-.menu-arrow {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: .8em;
-  height: 1em;
-  padding: 0;
-  border: 0;
-  background: none;
-  color: var(--color-fg);
-  font: inherit;
-  cursor: pointer;
-}
-.site-header > .menu-arrow { font-size: var(--type-nav); }
+/* Name + arrow: one button. The whole thing dims on hover; nothing moves. */
+.menu-toggle { display: inline-flex; align-items: center; gap: .3em; cursor: pointer; }
+.menu-toggle:hover { color: var(--color-muted); }
+.menu-arrow { display: inline-flex; width: .62em; height: .62em; flex: none; }
 .menu-arrow svg {
-  width: .72em;
-  height: .72em;
+  width: 100%;
+  height: 100%;
   fill: none;
   stroke: currentColor;
   stroke-width: 2;
   vector-effect: non-scaling-stroke;   /* same line weight at every size */
-  transition: transform var(--fast) var(--ease-out);
 }
-.menu-arrow:hover { color: var(--color-muted); }
-.menu-arrow:hover svg { transform: translateY(.08em); }     /* a small nod toward the menu */
-.menu-arrow.is-close svg { transform: rotate(180deg); }
-.menu-arrow.is-close:hover svg { transform: rotate(180deg) translateY(.08em); }
+.is-close .menu-arrow svg { transform: rotate(180deg); }
 
-/* The open menu is the home page itself: same big name, links, time, languages, legal. */
+/* The open menu is the home page itself: same big name, links, time, languages, legal.
+   It opens like the shadow behind the name spreading over the whole screen: a soft
+   black circle grows from the name, and the menu shows wherever the shadow reaches.
+   Closing shrinks it back into the corner. (main.js grows the name at the same time.) */
+@property --reveal { syntax: "<length>"; inherits: false; initial-value: 0px; }
 .menu {
   position: fixed;
   inset: 0;
@@ -134,27 +126,20 @@ img, video { display: block; max-width: 100%; }
   display: flex;
   flex-direction: column;
   overflow-y: auto;
-  opacity: 0;
   visibility: hidden;
-  transition: opacity var(--fast) var(--ease), visibility 0s linear var(--fast);
+  --reveal: 0px;
+  -webkit-mask-image: radial-gradient(circle at var(--mx, 100px) var(--my, 40px), #000 calc(var(--reveal) - 35vmax), transparent var(--reveal));
+  mask-image: radial-gradient(circle at var(--mx, 100px) var(--my, 40px), #000 calc(var(--reveal) - 35vmax), transparent var(--reveal));
+  transition: --reveal var(--menu-out) var(--ease-in-out), visibility 0s linear var(--menu-out);
 }
-.menu-open .menu { opacity: 1; visibility: visible; transition: opacity var(--fast) var(--ease), visibility 0s; }
+.menu-open .menu {
+  visibility: visible;
+  --reveal: 180vmax;   /* the far corner is fully covered */
+  transition: --reveal var(--menu-in) var(--ease-in-out), visibility 0s;
+}
 .menu-open { overflow: hidden; }
 .menu-open .site-header { z-index: 60; }   /* above the sound button and other fixed extras */
-/* Links rise one after another as the menu opens */
-.menu .home-nav a, .menu .home-foot {
-  opacity: 0;
-  transform: translateY(24px);
-  transition: opacity var(--menu-in) var(--ease-out), transform var(--menu-in) var(--ease-out);
-}
-.menu-open .menu .home-nav a, .menu-open .menu .home-foot { opacity: 1; transform: none; }
-.menu-open .menu .home-nav a:nth-child(1) { transition-delay: calc(var(--stagger) * 1); }
-.menu-open .menu .home-nav a:nth-child(2) { transition-delay: calc(var(--stagger) * 2); }
-.menu-open .menu .home-nav a:nth-child(3) { transition-delay: calc(var(--stagger) * 3); }
-.menu-open .menu .home-nav a:nth-child(4) { transition-delay: calc(var(--stagger) * 4); }
-.menu-open .menu .home-nav a:nth-child(5) { transition-delay: calc(var(--stagger) * 5); }
-.menu-open .menu .home-nav a:nth-child(6) { transition-delay: calc(var(--stagger) * 6); }
-.menu-open .menu .home-foot { transition-delay: calc(var(--stagger) * 7); }
+.menu-open .site-header::before { opacity: 0; transition-duration: var(--menu-in); }
 
 /* ---------- Main + footer ---------- */
 
@@ -180,7 +165,6 @@ main {
 /* Fits one screen: name at the top; the menu, then time, languages and legal links
    at the bottom. */
 .home-page { display: flex; flex-direction: column; padding: 0; }
-.home .site-footer { display: none; }   /* the legal links are part of the home view */
 .home-main {
   flex: 1;
   display: flex;
@@ -189,24 +173,23 @@ main {
   min-height: 100vh;
   min-height: 100svh;
 }
-.home-top { display: flex; align-items: baseline; gap: .2em; font-size: var(--type-display); }
+.home-top { display: flex; align-items: baseline; }
 .home-name,
 .home-nav a {
   font-size: var(--type-display);
   letter-spacing: var(--type-display-tracking);
 }
-.home-name { line-height: var(--type-display-lh); width: fit-content; }
-.home-top .menu-arrow { align-self: center; }
+.home-name { line-height: var(--type-display-lh); width: fit-content; transform-origin: 0 0; }
 .home-nav { display: flex; flex-direction: column; margin-top: auto; padding-top: 40px; }
 .home-nav a { line-height: var(--type-display-nav-lh); width: fit-content; }
 .home-nav a:hover { color: var(--color-muted); }
 
-/* Desktop: one row under the menu: time, languages ... legal links on the right.
+/* Desktop: one row under the menu: time ... languages, legal links on the right.
    Phones: two rows: languages on the right; time + legal links. */
 .home-foot {
   display: grid;
-  grid-template-columns: auto auto auto 1fr auto;
-  grid-template-areas: "time lang mode . legal";
+  grid-template-columns: auto auto 1fr auto auto;
+  grid-template-areas: "time mode . lang legal";
   align-items: baseline;
   column-gap: 32px;
   row-gap: 14px;
@@ -216,7 +199,7 @@ main {
 }
 .home-foot .clock { grid-area: time; }
 .home-foot .lang-switch { grid-area: lang; }
-@media (max-width: 640px) { .home-foot .lang-switch { justify-self: end; } }
+.home-foot .lang-switch { justify-self: end; }
 .home-foot .legal-links { grid-area: legal; display: flex; gap: 16px; font-size: var(--type-legal); color: var(--color-muted); }
 .legal-links a:hover { color: var(--color-fg); }
 @media (max-width: 640px) {
@@ -580,22 +563,21 @@ main {
 /* ---------- Page transitions ----------
    Browsers with view transitions (Chrome, Edge, Safari 18.2+) change pages like scenes:
    the old page fades out quickly, the new content rises into place, the background
-   media cross-fades, and the name stays exactly where it is. The big name on the home
-   page (or in the open menu) shrinks into the header name, and back when the menu opens. Other browsers just
-   load the next page. Off for visitors who ask for reduced motion. */
+   media cross-fades, and the name stays exactly where it is. Leaving the home page or
+   the open menu, the big name shrinks into the header name and the whole view shrinks
+   into the corner shadow, the reverse of opening the menu (main.js marks these with
+   .vt-contract). Other browsers just load the next page. Off for reduced motion. */
 
 @view-transition { navigation: auto; }
 
 .site-header .name, .home-name { view-transition-name: site-name; }
-.site-header .menu-arrow { view-transition-name: site-arrow; }
-/* A name may be used once per page. With the menu open, the menu's big name and arrow
-   take them, and the page underneath stays part of the background picture. */
-.menu .home-name, .menu .menu-arrow { view-transition-name: none; }
-.menu-open .site-header .name, .menu-open .site-header > .menu-arrow { view-transition-name: none; }
+/* A name may be used once per page. With the menu open, the menu's big name takes it,
+   and the page underneath stays part of the background picture. */
+.menu .home-name { view-transition-name: none; }
+.menu-open .site-header .name { view-transition-name: none; }
 .menu-open .menu .home-name { view-transition-name: site-name; }
-.menu-open .menu .menu-arrow { view-transition-name: site-arrow; }
 .menu-open .bg-video, .menu-open .bio-photo,
-.vt-menu .bg-video, .vt-menu .bio-photo { view-transition-name: none; }
+.vt-contract .bg-video, .vt-contract .bio-photo { view-transition-name: none; }
 .cursor { view-transition-name: site-cursor; }
 .bg-video, .bio-photo { view-transition-name: stage; }
 
@@ -613,8 +595,19 @@ main {
 /* The custom cursor hides while the page changes instead of freezing in place */
 ::view-transition-group(site-cursor) { display: none; }
 
-/* Opening and closing the menu: a plain quick cross-fade, nothing rises */
-.vt-menu::view-transition-new(root) { animation: fade-in var(--page-out) var(--ease) both; }
+/* From the home page or the open menu: the old view shrinks into the corner on top of
+   the new page, which is already in place underneath */
+.vt-contract::view-transition-group(*) { animation-duration: var(--menu-out); animation-timing-function: var(--ease-in-out); }
+.vt-contract::view-transition-old(site-name),
+.vt-contract::view-transition-new(site-name) { animation-duration: var(--menu-out); }
+.vt-contract::view-transition-new(root) { animation: none; }
+.vt-contract::view-transition-old(root) {
+  z-index: 1;
+  animation: contract var(--menu-out) var(--ease-in-out) both;
+  -webkit-mask-image: radial-gradient(circle at 100px 40px, #000 calc(var(--reveal) - 35vmax), transparent var(--reveal));
+  mask-image: radial-gradient(circle at 100px 40px, #000 calc(var(--reveal) - 35vmax), transparent var(--reveal));
+}
+@keyframes contract { from { --reveal: 180vmax; } to { --reveal: 0px; } }
 
 @keyframes fade-out { to { opacity: 0; } }
 @keyframes fade-in { from { opacity: 0; } }
@@ -625,6 +618,6 @@ main {
 
 @media (prefers-reduced-motion: reduce) {
   @view-transition { navigation: none; }
-  .menu .home-nav a, .menu .home-foot { transition: none !important; transform: none; }
+  .menu, .menu-open .menu { transition: none; }
   .bg-video, .bio-photo { animation: none; }
 }
