@@ -28,7 +28,7 @@ The site should let each of them get there in one or two clicks. Everything else
 
 ## The visual language
 
-**Color.** Black (`#000`) and white (`#fff`). One grey (`#a3a3a3`) for secondary text and hover. Blue only for links inside running text and the one call to action on the voice page. That's all. Color comes from the photos and videos, never from the interface.
+**Color.** Black (`#000`) and white (`#fff`). One grey (`#a3a3a3`) for secondary text and hover. That's all: links are white and underlined, not blue (#21, #76). Color comes from the photos and videos, never from the interface.
 
 **Type.** One family, TT Firs Neue, in two weights (regular and demibold). Its odd geometric letters (the open `g`, the straight `y`) are the brand, so the type is allowed to be very big. Hierarchy comes from **size and case**, almost never from weight or color.
 
@@ -136,6 +136,13 @@ Each entry: what was said → the likely reason → the rule that follows.
 | 67 | Light mode: the play text stays white until the page has scrolled about 100 px. | The first lines start over the dark photo, so they turn dark only once the photo has faded under them. | Text colour follows what is actually behind it. |
 | 68 | At one screen width the play text was already on the left but not yet full width. It should stay centred at its desktop width until it reaches the page padding, then respond normally. | Half-way layouts look broken. | A column keeps its designed width and position until the screen forces it to shrink. No in-between states. |
 | 69 | *(being tested)* "Try this for cursor: the current one, hide normal, on hover the light becomes much brighter and a bit larger and the hovered link turns black." The soft light is the pointer and the arrow is hidden. Over a link the light flares and the link turns black, like an actor stepping into a follow spot. The normal arrow comes back on touch screens and in the trailer popup. | The stage metaphor works best as the pointer itself. The earlier ray shape was too much, but simple brightening reads clearly as "clickable". | A custom cursor is allowed when the hover state is unmistakable and its feedback speaks the site's own language (light on a dark stage), not an extra shape. This trial reverses #56 for now. |
+| 70 | Audit: the internal "contact" link on the voice page keeps its ↗ arrow, "otherwise it's not obvious it's a link at all". | The icon's first job is to say "this is clickable"; where the link goes matters less. | Every link in text carries its small icon, internal or external. |
+| 71 | Audit: the voice page's closing bookings line stays centred: "it needs to bring attention". | Centring is kept as a deliberate emphasis tool, used once, for the one call to action that matters most. | Centring is allowed only to single out the page's main call to action (and the printed play text). Nothing else is centred. |
+| 72 | Audit: "Wikipedia (RU)", "Watch the full play on Vimeo" keep their capitals: "they are body text". | A link inside a sentence is part of the sentence, not an interface label. | Lowercase applies to standalone labels and buttons. Links inside running text follow the sentence's case. |
+| 73 | Audit: the Iran Conference link to the paid full play on Vimeo stays: "we have a trailer and want people to buy to watch the whole thing". | The free trailer plays on the site; the full play is the work for sale. Linking to buy it supports the artist. Refines #46. | Play only free media on the site (the trailer). A clearly labelled link to buy or rent the full work is fine. |
+| 74 | Audit: the page titles "director" / "author" can differ from the menu words ("theater", "playwriting"): "it's obv enough". Idea for later: show the current page's name after the header name, like "Igor Sergeev / theater". | The titles describe his role, the menu describes the section; both are clear in context. | Page titles may name the role rather than repeat the menu word. *(Idea parked: page name after the header name.)* |
+| 75 | Audit: the play's title screen and chapter spacing should scale smoothly "as long as it fits with the main body of the play and doesn't get weirdly smaller". | Smooth scaling (#9) also applies to the play, but the title screen has to stay in proportion with the reading text. | The play title uses the page-title size; the chapter numbers and the author line stay 20 px, a bit bigger than the text on every screen; line spacing and gaps scale smoothly. |
+| 76 | Audit, approved: no quotation marks around the Russian play title, the two blues dropped, a black 404 page, a black browser bar on phones, the demo plays a small MP3 (the WAV stays the download), every animation on the set speeds, a refreshed style guide. | One consistent system: the same name looks the same in every language, links have one style, and the black stage continues even on an error page and in the browser's own bar. | No colour but black, white and the grey. Every screen the visitor can land on, error pages included, is part of the black stage. Durations come only from the motion tokens. |
 
 ## Do and don't
 
@@ -156,7 +163,7 @@ Each entry: what was said → the likely reason → the rule that follows.
 - Add boxes, card borders, drop shadows, gradients, rounded corners, emoji or decorative icons where a word works. Small functional icons next to a word are fine (an arrow on an outside link, a copy icon on the email).
 - Add gimmicks: jumping letters, floating hover previews, tilting cards were all "too fun" and were removed.
 - Use UPPERCASE anywhere, or lowercase a name or a sentence.
-- Center layouts. The play text is the only exception, because it's a printed page.
+- Center layouts. The exceptions are the play text, because it's a printed page, and the voice page's closing call to action, to draw attention (#71).
 - Duplicate a control. When adding a new way, remove the old one.
 - Autoplay sound, or open the mail app or other apps without asking.
 - Use a third-party script, embed or font that is known to be blocked or slowed down in Russia (for example anything served through Cloudflare). Outside services are fine otherwise. Check for reports of blocking first (see `CLAUDE.md`).
@@ -167,4 +174,4 @@ Each entry: what was said → the likely reason → the rule that follows.
 
 These need the art director's call. Update this section when they answer.
 
-- **Blue:** #21 makes links white and underlined, so the blue may only survive in the voice page's "contact" call to action. Drop it entirely?
+- None right now.

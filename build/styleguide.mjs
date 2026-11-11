@@ -7,23 +7,23 @@ const colors = [
   ['--color-bg', 'Background'],
   ['--color-fg', 'Text'],
   ['--color-muted', 'Muted text, hover'],
-  ['--color-link', 'Links in text'],
-  ['--color-accent', 'Call-to-action links'],
   ['--color-placeholder', 'Image placeholder'],
 ];
 
 const type = [
   ['Display', 'home-name', 'font-size:var(--type-display);line-height:var(--type-display-lh);letter-spacing:var(--type-display-tracking)', '--type-display', 'Igor Sergeev'],
-  ['Page title', '', '', '.page-title', 'Director'],
-  ['Contact link', '', 'font-size:var(--type-contact);line-height:var(--type-contact-lh)', '--type-contact', 'Telegram'],
+  ['Page title', '', '', '.page-title', 'director'],
+  ['Contact link', '', 'font-size:var(--type-contact);line-height:var(--type-contact-lh)', '--type-contact', 'telegram'],
   ['Player time', '', 'font-size:var(--type-time);line-height:var(--type-time-lh)', '--type-time', '1:24'],
   ['Production list', '', 'font-size:var(--type-list);line-height:var(--type-list-lh)', '--type-list', 'Iran Conference'],
   ['Heading', '', 'font-size:var(--type-heading);line-height:var(--type-heading-lh)', '--type-heading', 'Leon Kennedy'],
   ['Menu', '', 'font-size:var(--type-nav);line-height:var(--type-nav-lh);letter-spacing:var(--type-nav-tracking)', '--type-nav', 'voice acting'],
   ['Body', '', '', '--type-body', 'Igor Sergeev is a playwright, director, actor and voice actor based in Munich.'],
-  ['Label', '', '', '.label', 'Official Russian dubs'],
-  ['Caption', '', 'font-size:var(--type-caption)', '--type-caption', 'DOWNLOAD'],
-  ['Small', '', 'font-size:var(--type-small);line-height:var(--type-small-lh)', '--type-small', 'Impressum'],
+  ['Label', '', '', '.label', 'official russian dubs'],
+  ['Play text: chapter number', '', 'font-size:var(--type-play-small)', '--type-play-small', '1.'],
+  ['Caption', '', 'font-size:var(--type-caption)', '--type-caption', 'download'],
+  ['Small', '', 'font-size:var(--type-small);line-height:var(--type-small-lh)', '--type-small', 'time in Munich'],
+  ['Legal links', '', 'font-size:var(--type-legal);color:var(--color-muted)', '--type-legal', 'impressum'],
 ];
 
 export function styleguide(site, C) {
@@ -57,14 +57,16 @@ ${colors.map(([v, n]) => `  <div class="sg-swatch"><i style="background:var(${v}
       return row(name, code, tag);
     }).join('\n')),
     section('Links', [
-      row('Text link', '.link', '<a class="link" href="#">Watch on Vimeo</a>'),
-      row('Call to action', '.accent', '<span class="label">for voiceover bookings and inquiries, please <a class="accent" href="#">contact</a></span>'),
+      row('Link in text (white, underlined, arrow)', '.link', '<p>More on <a class="link" href="https://example.com" target="_blank" rel="noopener">Wikipedia (RU)</a></p>'),
+      row('Call to action', '.accent', '<p>for voiceover bookings and inquiries, please <a class="accent" href="#">contact</a></p>'),
+      row('Email (copies the address)', '.copy-email', C.copyEmail('name@example.com', { label: 'e-mail', ui: site.ui })),
+      row('Download', 'a[download]', '<a href="#" download>download pdf</a>'),
     ].join('\n')),
     section('Header and menu', `<div class="sg-demo">\n${C.header(site).replace('id="menu"', 'id="sg-menu"').replace('aria-controls="menu"', 'aria-controls="sg-menu"')}\n</div>`),
-    section('Production list and text (theater, playwriting)', `<div class="sg-demo">\n${C.split(C.workList(sampleItems, 'b'), C.detail(['<p><a class="link" href="#">Watch on Vimeo</a></p>', '<p>Production: Takoy Theatre, Saint Petersburg</p>', '<p>Directed by Igor Sergeev and Vladimir Kuznetsov</p>']))}\n</div>`),
+    section('Production list and text (theater, playwriting)', `<div class="sg-demo">\n${C.split(C.workList(sampleItems, 'b'), C.detail(['<p><a class="link" href="https://example.com" target="_blank" rel="noopener">Watch the full play on Vimeo</a></p>', '<p>Production: Takoy Theatre, Saint Petersburg</p>', '<p>Directed by Igor Sergeev and Vladimir Kuznetsov</p>']))}\n</div>`),
     section('Voice role cards', `<div class="sg-demo">\n${C.workGrid(sampleRoles)}\n</div>`),
-    section('Audio player', `<div class="sg-demo">\n${C.player('/assets/media/demo.wav')}\n</div>`),
-    section('Footer', `<div class="sg-demo">\n${C.footer(site)}\n</div>`),
+    section('Audio player', `<div class="sg-demo">\n${C.demoHead('demo', '/assets/media/demo.wav', site.ui)}\n${C.player('/assets/media/demo.mp3', site.ui)}\n</div>`),
+    section('Home page and menu (legal links at the bottom)', `<div class="sg-demo">\n${C.homeFoot(site, null)}\n</div>`),
   ].join('\n\n');
 
   return C.layout(site, {
