@@ -265,15 +265,15 @@ main {
    scrolls and never makes the page longer. It lights up slowly like the videos.
    Desktop: in the right column, its top on the top of the title's letters, and as tall as
    the screen allows, ending just above the bottom edge (svh: the visible screen, so it
-   fits even with browser bars). If the right column is too narrow for that, the whole
-   photo gets smaller instead of being cut.
+   fits even with browser bars). On narrower screens his legs reach left behind the text,
+   like on phones, instead of the photo shrinking or being cut.
    Phones: see the responsive layout below. */
 .bio-photo {
   --photo-top: calc(var(--header-height) + 44px + var(--type-title) * .16);   /* top of the title's letters */
   position: fixed;
   top: var(--photo-top);
   right: var(--gutter);
-  width: calc(50vw - var(--gutter) - var(--col-gap) / 2);
+  left: var(--gutter);
   height: calc(100vh - var(--photo-top) - 24px);
   height: calc(100svh - var(--photo-top) - 24px);
   z-index: -1;
@@ -286,11 +286,9 @@ main {
   position: absolute;
   top: 0;
   right: 0;
-  width: 100%;
+  width: auto;
   height: 100%;
   max-width: none;
-  object-fit: contain;   /* always the whole photo: on narrower screens it gets smaller */
-  object-position: right top;
   opacity: var(--fade, 1);   /* phones: fades away while scrolling (main.js) */
 }
 
@@ -564,12 +562,12 @@ main {
   .bio { --u: min(1vw, 5.2px); }   /* 1% of a phone screen, capped on tablets */
   .bio-text { padding-top: calc(var(--u) * 51); }   /* the title starts just above his socks */
   .bio-photo {
+    left: auto;
     top: 18px;   /* the top of his head lines up with the top of the name in the header */
     right: 0;
     width: 100%;
     height: calc(var(--header-height) + 80px + var(--u) * 59 + var(--type-title) * var(--type-title-lh));
   }
-  .bio-photo img { width: auto; object-fit: fill; }
 }
 
 @media (max-width: 640px) {
