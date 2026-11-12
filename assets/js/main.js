@@ -34,19 +34,48 @@
     var turn = [{ transform: 'rotate(0deg)' }, { transform: 'rotate(180deg)' }];
     if (!on) { name.reverse(); size.reverse(); turn.reverse(); }
     var mine = anim = [close.animate(name, t), box.animate(size, t), svg.animate(turn, t)];
-    // The menu words are cut to a circle around the name that grows exactly with the
-    // shadow, a little inside its solid black, so they appear where the black arrives.
-    var head = open.parentNode.style;
-    var mx = parseFloat(head.getPropertyValue('--mx')), my = parseFloat(head.getPropertyValue('--my'));
-    var R = 27 * parseFloat(head.getPropertyValue('--grow'));
+    // The shadow behind the name (style.css, .site-header::before), its solid copy on top
+    // (::after) and the menu words are all moved here, on one clock with the name: the
+    // same start, length and curve, so nothing can drift apart. The words show through
+    // the very same soft oval as the black, so each appears exactly as the black reaches it.
+    var head = open.parentNode, hs = head.style;
+    var s0 = parseFloat(hs.getPropertyValue('--sh0')) || 0, s1 = parseFloat(hs.getPropertyValue('--sh-end'));
+    var bw = parseFloat(hs.getPropertyValue('--sh-w')) || 640, bh = parseFloat(hs.getPropertyValue('--sh-h')) || 230;
+    var sm = Math.max(s0, parseFloat(hs.getPropertyValue('--sh-mid')) || s1 / 3);
+    // sizes along the way (as a share of the name's own progress): start, 70%, end
+    var steps = [[0, s0], [.7, sm], [1, s1]];
+    if (!on) steps = steps.map(function (x) { return [1 - x[0], x[1]]; }).reverse();
+    function frames(fn) { return steps.map(function (x) { var f = fn(x[1]); f.offset = x[0]; return f; }); }
+    var grows = frames(function (k) { return { transform: 'scale(' + k + ')' }; });
+    var solid = frames(function (k) { return { transform: 'scale(' + k + ')' }; });
+    // the solid copy fades in right at the start (out right at the end), on top of the shadow
+    if (on) solid.splice(1, 0, { opacity: 1, offset: .15 }); else solid.splice(solid.length - 1, 0, { opacity: 1, offset: .85 });
+    solid[0].opacity = on ? 0 : 1; solid[solid.length - 1].opacity = on ? 1 : 0;
+    try {
+      mine.push(head.animate(grows, Object.assign({ pseudoElement: '::before' }, t)));
+      mine.push(head.animate(solid, Object.assign({ pseudoElement: '::after' }, t)));
+    } catch (e) {}
+    var soft = 'radial-gradient(closest-side, #000 15%, rgba(0,0,0,.88) 30%, rgba(0,0,0,.62) 50%, rgba(0,0,0,.32) 70%, rgba(0,0,0,.1) 88%, transparent)';
+    function oval(k, q) {
+      var W = 2 * bw * k, H = 2 * bh * k;   // the shadow's own oval: radius = its box, centred on the corner
+      var size = W + 'px ' + H + 'px', pos = (-q.left - W / 2) + 'px ' + (-q.top - H / 2) + 'px';
+      return { maskSize: size, webkitMaskSize: size, maskPosition: pos, webkitMaskPosition: pos };
+    }
+    var masked = [];
     menu.querySelectorAll('.home-nav, .home-foot, .home-top .clock').forEach(function (el) {
       var q = el.getBoundingClientRect();
       if (!q.width) return;
-      var at = ' at ' + (mx - q.left) + 'px ' + (my - q.top) + 'px)';
-      var clip = [{ clipPath: 'circle(0px' + at }, { clipPath: 'circle(' + R + 'px' + at }];
-      if (!on) clip.reverse();
-      mine.push(el.animate(clip, t));
+      el.style.maskImage = el.style.webkitMaskImage = soft;
+      el.style.maskRepeat = el.style.webkitMaskRepeat = 'no-repeat';
+      masked.push(el);
+      mine.push(el.animate(frames(function (k) { return oval(k, q); }), t));
     });
+    // one shared start time for everything
+    var now = document.timeline && document.timeline.currentTime;
+    if (now != null) mine.forEach(function (x) { x.startTime = now; });
+    mine[0].finished.then(function () {
+      masked.forEach(function (el) { el.style.maskImage = el.style.webkitMaskImage = el.style.maskRepeat = el.style.webkitMaskRepeat = ''; });
+    }).catch(function () {});
     mine[0].finished.then(function () {
       if (anim !== mine) return;
       done();
@@ -66,26 +95,46 @@
   window.addEventListener('resize', matchTracking);
   var keyboard = false;   // move focus only for keyboard users (a tap must not leave a ring)
   function set(on) {
-    // The shadow grows from the very corner of the screen, where the name's own corner
-    // shadow already sits (style.css, .site-header::before), so it reads as that shadow growing.
-    var x = 0, y = 0;
-    // Measure past the visible page: on phones the page also shows through behind the
-    // browser's address bar, so the shadow must reach under it too.
+    // The name's corner shadow (style.css, .site-header::before) grows from the very
+    // top-left corner until its solid middle covers the farthest corner of the screen,
+    // measured past the visible page, since on phones the page also shows behind the bars.
     var de = document.documentElement, bleed = 160;
-    var w = Math.max(innerWidth, de.clientWidth), h = Math.max(innerHeight, de.clientHeight, screen.height || 0);
-    var far = Math.hypot(w + bleed, h + bleed);
-    var head = open.parentNode;   // the shadow is the header's ::after (style.css)
-    head.style.setProperty('--mx', x + 'px');
-    head.style.setProperty('--my', y + 'px');
-    head.style.setProperty('--grow', (far / 30 + .5).toFixed(2));   // solid black reaches 30 px of the 100 px radius (the rest is the soft tail)
+    var w = Math.max(innerWidth, de.clientWidth) + bleed, h = Math.max(innerHeight, de.clientHeight, screen.height || 0) + bleed;
+    var head = open.parentNode, box = getComputedStyle(head, '::after');
+    var bw = parseFloat(box.width) || 640, bh = parseFloat(box.height) || 230;   // the shadow's oval fills this box
+    var reach = Math.hypot(w / bw, h / bh);
+    var end = reach / .15 + .5;   // solid middle (15% of the oval) covers the farthest corner
+    // the half-dark part of the edge travels across the screen together with the name, and
+    // reaches the far corner when the name is 70% of the way; then the black fills in
+    head.style.setProperty('--sh-mid', (reach / .5).toFixed(2));
+    head.style.setProperty('--sh-w', bw);
+    head.style.setProperty('--sh-h', bh);
+    // It starts from the shadow as it is now: full size once scrolled, otherwise nothing
+    var s0 = de.classList.contains('scrolled') ? 1 : 0;
+    head.style.setProperty('--sh0', s0);
+    head.style.setProperty('--sh-end', end.toFixed(2));
     var body = document.body;
     // The menu exists only while it is open or closing (display: none otherwise). It is
     // shown first and measured once, so the shadow still grows from zero.
-    if (on && !body.classList.contains('menu-shown')) { body.classList.add('menu-shown'); void menu.offsetWidth; getComputedStyle(head, '::after').transform; }
+    if (on && !body.classList.contains('menu-shown')) {
+      body.classList.add('menu-shown');
+      head.classList.add('sh-snap');
+      head.style.setProperty('--sh', s0);
+      void menu.offsetWidth; getComputedStyle(head, '::after').transform; getComputedStyle(head, '::before').transform;
+      head.classList.remove('sh-snap');
+      void head.offsetWidth;
+    }
+    head.style.setProperty('--sh', on ? end.toFixed(2) : s0);
     body.classList.toggle('menu-open', on);
     body.classList.toggle('menu-closing', !on);
     open.setAttribute('aria-expanded', on ? 'true' : 'false');
-    grow(on, function () { if (!on) body.classList.remove('menu-closing', 'menu-shown'); });
+    grow(on, function () {
+      if (on) return;
+      body.classList.remove('menu-closing', 'menu-shown');
+      // back to the shadow's normal size, without animating
+      head.classList.add('sh-snap'); head.style.removeProperty('--sh');
+      getComputedStyle(head, '::before').transform; head.classList.remove('sh-snap');
+    });
     if (keyboard) setTimeout(function () { (on ? close || menu : open).focus({ preventScroll: true }); }, 0);
   }
   function plainClick(e) { return !(e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button); }

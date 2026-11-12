@@ -1,0 +1,130 @@
+name: Update preview site
+
+# Rebuilds preview.harrysergeev.com whenever the live site changes (main) or a
+# waiting change (an open pull request) is opened, updated or closed. The preview
+# is always "live site + every waiting change", built fresh from main.
+#
+# The preview is published to a second repository (PREVIEW_REPO below) that has
+# GitHub Pages on, with these secrets in this repository:
+#   PREVIEW_TOKEN     a fine-grained token with "Contents: read and write" on that repository only
+#   PREVIEW_PASSWORD  the password visitors type once (optional; without it the preview is open)
+# The licensed fonts are not copied: the preview loads them from the live site.
+#
+# pull_request_target runs this file as it is on main (not as a pull request
+# changes it), and only pull requests from branches of this repository are
+# included, so outside forks can't run code with these secrets.
+
+on:
+  push:
+    branches: [main]
+  pull_request_target:
+    types: [opened, synchronize, reopened, closed, ready_for_review, converted_to_draft]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pull-requests: read
+
+concurrency:
+  group: preview
+  cancel-in-progress: true
+
+env:
+  PREVIEW_REPO: stirringdesert/hs-preview
+
+jobs:
+  preview:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Check setup
+        id: setup
+        env:
+          PREVIEW_TOKEN: ${{ secrets.PREVIEW_TOKEN }}
+        run: |
+          if [ -z "$PREVIEW_TOKEN" ]; then
+            echo "::warning::The preview isn't set up yet (PREVIEW_TOKEN secret missing). Nothing to do."
+            echo "ready=no" >> "$GITHUB_OUTPUT"
+          else
+            echo "ready=yes" >> "$GITHUB_OUTPUT"
+          fi
+
+      # Merge every open pull request from this repository on top of main (drafts
+      # are left out, so marking a change as draft hides it from the preview). A
+      # change that clashes with another one or doesn't build is skipped and shown
+      # as "not shown yet". Clashes only in generated pages are fine: those are
+      # rebuilt anyway.
+      - name: Combine live site + waiting changes
+        if: steps.setup.outputs.ready == 'yes'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          cp tools/preview-site.mjs "$RUNNER_TEMP/preview-site.mjs"
+          git config user.name "preview-bot"
+          git config user.email "preview-bot@users.noreply.github.com"
+          gh pr list --repo "$GITHUB_REPOSITORY" --base main --state open --limit 100 \
+            --json number,title,headRefName,isDraft,isCrossRepository,author \
+            --jq '[.[] | select(.isDraft | not) | select(.isCrossRepository | not)] | sort_by(.number) | .[] | [.number, .headRefName, .author.login, .title] | @tsv' > "$RUNNER_TEMP/prs.tsv"
+          C="$RUNNER_TEMP/changes.json"
+          echo '{"included":[],"skipped":[]}' > "$C"
+          add() { jq --arg k "$1" --argjson n "$2" --arg a "$3" --arg t "$4" '.[$k] += [{number:$n, author:$a, title:$t}]' "$C" > "$C.tmp" && mv "$C.tmp" "$C"; }
+          while IFS=$'\t' read -r num branch author title; do
+            [ -n "$num" ] || continue
+            if ! git fetch -q origin "refs/heads/$branch"; then add skipped "$num" "$author" "$title"; continue; fi
+            if ! git merge -q --no-edit FETCH_HEAD > /dev/null 2>&1; then
+              conflicted=$(git diff --name-only --diff-filter=U)
+              bad=$(printf '%s\n' "$conflicted" | grep -vxF -f <(cat build/generated-files.txt; echo build/generated-files.txt) || true)
+              if [ -z "$bad" ]; then
+                git checkout --ours -- $conflicted && git add -- $conflicted && git commit -q --no-edit
+              else
+                git merge --abort
+                echo "PR #$num not shown: it clashes with another change in: $bad"
+                add skipped "$num" "$author" "$title"; continue
+              fi
+            fi
+            if node build/build.mjs --check > /dev/null 2>&1; then
+              add included "$num" "$author" "$title"
+            else
+              echo "PR #$num not shown: the build reports problems"
+              git reset -q --hard HEAD~1
+              add skipped "$num" "$author" "$title"
+            fi
+          done < "$RUNNER_TEMP/prs.tsv"
+          cat "$C"
+
+      - name: Build preview
+        if: steps.setup.outputs.ready == 'yes'
+        env:
+          PREVIEW_PASSWORD: ${{ secrets.PREVIEW_PASSWORD }}
+        run: |
+          node build/build.mjs
+          node "$RUNNER_TEMP/preview-site.mjs" . "$RUNNER_TEMP/out" "$RUNNER_TEMP/changes.json"
+
+      - name: Publish to the preview site
+        if: steps.setup.outputs.ready == 'yes'
+        env:
+          PREVIEW_TOKEN: ${{ secrets.PREVIEW_TOKEN }}
+        run: |
+          # Only changed files are uploaded: the new build replaces the old one in a
+          # shallow clone, so unchanged videos and images aren't sent again.
+          url="https://x-access-token:${PREVIEW_TOKEN}@github.com/${PREVIEW_REPO}.git"
+          if git clone -q --depth 1 "$url" "$RUNNER_TEMP/pub" 2>/dev/null && [ -d "$RUNNER_TEMP/pub/.git" ]; then :; else
+            mkdir -p "$RUNNER_TEMP/pub" && git -C "$RUNNER_TEMP/pub" init -q -b main
+          fi
+          cd "$RUNNER_TEMP/pub"
+          find . -mindepth 1 -maxdepth 1 ! -name .git -exec rm -rf {} +
+          cp -a "$RUNNER_TEMP/out/." .
+          git config user.name "preview-bot"
+          git config user.email "preview-bot@users.noreply.github.com"
+          git add -A
+          git commit -q -m "Preview of ${GITHUB_SHA::7} (${{ github.event_name }})" || { echo "Nothing changed."; exit 0; }
+          git push -q "$url" HEAD:main
+          echo "Preview updated: https://preview.harrysergeev.com/"

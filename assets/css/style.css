@@ -29,6 +29,7 @@ a { color: inherit; text-decoration: none; }
 p { margin: 0; }
 h1, h2, h3 { margin: 0; font-weight: var(--weight-regular); }
 img, video { display: block; max-width: 100%; }
+picture { display: contents; }   /* only wraps an <img> with a smaller AVIF copy; lays out as the <img> */
 
 /* ---------- Text styles ---------- */
 
@@ -75,22 +76,24 @@ img, video { display: block; max-width: 100%; }
 .site-header > .name, .site-header .menu { pointer-events: auto; }
 .site-header::before {
   content: "";
-  position: absolute;
+  position: fixed;   /* fixed, so that when the menu scales it up it never makes the page wider */
   left: 0;
   top: 0;
   z-index: -1;
   width: min(100vw, 640px);
   height: 230px;
-  /* a shadow corner: darkest off screen in the top-left, still dark behind the name,
+  /* a shadow corner: darkest in the very top-left corner, still dark behind the name,
      fading out over a long way to the right and down */
-  background: radial-gradient(ellipse 420px 200px at 60px 10px,
+  background: radial-gradient(farthest-side at 0 0,
     color-mix(in srgb, var(--color-bg) 88%, transparent),
     color-mix(in srgb, var(--color-bg) 74%, transparent) 30%,
     color-mix(in srgb, var(--color-bg) 45%, transparent) 55%,
     color-mix(in srgb, var(--color-bg) 18%, transparent) 78%,
     transparent);
   opacity: 0;
-  transition: opacity var(--page-in) var(--ease-out);
+  transform-origin: 0 0;
+  transform: scale(var(--sh, 1));   /* the menu grows this shadow over the whole screen (below) */
+  transition: opacity var(--page-in) var(--ease);   /* fades in and out like the lights button */
   pointer-events: none;
 }
 .scrolled .site-header::before { opacity: 1; }
@@ -137,34 +140,39 @@ img, video { display: block; max-width: 100%; }
 .menu::-webkit-scrollbar { display: none; }
 /* One pixel taller than the screen, so the menu is always its own scroll box (see above) */
 .menu > .home-main { flex: none; min-height: calc(100% + 1px); }
-/* The black: a soft round shadow that grows out of the top-left corner, where the name's
-   own corner shadow sits, over the whole screen (and shrinks back into it on closing). It lives outside the menu's scroll box, so nothing
-   clips it and it also reaches behind the phone's address bar. It has no background
-   colour of its own (only a gradient), and the menu has none either, so Safari's bars
-   never switch to a flat colour when it lands or stay black after it closes. Only its
-   scale changes, so phones animate it smoothly. main.js sets --grow so it just covers
-   the farthest corner. */
+/* The black: the name's own corner shadow (above) grows out of the top-left corner over
+   the whole screen, and shrinks back into it on closing. If the shadow isn't showing yet
+   (page not scrolled), it grows from nothing at the corner. A copy of the same shape with
+   a solid middle and a long soft edge sits on top of it, grows with it and fades in, so
+   the shadow turns into solid black as it spreads. Both are drawn once and only scaled
+   and faded, which phones do smoothly; their colours never change while they move.
+   main.js sets --sh, the size. Neither is fixed or has a flat colour, so Safari's bars
+   aren't affected, and nothing clips them, so they also reach behind the address bar. */
 .site-header::after {
   content: "";
   position: fixed;
+  left: 0;
+  top: 0;
   z-index: 49;
-  left: calc(var(--mx, 100px) - 100px);
-  top: calc(var(--my, 40px) - 100px);
-  width: 200px;
-  height: 200px;
-  border-radius: 50%;
-  /* solid only in the middle, then a long, gradual tail, like the name's corner shadow */
-  background: radial-gradient(closest-side, var(--color-bg) 30%,
-    color-mix(in srgb, var(--color-bg) 86%, transparent) 46%,
-    color-mix(in srgb, var(--color-bg) 55%, transparent) 64%,
-    color-mix(in srgb, var(--color-bg) 22%, transparent) 82%,
+  width: min(100vw, 640px);
+  height: 230px;
+  background: radial-gradient(farthest-side at 0 0, var(--color-bg) 15%,
+    color-mix(in srgb, var(--color-bg) 88%, transparent) 30%,
+    color-mix(in srgb, var(--color-bg) 62%, transparent) 50%,
+    color-mix(in srgb, var(--color-bg) 32%, transparent) 70%,
+    color-mix(in srgb, var(--color-bg) 10%, transparent) 88%,
     transparent);
-  transform: scale(0);
+  transform-origin: 0 0;
+  transform: scale(var(--sh, 1));
+  opacity: 0;
   visibility: hidden;
-  transition: transform var(--menu-out) var(--ease-in-out), visibility 0s var(--menu-out);
   pointer-events: none;
 }
-.menu-open .site-header::after { transform: scale(var(--grow, 30)); visibility: visible; transition: transform var(--menu-in) var(--ease-in-out); }
+/* While the menu is shown, main.js moves the shadow (size and fade) on the same clock as
+   the name and the menu words, so all three stay exactly together. These are the end states. */
+.menu-shown .site-header::after { visibility: visible; }
+.menu-open .site-header::after { opacity: 1; }
+.sh-snap::before, .sh-snap::after { transition: none !important; }
 /* The menu words are revealed by the shadow itself: each one shows only where the black
    has already reached (main.js cuts them to a circle that grows with it), and closing
    hides them the same way, so they disappear as the shadow shrinks past them. */
@@ -429,7 +437,7 @@ main {
   text-underline-offset: 3px;
 }
 /* Reading pages: the play text starts below the playwriting section */
-.reading .split + .play-body { margin-top: 120px; }
+.reading .split ~ .play-body { margin-top: 120px; }   /* "~", since a tiny script sits right after the block (components.mjs, split) */
 
 /* Background video on production pages */
 .bg-video {
@@ -444,9 +452,9 @@ main {
   pointer-events: none;
   animation: stage-in var(--bg-video-fade) var(--ease-out) both;
 }
-/* Background media lights up slowly, like a stage: from dark and slightly closer.
+/* Background media lights up slowly, like a stage: it only fades in from dark.
    When the next page shows the same picture, it stays lit instead (main.js adds .stage-lit). */
-@keyframes stage-in { from { opacity: 0; transform: scale(1.03); } }
+@keyframes stage-in { from { opacity: 0; } }   /* only a fade: nothing changes size */
 .stage-lit .bg-video, .stage-lit .bio-photo { animation: none; }
 /* Media fade-in: the slow light-up waits until the photo or video has actually arrived
    (the "loaded" class comes from a tiny script in <head>), so on a slow connection it
@@ -644,6 +652,5 @@ main {
 
 @media (prefers-reduced-motion: reduce) {
   @view-transition { navigation: none; }
-  .site-header::after, .menu-open .site-header::after { transition: none !important; }
   .bg-video, .bio-photo { animation: none; }
 }
