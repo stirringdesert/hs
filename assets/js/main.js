@@ -34,15 +34,30 @@
     var turn = [{ transform: 'rotate(0deg)' }, { transform: 'rotate(180deg)' }];
     if (!on) { name.reverse(); size.reverse(); turn.reverse(); }
     var mine = anim = [close.animate(name, t), box.animate(size, t), svg.animate(turn, t)];
-    // The menu words show through a soft oval that grows exactly with the shadow: fully
-    // there inside its solid middle, fading out across its soft edge, so they appear and
-    // disappear with the black instead of being cut by a hard line.
-    var hs = open.parentNode.style;
+    // The shadow behind the name (style.css, .site-header::before), its solid copy on top
+    // (::after) and the menu words are all moved here, on one clock with the name: the
+    // same start, length and curve, so nothing can drift apart. The words show through
+    // the very same soft oval as the black, so each appears exactly as the black reaches it.
+    var head = open.parentNode, hs = head.style;
     var s0 = parseFloat(hs.getPropertyValue('--sh0')) || 0, s1 = parseFloat(hs.getPropertyValue('--sh-end'));
     var bw = parseFloat(hs.getPropertyValue('--sh-w')) || 640, bh = parseFloat(hs.getPropertyValue('--sh-h')) || 230;
-    var soft = 'radial-gradient(closest-side, #000 50%, transparent)';
+    var sm = Math.max(s0, parseFloat(hs.getPropertyValue('--sh-mid')) || s1 / 3);
+    // sizes along the way (as a share of the name's own progress): start, 70%, end
+    var steps = [[0, s0], [.7, sm], [1, s1]];
+    if (!on) steps = steps.map(function (x) { return [1 - x[0], x[1]]; }).reverse();
+    function frames(fn) { return steps.map(function (x) { var f = fn(x[1]); f.offset = x[0]; return f; }); }
+    var grows = frames(function (k) { return { transform: 'scale(' + k + ')' }; });
+    var solid = frames(function (k) { return { transform: 'scale(' + k + ')' }; });
+    // the solid copy fades in right at the start (out right at the end), on top of the shadow
+    if (on) solid.splice(1, 0, { opacity: 1, offset: .15 }); else solid.splice(solid.length - 1, 0, { opacity: 1, offset: .85 });
+    solid[0].opacity = on ? 0 : 1; solid[solid.length - 1].opacity = on ? 1 : 0;
+    try {
+      mine.push(head.animate(grows, Object.assign({ pseudoElement: '::before' }, t)));
+      mine.push(head.animate(solid, Object.assign({ pseudoElement: '::after' }, t)));
+    } catch (e) {}
+    var soft = 'radial-gradient(closest-side, #000 15%, rgba(0,0,0,.88) 30%, rgba(0,0,0,.62) 50%, rgba(0,0,0,.32) 70%, rgba(0,0,0,.1) 88%, transparent)';
     function oval(k, q) {
-      var W = 2 * .3 * bw * k, H = 2 * .3 * bh * k;   // fades out by 30% of the shadow's radius, where it is still nearly black
+      var W = 2 * bw * k, H = 2 * bh * k;   // the shadow's own oval: radius = its box, centred on the corner
       var size = W + 'px ' + H + 'px', pos = (-q.left - W / 2) + 'px ' + (-q.top - H / 2) + 'px';
       return { maskSize: size, webkitMaskSize: size, maskPosition: pos, webkitMaskPosition: pos };
     }
@@ -53,10 +68,11 @@
       el.style.maskImage = el.style.webkitMaskImage = soft;
       el.style.maskRepeat = el.style.webkitMaskRepeat = 'no-repeat';
       masked.push(el);
-      var kf = [oval(s0, q), oval(s1, q)];
-      if (!on) kf.reverse();
-      mine.push(el.animate(kf, t));
+      mine.push(el.animate(frames(function (k) { return oval(k, q); }), t));
     });
+    // one shared start time for everything
+    var now = document.timeline && document.timeline.currentTime;
+    if (now != null) mine.forEach(function (x) { x.startTime = now; });
     mine[0].finished.then(function () {
       masked.forEach(function (el) { el.style.maskImage = el.style.webkitMaskImage = el.style.maskRepeat = el.style.webkitMaskRepeat = ''; });
     }).catch(function () {});
@@ -86,7 +102,11 @@
     var w = Math.max(innerWidth, de.clientWidth) + bleed, h = Math.max(innerHeight, de.clientHeight, screen.height || 0) + bleed;
     var head = open.parentNode, box = getComputedStyle(head, '::after');
     var bw = parseFloat(box.width) || 640, bh = parseFloat(box.height) || 230;   // the shadow's oval fills this box
-    var end = Math.hypot(w / bw, h / bh) / .15 + .5;
+    var reach = Math.hypot(w / bw, h / bh);
+    var end = reach / .15 + .5;   // solid middle (15% of the oval) covers the farthest corner
+    // the half-dark part of the edge travels across the screen together with the name, and
+    // reaches the far corner when the name is 70% of the way; then the black fills in
+    head.style.setProperty('--sh-mid', (reach / .5).toFixed(2));
     head.style.setProperty('--sh-w', bw);
     head.style.setProperty('--sh-h', bh);
     // It starts from the shadow as it is now: full size once scrolled, otherwise nothing
