@@ -204,7 +204,15 @@ main {
    Wider screens: in the top-right corner. */
 .home-foot .clock { font-size: var(--type-small); line-height: 13px; }
 @media (max-width: 640px) { .home-main:has(.foot-clock) .home-top .clock { display: none; } }
-@media (min-width: 641px) { .home-foot .clock { visibility: hidden; } }   /* keeps the legal links on the right */
+/* Wider screens: the menu sits in the bottom row, its last line on the same baseline as
+   the legal links in the bottom-right corner. */
+@media (min-width: 641px) {
+  .home-main { display: grid; grid-template-columns: 1fr auto; grid-template-rows: auto 1fr; column-gap: 24px; }
+  .home-top { grid-column: 1 / -1; }
+  .home-nav { grid-column: 1; grid-row: 2; align-self: last baseline; margin-top: 0; }
+  .home-foot { grid-column: 2; grid-row: 2; align-self: last baseline; margin-top: 0; }
+  .home-foot .clock { display: none; }   /* the time is in the top-right corner here */
+}
 .clock b { font-weight: var(--weight-bold); margin-left: 4px; }
 
 /* ---------- Bio ---------- */
