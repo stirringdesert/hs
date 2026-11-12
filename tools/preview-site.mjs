@@ -38,13 +38,18 @@ const changes = changesFile && fs.existsSync(changesFile)
 const SKIP_TOP = new Set(['.git', '.github', '_site', '_preview', 'build', 'content', 'tools', '.claude', 'team',
   'README.md', 'CLAUDE.md', 'DESIGN-PHILOSOPHY.md', '.gitignore', 'CNAME', 'robots.txt', 'sitemap.xml', 'node_modules']);
 
+// The tag script changes with every build, so its address does too: otherwise browsers
+// keep showing an old copy for up to 10 minutes (GitHub Pages caching).
+const TAG = tagScript(changes);
+const TAG_URL = '/_preview.js?v=' + crypto.createHash('sha1').update(TAG).digest('hex').slice(0, 8);
+
 const liveFont = (name) => `${LIVE}/assets/fonts/${name}`;
 
 function prepare(html) {
   html = html.replace(/href="\/assets\/fonts\/([^"?]+\.woff2)[^"]*"/g, (_, f) => `href="${liveFont(f)}"`);
   html = html.replace(/<meta name="robots"[^>]*>\s*/g, '');
   html = html.replace(/<head>/i, '<head>\n<meta name="robots" content="noindex, nofollow">');
-  html = html.replace(/<\/body>/i, '<script src="/_preview.js"></script>\n</body>');
+  html = html.replace(/<\/body>/i, `<script src="${TAG_URL}"></script>\n</body>`);
   return KEY ? lock(html) : html;
 }
 
@@ -106,7 +111,7 @@ function copy(dir, rel = '') {
 fs.rmSync(out, { recursive: true, force: true });
 fs.mkdirSync(out, { recursive: true });
 copy(src);
-fs.writeFileSync(path.join(out, '_preview.js'), tagScript(changes));
+fs.writeFileSync(path.join(out, '_preview.js'), TAG);
 fs.writeFileSync(path.join(out, 'CNAME'), DOMAIN + '\n');
 fs.writeFileSync(path.join(out, 'robots.txt'), 'User-agent: *\nDisallow: /\n');
 fs.writeFileSync(path.join(out, '.nojekyll'), '');
