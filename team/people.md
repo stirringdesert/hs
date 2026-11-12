@@ -8,7 +8,7 @@ This repository is public, so this file uses roles, not names, and holds only wo
 - Shapes how the site looks. The design reasoning is in `DESIGN-PHILOSOPHY.md`.
 - Receives the `inbox` issues (looks-wrong reports, drastic changes to check, proposed rule changes).
 - Prefers: fixes, small changes and small features published right away; big taste-driven redesigns go to the preview first and wait for "publish".
-- Efficiency: when a change only repeats an existing pattern (another voice role, another production), copy the existing entries without re-reading the design notes. Short sessions, short reports, test only what the change could affect.
+- Works in a Claude project where several threads may run in parallel; the project chat summarises each thread's part as it finishes.
 
 ## The owner (the person the site is about)
 
