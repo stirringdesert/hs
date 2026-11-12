@@ -159,13 +159,20 @@ function tagScript(data) {
   btn.addEventListener('click', function () { var o = tag.classList.toggle('open'); btn.setAttribute('aria-expanded', o); });
 
   // Status: is a newer preview being built, or already built? Asks GitHub (public, no
-  // login) for the latest preview run: at most once a minute, only while the tab is visible.
+  // login) for the latest preview run every 15 s while the tab is visible. Requests are
+  // conditional ("no-cache" revalidates with the ETag), and an unchanged answer (304)
+  // doesn't count toward GitHub's limit of 60 requests an hour; if the limit is hit
+  // anyway, it waits a few minutes before asking again.
   var built = 'Эта версия собрана в ' + time(B.at) + '.';
   function show(s, text) { tag.setAttribute('data-s', s); stateEl.innerHTML = text; }
   show('unknown', built);
   function check() {
     if (document.hidden) return;
-    fetch(RUNS, { cache: 'no-store' }).then(function (r) { return r.ok ? r.json() : null; }).then(function (j) {
+    if (Date.now() < pause) return;
+    fetch(RUNS, { cache: 'no-cache' }).then(function (r) {
+      if (r.status === 403 || r.status === 429) { pause = Date.now() + 300000; return null; }
+      return r.ok ? r.json() : null;
+    }).then(function (j) {
       var run = j && j.workflow_runs && j.workflow_runs[0];
       if (!run) return show('unknown', built);
       if (run.status !== 'completed') return show('busy', '<b>Обновляется…</b> Новые изменения применяются, это занимает 2–3 минуты. ' + built);
@@ -174,8 +181,9 @@ function tagScript(data) {
       show('ok', '<b>Актуально.</b> ' + built);
     }).catch(function () { show('unknown', built); });
   }
+  var pause = 0;
   check();
-  setInterval(check, 60000);
+  setInterval(check, 15000);
   document.addEventListener('visibilitychange', function () { if (!document.hidden) check(); });
 })();
 `;

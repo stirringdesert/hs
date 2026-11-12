@@ -8,4 +8,3 @@ Short summaries of longer sessions, newest at the bottom, so each person's Claud
 - New preview website (the `preview.` subdomain, password, hidden from search), rebuilt automatically from live + all open changes by the "Update preview site" action. Replaces the hand-built claude.ai preview.
 - Bugs and looks-wrong reports from the owner's side go to the art director as GitHub `inbox` issues.
 - Docs synced with the workflow: README preview section rewritten, old hand-built preview tool removed, efficiency rule moved into CLAUDE.md so both projects follow it, rule added to update all workflow docs together whenever the workflow changes.
-
