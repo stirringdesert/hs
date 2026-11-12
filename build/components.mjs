@@ -41,7 +41,7 @@ export function layout(site, { path, title, bodyClass, lang = 'en', description,
 <html lang="${lang}">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="color-scheme" content="dark">
   <meta name="theme-color" content="#000">
   <title>${esc(fullTitle)}</title>

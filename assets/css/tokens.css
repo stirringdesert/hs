@@ -71,7 +71,7 @@
   --play-title-space: clamp(160px, 108px + 13.33vw, 300px);  /* above and below the title screen */
 
   /* ---- Layout ---- */
-  --gutter: 24px;              /* space at the left/right edge of the page */
+  --gutter: max(24px, env(safe-area-inset-left), env(safe-area-inset-right));   /* space at the left/right edge of the page (more beside a phone's notch in landscape) */
   --col-gap: 24px;             /* gap between the two columns */
   --content-max: 813px;        /* max width of long text */
   --header-height: 54px;

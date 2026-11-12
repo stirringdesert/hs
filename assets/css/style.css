@@ -120,7 +120,9 @@ img, video { display: block; max-width: 100%; }
    Closing shrinks it back into the corner. (main.js grows the name at the same time.) */
 .menu {
   position: fixed;
-  inset: 0;
+  inset: 0 0 auto;
+  height: 100vh;
+  height: 100lvh;   /* the largest screen height: reaches behind the browser bars */
   z-index: 50;
   display: flex;
   flex-direction: column;
@@ -128,13 +130,15 @@ img, video { display: block; max-width: 100%; }
   visibility: hidden;
 }
 .menu-open .menu, .menu-closing .menu { visibility: visible; }
-/* Once the shadow has covered everything, the menu turns solid black itself, reaching
-   far past the screen edges (behind the address bar too), so nothing shows through when
-   the browser bars move. It's already black there, so the switch can't be seen. */
-.menu-open .menu {
+/* While it opens, the menu doesn't clip anything, so the growing shadow also reaches
+   behind the phone's address bar (Safari cut it off at the scroll box before). Once the
+   shadow has covered everything (main.js adds .menu-settled), the menu turns solid black
+   past the screen edges and may scroll. It's already black there, so nothing changes. */
+.menu-open .menu, .menu-closing .menu { overflow: visible; }
+.menu-open.menu-settled .menu {
+  overflow-y: auto;
   background-color: var(--color-bg);
   box-shadow: 0 0 0 100vmax var(--color-bg);
-  transition: background-color 0s linear var(--menu-in), box-shadow 0s linear var(--menu-in);
 }
 /* The black: a soft round shadow centred on the name that grows over the whole screen
    (and shrinks back on closing). Only its scale changes, so phones animate it smoothly
@@ -262,7 +266,9 @@ main {
    edges dissolve into the black so no cut edge shows. Only the text scrolls over it. */
 .bio-photo {
   position: fixed;
-  inset: 0 0 0 auto;
+  inset: 0 0 auto auto;
+  height: 100vh;
+  height: 100lvh;   /* behind the browser bars too, without jumping */
   z-index: -1;
   width: 58vw;
   overflow: hidden;
@@ -428,7 +434,11 @@ main {
 /* Background video on production pages */
 .bg-video {
   position: fixed;
-  inset: 0;
+  inset: 0 0 auto;
+  /* The largest screen height, so the picture reaches behind the phone's address bar and
+     doesn't jump when the bar shrinks or grows */
+  height: 100vh;
+  height: 100lvh;
   z-index: -1;
   opacity: var(--bg-video-opacity);
   pointer-events: none;
