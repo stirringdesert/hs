@@ -19,7 +19,9 @@
 /* The play page in light mode: the top of the page stays a dark stage (photo on black,
    white text) exactly like dark mode, and fades into the light page as the photo fades.
    A dark photo washed onto white turned everything grey, and black text on it looked faded. */
-:root[data-theme="light"] .bg-image.scroll-fade { background: #000; opacity: var(--fade, 1); }
+:root[data-theme="light"] .bg-image.scroll-fade { opacity: var(--fade, 1); }
+/* the black under the photo is a layer inside it, not its background (Safari would paint its bars black) */
+:root[data-theme="light"] .bg-image.scroll-fade::before { content: ""; position: absolute; inset: 0; z-index: -1; background: #000; }
 :root[data-theme="light"] .bg-image.scroll-fade img { opacity: var(--bg-video-opacity); }   /* same as dark mode */
 /* The black is there from the first moment (the page never shows light first and then
    darkens); only the photo on it lights up slowly, once it has loaded, as in dark mode. */
@@ -44,7 +46,7 @@
 :root[data-theme="light"] .reading .site-header .name { color: var(--color-fg); transition: color var(--page-in) var(--ease), text-shadow var(--page-in) var(--ease); }
 /* Menus stay black in light mode: light mode is only for reading the play */
 :root[data-theme="light"] .menu,
-:root[data-theme="light"] .menu-open .site-header {
+:root[data-theme="light"] .menu-shown .site-header {
   --color-bg: #000;
   --color-fg: #fff;
   --color-muted: #a3a3a3;

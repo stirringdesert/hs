@@ -34,6 +34,19 @@
     var turn = [{ transform: 'rotate(0deg)' }, { transform: 'rotate(180deg)' }];
     if (!on) { name.reverse(); size.reverse(); turn.reverse(); }
     var mine = anim = [close.animate(name, t), box.animate(size, t), svg.animate(turn, t)];
+    // The menu words are cut to a circle around the name that grows exactly with the
+    // shadow, a little inside its solid black, so they appear where the black arrives.
+    var head = open.parentNode.style;
+    var mx = parseFloat(head.getPropertyValue('--mx')), my = parseFloat(head.getPropertyValue('--my'));
+    var R = 60 * parseFloat(head.getPropertyValue('--grow'));
+    menu.querySelectorAll('.home-nav, .home-foot, .home-top .clock').forEach(function (el) {
+      var q = el.getBoundingClientRect();
+      if (!q.width) return;
+      var at = ' at ' + (mx - q.left) + 'px ' + (my - q.top) + 'px)';
+      var clip = [{ clipPath: 'circle(0px' + at }, { clipPath: 'circle(' + R + 'px' + at }];
+      if (!on) clip.reverse();
+      mine.push(el.animate(clip, t));
+    });
     mine[0].finished.then(function () {
       if (anim !== mine) return;
       done();
@@ -60,15 +73,18 @@
     var de = document.documentElement, bleed = 160;
     var w = Math.max(innerWidth, de.clientWidth), h = Math.max(innerHeight, de.clientHeight, screen.height || 0);
     var far = Math.hypot(Math.max(x, w - x) + bleed, Math.max(y, h - y) + bleed);
-    menu.style.setProperty('--mx', x + 'px');
-    menu.style.setProperty('--my', y + 'px');
-    menu.style.setProperty('--grow', (far / 65 + .5).toFixed(2));   // solid black reaches 65 px of the 100 px radius
+    var head = open.parentNode;   // the shadow is the header's ::after (style.css)
+    head.style.setProperty('--mx', x + 'px');
+    head.style.setProperty('--my', y + 'px');
+    head.style.setProperty('--grow', (far / 65 + .5).toFixed(2));   // solid black reaches 65 px of the 100 px radius
     var body = document.body;
+    // The menu exists only while it is open or closing (display: none otherwise). It is
+    // shown first and measured once, so the shadow still grows from zero.
+    if (on && !body.classList.contains('menu-shown')) { body.classList.add('menu-shown'); void menu.offsetWidth; getComputedStyle(head, '::after').transform; }
     body.classList.toggle('menu-open', on);
     body.classList.toggle('menu-closing', !on);
     open.setAttribute('aria-expanded', on ? 'true' : 'false');
-    body.classList.remove('menu-settled');
-    grow(on, function () { body.classList.toggle('menu-settled', on); if (!on) body.classList.remove('menu-closing'); });
+    grow(on, function () { if (!on) body.classList.remove('menu-closing', 'menu-shown'); });
     if (keyboard) setTimeout(function () { (on ? close || menu : open).focus({ preventScroll: true }); }, 0);
   }
   function plainClick(e) { return !(e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button); }
@@ -79,7 +95,7 @@
   });
   // Coming back with the Back button can restore the page with the menu still open
   window.addEventListener('pageshow', function (e) {
-    if (e.persisted) { document.body.classList.remove('menu-open', 'menu-closing', 'menu-settled'); open.setAttribute('aria-expanded', 'false'); }
+    if (e.persisted) { document.body.classList.remove('menu-open', 'menu-closing', 'menu-shown'); open.setAttribute('aria-expanded', 'false'); }
   });
 })();
 
@@ -89,6 +105,9 @@ window.addEventListener('pageswap', function (e) {
   if (!e.viewTransition) return;
   var from = document.body.classList.contains('home') || document.body.classList.contains('menu-open');
   try { sessionStorage.setItem('vt', from ? 'contract' : ''); } catch (x) {}
+  // Every other page change is a plain load: skip here already, so the browser doesn't
+  // even take a picture of this page to lay over the next one for a moment.
+  if (!from) e.viewTransition.skipTransition();
 });
 // (The new page's side, 'pagereveal', is an inline script in <head>: see VT_BOOT in components.mjs.)
 
