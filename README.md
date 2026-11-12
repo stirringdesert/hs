@@ -80,14 +80,12 @@ The site is in English (at the root), German (`/de/`) and Russian (`/ru/`). The 
 
 ## Previewing changes before they go live
 
-Design changes are checked in a private claude.ai Artifact, "Site preview", before they are merged to `main`:
-https://claude.ai/artifact/TDSeaW3f6Bqcbctk2LQd5P
+Every waiting change is an open pull request. The "Update preview site" action (`.github/workflows/preview.yml`) runs on every push to `main` and whenever a pull request is opened, updated or closed. It takes `main` (the live site), merges every open, non-draft pull request from this repository on top, builds, and publishes the result to the preview website (the `preview.` subdomain of the domain in `CNAME`). Nobody builds previews by hand.
 
-1. Make the change on a branch and run `node tools/preview.mjs --key-file <font key file>` (or set `FONT_KEY`). It builds the site, decrypts the fonts, and writes a copy with relative links to `_preview/` (git-ignored), plus `_preview/files.json`.
-2. Publish `_preview/index.html` to the Site preview URL with the Artifact tool, passing `files.json` as `files`. After the first publish, files you leave out are kept, so for most changes `node tools/preview.mjs --pages-only` and publishing only the HTML/CSS/JS is enough.
-3. Look at it (desktop and phone), ask for tweaks, repeat. When it looks right, merge the PR and `main` deploys the live site.
-
-The preview is private: only people it is shared with (from the page's Share menu) can open it.
+- The preview lives in a second repository, `stirringdesert/hs-preview` (GitHub Pages, custom domain), pushed with the `PREVIEW_TOKEN` secret.
+- `tools/preview-site.mjs` prepares it: it keeps search engines out (robots.txt + noindex), locks every page with the `PREVIEW_PASSWORD` secret (encrypted, unlocked in the browser and remembered per device), loads the licensed fonts from the live site instead of copying them, and adds the yellow "превью" tag (top right) that lists the waiting changes and links to the same page on the live site.
+- A draft pull request is left out. One that clashes with another change, or doesn't build, is listed as "пока не показано" in the tag; merge `main` into its branch to fix it. Clashes only in generated pages are resolved automatically by rebuilding.
+- Pull request titles are what the tag lists, so write them as one plain-language line.
 
 ## Playful layer and light mode
 
@@ -97,7 +95,7 @@ The preview is private: only people it is shared with (from the page's Share men
 
 Every CSS, JS, image, video, audio and PDF link carries `?v=<content hash>`, so a changed file is fetched fresh at once. GitHub Pages lets browsers keep a page itself for up to 10 minutes, and that can't be changed on this hosting, so a just-published page can take up to 10 minutes (or one refresh) to show. Unknown addresses (`404.html`) forward to the home page.
 
-Every push to `main` deploys the site to GitHub Pages (`.github/workflows/pages.yml`). The workflow decrypts the fonts, runs the build, and publishes everything except `.git`, `.github`, `tools/`, `build/`, `content/` and `README.md`.
+Every push to `main` deploys the site to GitHub Pages (`.github/workflows/pages.yml`). The workflow decrypts the fonts, runs the build, and publishes everything except `.git`, `.github`, `tools/`, `build/`, `content/`, `team/` and the Markdown docs.
 
 ### Fonts
 
