@@ -28,6 +28,10 @@ if (!src || !out) { console.error('usage: preview-site.mjs <src> <out> [changes.
 const DOMAIN = 'preview.harrysergeev.com';
 const LIVE = 'https://harrysergeev.com';
 const PASSWORD = process.env.PREVIEW_PASSWORD || '';
+// A read-only GitHub token (no permissions, public repositories only) lets the tag check
+// the build status often: without one GitHub allows 60 checks an hour per connection.
+// It only goes inside password-locked pages, never into a plain file.
+const API_TOKEN = PASSWORD ? (process.env.PREVIEW_API_TOKEN || '') : '';
 const ITER = 150000;
 const SALT = crypto.randomBytes(16);
 const KEY = PASSWORD ? crypto.pbkdf2Sync(PASSWORD, SALT, ITER, 32, 'sha256') : null;
@@ -50,7 +54,8 @@ function prepare(html) {
   html = html.replace(/href="\/assets\/fonts\/([^"?]+\.woff2)[^"]*"/g, (_, f) => `href="${liveFont(f)}"`);
   html = html.replace(/<meta name="robots"[^>]*>\s*/g, '');
   html = html.replace(/<head>/i, '<head>\n<meta name="robots" content="noindex, nofollow">');
-  html = html.replace(/<\/body>/i, `<script src="${TAG_URL}"></script>\n</body>`);
+  const token = API_TOKEN ? `<script>window.__pvApi = ${JSON.stringify(API_TOKEN)};</script>\n` : '';
+  html = html.replace(/<\/body>/i, `${token}<script src="${TAG_URL}"></script>\n</body>`);
   return KEY ? lock(html) : html;
 }
 
@@ -208,10 +213,18 @@ function tagClient() { return String.raw`
 
   function check() {
     if (document.hidden || Date.now() < pause) return;
-    fetch(RUNS, { cache: 'no-cache' }).then(function (r) {
-      if (r.status === 403 || r.status === 429) { pause = Date.now() + 300000; return null; }
+    var opts = { cache: 'no-cache' };
+    if (window.__pvApi) opts.headers = { Authorization: 'Bearer ' + window.__pvApi };
+    fetch(RUNS, opts).then(function (r) {
+      if (r.status === 401 && window.__pvApi) { window.__pvApi = null; return null; } // token expired: go on without it
+      if (r.status === 403 || r.status === 429) {
+        pause = Date.now() + 300000;
+        show('unknown', '<b>Статус на паузе.</b> GitHub ограничил число проверок, продолжу через 5 минут. ' + built, 'статус на паузе');
+        return false;
+      }
       return r.ok ? r.json() : null;
     }).then(function (j) {
+      if (j === false) return;
       var runs = (j && j.workflow_runs) || [];
       var pv = runs.filter(function (r) { return r.name === 'Update preview site'; })[0];
       var lv = runs.filter(function (r) { return r.name === 'Deploy to GitHub Pages'; })[0];
