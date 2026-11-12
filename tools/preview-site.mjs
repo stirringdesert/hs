@@ -167,7 +167,7 @@ function tagClient() { return String.raw`
     + (n ? list(D.included) : '')
     + (D.skipped.length ? '<p class="pv-muted">Пока не показано (конфликтует с другим изменением, исправляется):</p>' + list(D.skipped) : '')
     + '</div>'
-    + '<a class="pv-pill pv-live" href="' + esc(live) + '" title="Открыть эту страницу на сайте">сайт ↗</a>'
+    + '<a class="pv-pill pv-live" href="' + esc(live) + '" target="_blank" rel="noopener" title="Открыть эту страницу на сайте">сайт ↗</a>'
     + '<button type="button" class="pv-pill pv-btn" aria-expanded="false"><span class="pv-dot"></span><span class="pv-label"></span></button>';
   document.body.appendChild(tag);
   var btn = tag.querySelector('.pv-btn'), stateEl = tag.querySelector('.pv-state'), labelEl = tag.querySelector('.pv-label'), liveBtn = tag.querySelector('.pv-live');
