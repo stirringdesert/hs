@@ -594,12 +594,16 @@ main {
 .vt-contract::view-transition-group(*) { animation-duration: var(--menu-out); animation-timing-function: var(--ease-in-out); }
 /* One name, never two: the big name shrinks into the header's place as one picture, and
    the small one replaces it only at the very end, where they match exactly. The arrow
-   fades out on the way and the new one fades in as the name lands. */
+   travels with it and turns from up to down on the way, like when the menu closes. */
 .vt-contract::view-transition-image-pair(site-name) { isolation: auto; }
 .vt-contract::view-transition-old(site-name) { animation: none; mix-blend-mode: normal; }
 .vt-contract::view-transition-new(site-name) { animation: show-at-end var(--menu-out) linear both; mix-blend-mode: normal; }
-.vt-contract::view-transition-old(site-arrow) { animation: fade-out calc(var(--menu-out) * .4) var(--ease) both; }
-.vt-contract::view-transition-new(site-arrow) { animation: rise-fade calc(var(--menu-out) * .4) var(--ease) calc(var(--menu-out) * .6) both; }
+.vt-contract::view-transition-image-pair(site-arrow) { isolation: auto; }
+.vt-contract::view-transition-old(site-arrow) { animation: arrow-turn var(--menu-out) var(--ease-in-out) both; mix-blend-mode: normal; }
+.vt-contract::view-transition-new(site-arrow) { animation: show-at-end var(--menu-out) linear both; mix-blend-mode: normal; }
+/* From the home page there is no arrow yet: it fades in as the name lands */
+.vt-contract::view-transition-new(site-arrow):only-child { animation: rise-fade calc(var(--menu-out) * .4) var(--ease) calc(var(--menu-out) * .6) both; }
+@keyframes arrow-turn { to { transform: rotate(-180deg); } }   /* same direction as when the menu closes */
 @keyframes show-at-end { 0%, 99% { opacity: 0; } 100% { opacity: 1; } }
 @keyframes rise-fade { from { opacity: 0; } }
 .vt-contract::view-transition-new(root) { animation: none; }
