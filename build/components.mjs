@@ -233,8 +233,12 @@ export function workList(items, currentSlug) {
 }
 
 // Two-column layout: list on the left, text on the right.
+// On phones the description belongs right under the selected production in the list.
+// A tiny script right after the block puts it there before the page is first drawn, so it
+// doesn't appear later and push things around (fun.js keeps it right when the screen turns).
+const DETAIL_BOOT = `<script>(function(){var s=document.currentScript.previousElementSibling,d=s&&s.querySelector(':scope>.detail'),c=s&&s.querySelector('.nav-list li.current');if(d&&c&&matchMedia('(max-width: 900px)').matches){c.appendChild(d);document.body.classList.add('detail-inline')}})()</script>`;
 export function split(left, right = '') {
-  return `<div class="split">\n${indent(left, 2)}${right ? '\n' + indent(right, 2) : ''}\n</div>`;
+  return `<div class="split">\n${indent(left, 2)}${right ? '\n' + indent(right, 2) : ''}\n</div>${right ? DETAIL_BOOT : ''}`;
 }
 
 export function detail(blocks) {
