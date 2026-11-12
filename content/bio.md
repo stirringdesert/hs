@@ -1,9 +1,9 @@
 ---
 title: About
-photo: /assets/img/bio.jpg
-photo_alt: Igor Sergeev
-photo_width: 1024
-photo_height: 1536
+photo: /assets/img/bio-1134.jpg
+photo_alt: Igor Sergeev in a patterned sweater with headphones and a laptop
+photo_width: 1134
+photo_height: 942
 ---
 
 Igor Sergeev (born July 24, 1987, Kuzema, Kemsky District, Karelian ASSR, USSR) is a playwright, director, actor and voice actor. 2005–2022 Saint Petersburg, since 2022 Munich.

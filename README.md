@@ -116,6 +116,8 @@ openssl enc -aes-256-cbc -pbkdf2 -iter 200000 -salt -in font.woff2 -out assets/f
 
 The demo has two files in `content/voice.json`: `file` is the full-quality WAV that the download link gives (saved as `download_name`, e.g. "igor sergeev - voice.wav"), and `stream` is a small MP3 the player plays (it starts much faster). After replacing the WAV, make a new MP3: `ffmpeg -i assets/media/demo.wav -b:a 192k assets/media/demo.mp3`.
 
+The About photo is set in `content/bio.md` (`photo:` is the largest JPEG, e.g. `/assets/img/bio-1134.jpg`). The build also picks up smaller and newer copies next to it named `bio-<width>.avif`, `.webp` and `.jpg`, so phones get a small file and modern browsers a lighter format. When replacing the photo, make all of them.
+
 All images, audio, fonts and videos are in `assets/` (downloaded from the old Framer site with `tools/fetch-assets.sh`). The production background videos were converted from HEVC to H.264 so they play in every browser. They are 1280×720 (sasha-why 720×720) at about 0.6 Mbit/s with the index at the start of the file ("faststart"), so they start playing before they finish downloading. Keep new ones like that: `ffmpeg -i in.mov -an -c:v libx264 -preset slow -crf 26 -vf scale=-2:720 -movflags +faststart out.mp4` (drop `-an` if the video needs its sound).
 
 `open-relationship-ru/` holds the full Russian text of the play (the READ RU link), copied from the Framer page.
