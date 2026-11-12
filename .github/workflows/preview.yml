@@ -8,6 +8,9 @@ name: Update preview site
 # GitHub Pages on, with these secrets in this repository:
 #   PREVIEW_TOKEN     a fine-grained token with "Contents: read and write" on that repository only
 #   PREVIEW_PASSWORD  the password visitors type once (optional; without it the preview is open)
+#   PREVIEW_API_TOKEN a fine-grained token with no permissions ("Public repositories" access),
+#                     so the tag can check the build status often (optional; without it GitHub
+#                     allows 60 checks an hour). It is only put inside the password-locked pages.
 # The licensed fonts are not copied: the preview loads them from the live site.
 #
 # pull_request_target runs this file as it is on main (not as a pull request
@@ -109,6 +112,7 @@ jobs:
         if: steps.setup.outputs.ready == 'yes'
         env:
           PREVIEW_PASSWORD: ${{ secrets.PREVIEW_PASSWORD }}
+          PREVIEW_API_TOKEN: ${{ secrets.PREVIEW_API_TOKEN }}
           PREVIEW_RUN_ID: ${{ github.run_id }}
         run: |
           node build/build.mjs
