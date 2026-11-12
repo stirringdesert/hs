@@ -3,7 +3,12 @@
 
 *, *::before, *::after { box-sizing: border-box; }
 
-html { -webkit-text-size-adjust: 100%; }
+/* The page colour sits on <html> itself from the very first paint. iPhone Safari paints
+   the strips behind its address bar from it (it ignores theme-color), so it must never
+   change after load. Rule of thumb for the rest of the site: no fixed or sticky element
+   that touches the top or bottom edge gets a background colour, and nothing fixed stays
+   on the page invisibly, because Safari colours its bars from those too. */
+html { -webkit-text-size-adjust: 100%; background-color: var(--color-bg); }
 
 body {
   margin: 0;
@@ -120,33 +125,29 @@ img, video { display: block; max-width: 100%; }
    Closing shrinks it back into the corner. (main.js grows the name at the same time.) */
 .menu {
   position: fixed;
-  inset: 0 0 auto;
-  height: 100vh;
-  height: 100lvh;   /* the largest screen height: reaches behind the browser bars */
+  inset: 0;
   z-index: 50;
-  display: flex;
+  display: none;   /* gone completely when closed: Safari would keep colouring its bars from it */
   flex-direction: column;
   overflow-y: auto;
-  visibility: hidden;
+  overscroll-behavior: contain;   /* a swipe on the menu never scrolls the page underneath */
 }
-.menu-open .menu, .menu-closing .menu { visibility: visible; }
-/* While it opens, the menu doesn't clip anything, so the growing shadow also reaches
-   behind the phone's address bar (Safari cut it off at the scroll box before). Once the
-   shadow has covered everything (main.js adds .menu-settled), the menu turns solid black
-   past the screen edges and may scroll. It's already black there, so nothing changes. */
-.menu-open .menu, .menu-closing .menu { overflow: visible; }
-.menu-open.menu-settled .menu {
-  overflow-y: auto;
-  background-color: var(--color-bg);
-  box-shadow: 0 0 0 100vmax var(--color-bg);
-}
+.menu-shown .menu { display: flex; }
+.menu { scrollbar-width: none; }
+.menu::-webkit-scrollbar { display: none; }
+/* One pixel taller than the screen, so the menu is always its own scroll box (see above) */
+.menu > .home-main { flex: none; min-height: calc(100% + 1px); }
 /* The black: a soft round shadow centred on the name that grows over the whole screen
-   (and shrinks back on closing). Only its scale changes, so phones animate it smoothly
-   on the graphics chip. main.js sets --grow so it just covers the farthest corner. */
-.menu::before {
+   (and shrinks back on closing). It lives outside the menu's scroll box, so nothing
+   clips it and it also reaches behind the phone's address bar. It has no background
+   colour of its own (only a gradient), and the menu has none either, so Safari's bars
+   never switch to a flat colour when it lands or stay black after it closes. Only its
+   scale changes, so phones animate it smoothly. main.js sets --grow so it just covers
+   the farthest corner. */
+.site-header::after {
   content: "";
   position: fixed;
-  z-index: -1;
+  z-index: 49;
   left: calc(var(--mx, 100px) - 100px);
   top: calc(var(--my, 40px) - 100px);
   width: 200px;
@@ -154,21 +155,15 @@ img, video { display: block; max-width: 100%; }
   border-radius: 50%;
   background: radial-gradient(closest-side, var(--color-bg) 65%, transparent);
   transform: scale(0);
-  transition: transform var(--menu-out) var(--ease-in-out);
+  visibility: hidden;
+  transition: transform var(--menu-out) var(--ease-in-out), visibility 0s var(--menu-out);
   pointer-events: none;
 }
-.menu-open .menu::before { transform: scale(var(--grow, 30)); transition-duration: var(--menu-in); }
-/* The menu words appear as the shadow reaches them, and leave first when it closes */
-.menu .home-nav, .menu .home-foot, .menu .home-top .clock {
-  opacity: 0;
-  transition: opacity calc(var(--menu-out) * .5) var(--ease);
-}
-.menu-open .menu .home-nav, .menu-open .menu .home-foot, .menu-open .menu .home-top .clock {
-  opacity: 1;
-  transition: opacity var(--page-in) var(--ease-out) calc(var(--menu-in) * .3);
-}
-.menu-open { overflow: hidden; }
-.menu-open .site-header, .menu-closing .site-header { z-index: 60; }   /* above the sound button and other fixed extras */
+.menu-open .site-header::after { transform: scale(var(--grow, 30)); visibility: visible; transition: transform var(--menu-in) var(--ease-in-out); }
+/* The menu words are revealed by the shadow itself: each one shows only where the black
+   has already reached (main.js cuts them to a circle that grows with it), and closing
+   hides them the same way, so they disappear as the shadow shrinks past them. */
+.menu-shown .site-header { z-index: 60; }   /* above the sound button and other fixed extras */
 .menu-open .site-header::before { opacity: 1; }   /* the name's shadow stays until the menu's black covers it (no flicker) */
 /* One name, never two: the menu's big name starts exactly on top of the small one and
    grows into place (main.js); the small one is hidden in that same moment. Closing runs
@@ -648,6 +643,6 @@ main {
 
 @media (prefers-reduced-motion: reduce) {
   @view-transition { navigation: none; }
-  .menu::before, .menu-open .menu::before, .menu .home-nav, .menu .home-foot, .menu .home-top .clock { transition: none !important; }
+  .site-header::after, .menu-open .site-header::after { transition: none !important; }
   .bg-video, .bio-photo { animation: none; }
 }
