@@ -13,55 +13,57 @@
   var ease = 'cubic-bezier(.6, 0, .25, 1)';
   var anim = null;
 
-  // One name that grows and shrinks: the header's name is lifted above the menu and
-  // animated (size, place, arrow) into the exact shape of the menu's big name, which then
-  // takes over. Closing runs the same in reverse. Font size is animated, not scaled, so
-  // the letters stay sharp the whole way.
-  function shape(el) {
-    var r = el.getBoundingClientRect(), cs = getComputedStyle(el);
-    var arrow = el.querySelector('.menu-arrow').getBoundingClientRect();
-    return {
-      left: r.left + 'px', top: r.top + 'px', fontSize: cs.fontSize, lineHeight: cs.lineHeight,
-      letterSpacing: cs.letterSpacing, columnGap: cs.columnGap,
-      paddingTop: cs.paddingTop, paddingBottom: cs.paddingBottom, arrow: arrow.width + 'px'
-    };
-  }
-  function grow(on) {
+  // One name that grows and shrinks: the menu's big name starts exactly on top of the
+  // small one (scaled down, so the letters stay sharp) and grows into place, while the
+  // small one is hidden. Closing runs in reverse. Only transforms move, so it stays smooth.
+  function grow(on, done) {
     if (anim) { anim.forEach(function (x) { x.cancel(); }); anim = null; }
-    open.classList.remove('moving');
-    document.body.classList.remove('name-moving');
-    if (!close || reduce.matches || !open.animate) return;
-    var small = shape(open), big = shape(close);
-    if (big.fontSize === '0px' || !close.getBoundingClientRect().width) return;
-    function frame(x) {
-      return { left: x.left, top: x.top, fontSize: x.fontSize, lineHeight: x.lineHeight, letterSpacing: x.letterSpacing,
-        columnGap: x.columnGap, paddingTop: x.paddingTop, paddingBottom: x.paddingBottom };
-    }
-    var t = { duration: ms(on ? '--menu-in' : '--menu-out'), easing: ease };
-    var arrow = open.querySelector('.menu-arrow'), svg = arrow.querySelector('svg');
-    var frames = [frame(small), frame(big)], size = [{ width: small.arrow, height: small.arrow }, { width: big.arrow, height: big.arrow }];
+    if (!close || reduce.matches || !close.animate) { done(); return; }
+    var a = open.getBoundingClientRect(), b = close.getBoundingClientRect();
+    if (!b.width) { done(); return; }
+    var k = parseFloat(getComputedStyle(open).fontSize) / parseFloat(getComputedStyle(close).fontSize);
+    var dx = a.left - b.left, dy = a.top + a.height / 2 - b.top - b.height * k / 2;
+    // The arrows have their own sizes, so the big arrow also starts exactly on the small one
+    var box = close.querySelector('.menu-arrow'), svg = box.querySelector('svg');
+    var sa = open.querySelector('.menu-arrow').getBoundingClientRect(), ba = box.getBoundingClientRect();
+    var s = sa.width / (ba.width * k);
+    var ax = (sa.left - b.left - dx) / k - (ba.left - b.left), ay = (sa.top - b.top - dy) / k - (ba.top - b.top);
+    var t = { duration: ms(on ? '--menu-in' : '--menu-out'), easing: ease, fill: 'both' };
+    var name = [{ transform: 'translate(' + dx + 'px,' + dy + 'px) scale(' + k + ')' }, { transform: 'none' }];
+    var size = [{ transform: 'translate(' + ax + 'px,' + ay + 'px) scale(' + s + ')' }, { transform: 'none' }];
     var turn = [{ transform: 'rotate(0deg)' }, { transform: 'rotate(180deg)' }];
-    if (!on) { frames.reverse(); size.reverse(); turn.reverse(); }
-    open.classList.add('moving');
-    document.body.classList.add('name-moving');
-    anim = [open.animate(frames, t), arrow.animate(size, t), svg.animate(turn, t)];
-    anim[0].finished.then(function () {
-      anim.forEach(function (x) { x.cancel(); });
+    if (!on) { name.reverse(); size.reverse(); turn.reverse(); }
+    var mine = anim = [close.animate(name, t), box.animate(size, t), svg.animate(turn, t)];
+    mine[0].finished.then(function () {
+      if (anim !== mine) return;
+      done();
+      mine.forEach(function (x) { x.cancel(); });
       anim = null;
-      open.classList.remove('moving');
-      document.body.classList.remove('name-moving');
     }).catch(function () {});
   }
+  // The small name uses the big name's letter spacing, scaled down, so that when one
+  // takes over from the other the letters sit exactly in the same place.
+  function matchTracking() {
+    if (!close) return;
+    var k = parseFloat(getComputedStyle(open).fontSize) / parseFloat(getComputedStyle(close).fontSize);
+    var ls = parseFloat(getComputedStyle(close).letterSpacing);
+    if (k && !isNaN(ls)) open.style.letterSpacing = (ls * k).toFixed(3) + 'px';
+  }
+  matchTracking();
+  window.addEventListener('resize', matchTracking);
   var keyboard = false;   // move focus only for keyboard users (a tap must not leave a ring)
   function set(on) {
     var r = open.getBoundingClientRect();
-    menu.style.setProperty('--mx', (r.left + r.width / 2) + 'px');
-    menu.style.setProperty('--my', (r.top + r.height / 2) + 'px');
-    document.body.classList.toggle('menu-open', on);
+    var x = r.left + r.width / 2, y = r.top + r.height / 2;
+    var far = Math.hypot(Math.max(x, innerWidth - x), Math.max(y, innerHeight - y));
+    menu.style.setProperty('--mx', x + 'px');
+    menu.style.setProperty('--my', y + 'px');
+    menu.style.setProperty('--grow', (far / 65 + .5).toFixed(2));   // solid black reaches 65 px of the 100 px radius
+    var body = document.body;
+    body.classList.toggle('menu-open', on);
+    body.classList.toggle('menu-closing', !on);
     open.setAttribute('aria-expanded', on ? 'true' : 'false');
-    grow(on);
-    // After closing, the small big-name stays put (hidden) until the next opening:
-    // resetting it at the last moment made it flash full size.
+    grow(on, function () { if (!on) body.classList.remove('menu-closing'); });
     if (keyboard) setTimeout(function () { (on ? close || menu : open).focus({ preventScroll: true }); }, 0);
   }
   function plainClick(e) { return !(e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button); }
@@ -72,7 +74,7 @@
   });
   // Coming back with the Back button can restore the page with the menu still open
   window.addEventListener('pageshow', function (e) {
-    if (e.persisted) { document.body.classList.remove('menu-open'); open.setAttribute('aria-expanded', 'false'); }
+    if (e.persisted) { document.body.classList.remove('menu-open', 'menu-closing'); open.setAttribute('aria-expanded', 'false'); }
   });
 })();
 
