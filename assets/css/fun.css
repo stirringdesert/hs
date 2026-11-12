@@ -21,6 +21,12 @@
    A dark photo washed onto white turned everything grey, and black text on it looked faded. */
 :root[data-theme="light"] .bg-image.scroll-fade { background: #000; opacity: var(--fade, 1); }
 :root[data-theme="light"] .bg-image.scroll-fade img { opacity: var(--bg-video-opacity); }   /* same as dark mode */
+/* The black is there from the first moment (the page never shows light first and then
+   darkens); only the photo on it lights up slowly, once it has loaded, as in dark mode. */
+:root[data-theme="light"] .bg-image.scroll-fade { animation: none; }
+:root[data-theme="light"] .bg-image.scroll-fade img { animation: stage-in var(--bg-video-fade) var(--ease-out) both, drift 30s ease-in-out infinite alternate; }
+:root[data-theme="light"].stage-lit .bg-image.scroll-fade img { animation: drift 30s ease-in-out infinite alternate; }
+:root[data-theme="light"].js .bg-image.scroll-fade img:not(.loaded) { animation-play-state: paused; }
 /* The name stays white over the photo; once the page scrolls, its corner shadow turns
    light like the page, so the name turns dark. The play text starts white too and turns
    black when the first chapter number reaches the middle of the screen (fun.js sets .read-top). */
@@ -238,6 +244,9 @@ a[download] {
 .detail-inline .split { row-gap: 0; }
 .detail { transition: opacity var(--page-in) var(--ease), transform var(--page-in) var(--ease-out); }
 .detail.opening { opacity: 0; transform: translateY(-12px); transition: none; }
+/* Until fun.js has moved it into the list, the description waits unseen, so it isn't
+   drawn once in the wrong place and then blinks out (phones only, only with JavaScript). */
+@media (max-width: 900px) { .js .split > .detail { opacity: 0; transition: none; } }
 
 /* ---------- Sound button for background videos (only for videos with sound) ---------- */
 .sound-toggle {
@@ -290,4 +299,6 @@ a[download] {
 /* The description moved into the list on phones keeps body-text links, not list-size ones */
 .nav-list .detail a { display: inline; font-size: inherit; line-height: inherit; }
 .nav-list .detail a.trailer { display: block; }
+/* The trailer picture fades in over its placeholder once it has loaded */
+.js .trailer img:not(.loaded) { opacity: 0; }
 .nav-list .detail a:not(.trailer):hover { color: var(--color-muted); }

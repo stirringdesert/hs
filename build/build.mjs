@@ -330,7 +330,7 @@ for (const { f, slug, data, body: raw } of freePages) {
         body = `${C.pageTitle(pageTitle)}\n${C.split(C.workList(items, playSlug), C.detail(cur.bodyHtml))}\n${body}`;
         bodyClass = 'theater reading';
         // The play's photo sits behind the top of the page and fades out as the text begins (fun.js)
-        if (cur.image) before = C.bgImage(cur.image, cur.imageAlt);
+        if (cur.image) before = C.bgImage(cur.image, cur.imageAlt, { scrollFade: true });
       }
     }
   }
