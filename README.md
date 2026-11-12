@@ -4,9 +4,14 @@ Source of a small static portfolio site. The pages are plain HTML, built from si
 
 ## How editing works
 
-1. Change a file in `content/` (text, productions, voice roles) or `assets/css/tokens.css` (colors, fonts, sizes).
+Two people edit this site, each by chatting with Claude in their own Claude project; neither needs to touch code. The shared rules every Claude follows are in [`CLAUDE.md`](CLAUDE.md) (how a change goes live, the two-editor workflow, efficiency), who prefers what is in [`team/people.md`](team/people.md), short summaries of longer sessions are in [`team/log.md`](team/log.md), and the design reasoning is in [`DESIGN-PHILOSOPHY.md`](DESIGN-PHILOSOPHY.md).
+
+1. Start from the latest `main` and make the change on a branch: a file in `content/` (text, productions, voice roles), `assets/css/tokens.css` (colors, fonts, sizes) or the components and styles.
 2. Run `node build/build.mjs`. It rebuilds every page and stops with a clear message if something is wrong, such as a missing image or video. `node build/build.mjs --check` only checks.
-3. Publish the site folder as usual.
+3. Open a pull request with a one-line plain-language title. It shows up on the preview website within about two minutes (see "Previewing changes" below).
+4. Publish by merging it into `main`: fixes, small changes and content right away; bigger visual changes after the person says "publish". Each person publishes only their own changes. `main` deploys the live site.
+
+Bugs, things that look wrong and proposed rule changes from the owner's side go to the art director as GitHub issues labelled `inbox`.
 
 Don't edit the generated `index.html` pages by hand. The next build overwrites them. Each one starts with a comment that says so.
 
@@ -89,7 +94,7 @@ Every waiting change is an open pull request. The "Update preview site" action (
 
 ## Playful layer and light mode
 
-`assets/css/fun.css` and `assets/js/fun.js` add the interactive extras: a dot cursor that grows over links, floating video/photo previews when hovering menu items and productions (the map is built from the content files), letters that jump on the big titles, tilting voice cards, contact links that drift toward the cursor, the background-video sound button and a test light mode (round button bottom-left, or `?theme=light` / `?theme=dark` in any URL; remembered per browser). Everything respects the system "reduce motion" setting, and the cursor/previews only run with a mouse. Removing the two files turns all of it off.
+`assets/css/fun.css` and `assets/js/fun.js` add the interactive extras, each block independent: a soft spotlight that follows the mouse (the normal arrow stays), the sound button on background videos, the theater descriptions that open under the selected production on phones, the trailer player, and on the play reading pages a photo that fades out and a light/dark switch for reading (light mode only exists there; every other page and the menu stay black). Everything respects the system "reduce motion" setting. Removing the two files turns all of it off.
 
 ## Publishing
 
@@ -117,4 +122,4 @@ All images, audio, fonts and videos are in `assets/` (downloaded from the old Fr
 
 ## Hosting
 
-GitHub Pages (served through Fastly, which is not throttled in Russia like Cloudflare). Without a custom domain the site lives at https://stirringdesert.github.io/hs/; the workflow adds the `/hs` prefix to links automatically, and drops it once harrysergeev.com is connected.
+GitHub Pages (served through Fastly, which is not throttled in Russia like Cloudflare). Without a custom domain the site lives at https://stirringdesert.github.io/hs/; the workflow adds the `/hs` prefix to links automatically, and drops it once the custom domain is connected.
