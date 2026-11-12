@@ -4,9 +4,14 @@ Source of a small static portfolio site. The pages are plain HTML, built from si
 
 ## How editing works
 
-1. Change a file in `content/` (text, productions, voice roles) or `assets/css/tokens.css` (colors, fonts, sizes).
+Two people edit this site, each by chatting with Claude in their own Claude project; neither needs to touch code. The shared rules every Claude follows are in [`CLAUDE.md`](CLAUDE.md) (how a change goes live, the two-editor workflow, efficiency), who prefers what is in [`team/people.md`](team/people.md), short summaries of longer sessions are in [`team/log.md`](team/log.md), and the design reasoning is in [`DESIGN-PHILOSOPHY.md`](DESIGN-PHILOSOPHY.md).
+
+1. Start from the latest `main` and make the change on a branch: a file in `content/` (text, productions, voice roles), `assets/css/tokens.css` (colors, fonts, sizes) or the components and styles.
 2. Run `node build/build.mjs`. It rebuilds every page and stops with a clear message if something is wrong, such as a missing image or video. `node build/build.mjs --check` only checks.
-3. Publish the site folder as usual.
+3. Open a pull request with a one-line plain-language title. It shows up on the preview website within about two minutes (see "Previewing changes" below).
+4. Publish by merging it into `main`: fixes, small changes and content right away; bigger visual changes after the person says "publish". Each person publishes only their own changes. `main` deploys the live site.
+
+Bugs, things that look wrong and proposed rule changes from the owner's side go to the art director as GitHub issues labelled `inbox`.
 
 Don't edit the generated `index.html` pages by hand. The next build overwrites them. Each one starts with a comment that says so.
 
@@ -80,24 +85,22 @@ The site is in English (at the root), German (`/de/`) and Russian (`/ru/`). The 
 
 ## Previewing changes before they go live
 
-Design changes are checked in a private claude.ai Artifact, "Site preview", before they are merged to `main`:
-https://claude.ai/artifact/TDSeaW3f6Bqcbctk2LQd5P
+Every waiting change is an open pull request. The "Update preview site" action (`.github/workflows/preview.yml`) runs on every push to `main` and whenever a pull request is opened, updated or closed. It takes `main` (the live site), merges every open, non-draft pull request from this repository on top, builds, and publishes the result to the preview website (the `preview.` subdomain of the domain in `CNAME`). Nobody builds previews by hand.
 
-1. Make the change on a branch and run `node tools/preview.mjs --key-file <font key file>` (or set `FONT_KEY`). It builds the site, decrypts the fonts, and writes a copy with relative links to `_preview/` (git-ignored), plus `_preview/files.json`.
-2. Publish `_preview/index.html` to the Site preview URL with the Artifact tool, passing `files.json` as `files`. After the first publish, files you leave out are kept, so for most changes `node tools/preview.mjs --pages-only` and publishing only the HTML/CSS/JS is enough.
-3. Look at it (desktop and phone), ask for tweaks, repeat. When it looks right, merge the PR and `main` deploys the live site.
-
-The preview is private: only people it is shared with (from the page's Share menu) can open it.
+- The preview lives in a second repository, `stirringdesert/hs-preview` (GitHub Pages, custom domain), pushed with the `PREVIEW_TOKEN` secret.
+- `tools/preview-site.mjs` prepares it: it keeps search engines out (robots.txt + noindex), locks every page with the `PREVIEW_PASSWORD` secret (encrypted, unlocked in the browser and remembered per device), loads the licensed fonts from the live site instead of copying them, and adds the yellow "превью" tag (top right) that lists the waiting changes and links to the same page on the live site.
+- A draft pull request is left out. One that clashes with another change, or doesn't build, is listed as "пока не показано" in the tag; merge `main` into its branch to fix it. Clashes only in generated pages are resolved automatically by rebuilding.
+- Pull request titles are what the tag lists, so write them as one plain-language line.
 
 ## Playful layer and light mode
 
-`assets/css/fun.css` and `assets/js/fun.js` add the interactive extras: a dot cursor that grows over links, floating video/photo previews when hovering menu items and productions (the map is built from the content files), letters that jump on the big titles, tilting voice cards, contact links that drift toward the cursor, the background-video sound button and a test light mode (round button bottom-left, or `?theme=light` / `?theme=dark` in any URL; remembered per browser). Everything respects the system "reduce motion" setting, and the cursor/previews only run with a mouse. Removing the two files turns all of it off.
+`assets/css/fun.css` and `assets/js/fun.js` add the interactive extras, each block independent: a soft spotlight that follows the mouse (the normal arrow stays), the sound button on background videos, the theater descriptions that open under the selected production on phones, the trailer player, and on the play reading pages a photo that fades out and a light/dark switch for reading (light mode only exists there; every other page and the menu stay black). Everything respects the system "reduce motion" setting. Removing the two files turns all of it off.
 
 ## Publishing
 
 Every CSS, JS, image, video, audio and PDF link carries `?v=<content hash>`, so a changed file is fetched fresh at once. GitHub Pages lets browsers keep a page itself for up to 10 minutes, and that can't be changed on this hosting, so a just-published page can take up to 10 minutes (or one refresh) to show. Unknown addresses (`404.html`) forward to the home page.
 
-Every push to `main` deploys the site to GitHub Pages (`.github/workflows/pages.yml`). The workflow decrypts the fonts, runs the build, and publishes everything except `.git`, `.github`, `tools/`, `build/`, `content/` and `README.md`.
+Every push to `main` deploys the site to GitHub Pages (`.github/workflows/pages.yml`). The workflow decrypts the fonts, runs the build, and publishes everything except `.git`, `.github`, `tools/`, `build/`, `content/`, `team/` and the Markdown docs.
 
 ### Fonts
 
@@ -121,4 +124,4 @@ All images, audio, fonts and videos are in `assets/` (downloaded from the old Fr
 
 ## Hosting
 
-GitHub Pages (served through Fastly, which is not throttled in Russia like Cloudflare). Without a custom domain the site lives at https://stirringdesert.github.io/hs/; the workflow adds the `/hs` prefix to links automatically, and drops it once harrysergeev.com is connected.
+GitHub Pages (served through Fastly, which is not throttled in Russia like Cloudflare). Without a custom domain the site lives at https://stirringdesert.github.io/hs/; the workflow adds the `/hs` prefix to links automatically, and drops it once the custom domain is connected.
