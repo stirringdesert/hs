@@ -10,6 +10,11 @@
   "roles": [
     {
       "character": "Leon Kennedy",
+      "title": "Resident Evil Requiem",
+      "image": "/assets/img/voice/leon-kennedy-requiem.jpg"
+    },
+    {
+      "character": "Leon Kennedy",
       "title": "Resident Evil 4 Remake",
       "image": "/assets/img/voice/leon-kennedy.jpg"
     },
