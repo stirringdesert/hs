@@ -86,8 +86,8 @@
   --page-in: .55s;             /* new page / open menu arriving */
   --page-out: .25s;            /* old page leaving: always quicker than arriving */
   --ease-in-out: cubic-bezier(.6, 0, .25, 1);  /* slow start and end: the shadow spreading over the screen */
-  --menu-in: .7s;              /* menu opening: the shadow spreads and the name grows */
-  --menu-out: .5s;             /* menu closing / leaving the home page: the shadow shrinks into the corner */
+  --menu-in: 1s;               /* menu opening: the shadow spreads and the name grows */
+  --menu-out: .8s;            /* menu closing / leaving the home page: the shadow shrinks into the corner */
   --bg-video-opacity: .65;
   --bg-video-fade: 3s;
   --bio-photo-opacity: .8;
