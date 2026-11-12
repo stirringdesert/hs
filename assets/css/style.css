@@ -265,8 +265,8 @@ main {
    scrolls and never makes the page longer. It lights up slowly like the videos.
    Desktop: in the right column, its top on the top of the title's letters, and as tall as
    the screen allows, ending just above the bottom edge (svh: the visible screen, so it
-   fits even with browser bars). If the screen is too narrow for the whole photo, his legs
-   are cut off at the edge of the text column, so the text stays clear.
+   fits even with browser bars). If the right column is too narrow for that, the whole
+   photo gets smaller instead of being cut.
    Phones: see the responsive layout below. */
 .bio-photo {
   --photo-top: calc(var(--header-height) + 44px + var(--type-title) * .16);   /* top of the title's letters */
@@ -286,9 +286,11 @@ main {
   position: absolute;
   top: 0;
   right: 0;
-  width: auto;
+  width: 100%;
   height: 100%;
   max-width: none;
+  object-fit: contain;   /* always the whole photo: on narrower screens it gets smaller */
+  object-position: right top;
   opacity: var(--fade, 1);   /* phones: fades away while scrolling (main.js) */
 }
 
@@ -557,19 +559,17 @@ main {
 @media (max-width: 900px) {
   .split { grid-template-columns: 1fr; row-gap: 40px; }
   /* About page on phones and tablets: the photo starts at the top and hangs from the
-     top-right corner, down to where the running text begins, with the title over its lower
-     part. Wider than the screen, so his legs run off the left edge. No edge fades: the black
+     top-right corner, with the title over his legs, starting just above the socks. Wider than the screen, so his legs run off the left edge. No edge fades: the black
      background already melts into the page. It fades away as the text scrolls up (main.js). */
   .bio { --u: min(1vw, 5.2px); }   /* 1% of a phone screen, capped on tablets */
-  .bio-text { padding-top: calc(var(--u) * 59 + 18px); }
+  .bio-text { padding-top: calc(var(--u) * 51); }   /* the title starts just above his socks */
   .bio-photo {
     top: 18px;   /* the top of his head lines up with the top of the name in the header */
     right: 0;
     width: 100%;
-    /* header + space above the title + text padding + title + space under it */
-    height: calc(var(--header-height) + 44px + var(--u) * 59 + var(--type-title) * var(--type-title-lh) + 36px);
+    height: calc(var(--header-height) + 80px + var(--u) * 59 + var(--type-title) * var(--type-title-lh));
   }
-  .bio-photo img { width: auto; }
+  .bio-photo img { width: auto; object-fit: fill; }
 }
 
 @media (max-width: 640px) {
