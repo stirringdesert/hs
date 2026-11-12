@@ -90,17 +90,20 @@ img, video { display: block; max-width: 100%; }
 }
 .scrolled .site-header::before { opacity: 1; }
 .site-header .name {
+  position: relative;
   font-size: var(--type-nav);
-  line-height: var(--type-nav);
+  /* Same proportions as the big name (line height, arrow, gap), so the two are one shape
+     at two sizes and the menu and page changes can turn one into the other seamlessly */
+  line-height: var(--type-display-lh);
   letter-spacing: var(--type-nav-tracking);
-  padding: 4px 0;
 }
+.site-header .name::after { content: ""; position: absolute; inset: -6px -4px; }   /* bigger tap area */
 
 /* Name + arrow: one button. The whole thing dims on hover; nothing moves. */
-.menu-toggle { display: inline-flex; align-items: center; gap: .3em; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+.menu-toggle { display: inline-flex; align-items: center; gap: .25em; cursor: pointer; -webkit-tap-highlight-color: transparent; }
 @media (hover: hover) { .menu-toggle:hover { color: var(--color-muted); } }   /* a tap on a phone must not leave it grey */
 .menu-toggle:focus:not(:focus-visible) { outline: none; }
-.menu-arrow { display: inline-flex; width: .62em; height: .62em; flex: none; }
+.menu-arrow { display: inline-flex; width: .5em; height: .5em; flex: none; }
 .menu-arrow svg {
   width: 100%;
   height: 100%;
@@ -195,8 +198,11 @@ main {
 .home-name { line-height: var(--type-display-lh); width: fit-content; transform-origin: 0 0; white-space: nowrap; }
 /* The big name in the menu always stays on one line with its arrow. «Игорь Сергеев» is
    the longest: on narrow phones it gets just small enough to fit (about 7.95em wide). */
-.home-name .menu-arrow { width: .5em; height: .5em; transform-origin: 0 0; }   /* main.js moves it from its top-left corner */
-.home-name.menu-toggle { gap: .25em; }
+.home-name .menu-arrow { transform-origin: 0 0; }   /* main.js moves it from its top-left corner */
+/* The home page's name keeps the arrow's space (invisible), so it has the same shape as
+   the header name it turns into when a page opens */
+.home-name:not(.menu-toggle) { display: inline-flex; align-items: center; gap: .25em; }
+.home-name:not(.menu-toggle) .menu-arrow { visibility: hidden; }
 .menu .home-name:lang(ru) { font-size: min(var(--type-display), calc((100vw - 2 * var(--gutter)) / 7.95)); }
 .home-nav { display: flex; flex-direction: column; margin-top: auto; padding-top: 40px; }
 .home-nav a { line-height: var(--type-display-nav-lh); width: fit-content; }
@@ -563,6 +569,10 @@ main {
 .menu .home-name { view-transition-name: none; }
 .menu-open .site-header .name { view-transition-name: none; }
 .menu-open .menu .home-name { view-transition-name: site-name; }
+/* The arrow travels on its own, so the name's letters are one picture that simply shrinks */
+.site-header > .name .menu-arrow { view-transition-name: site-arrow; }
+.menu-open .site-header > .name .menu-arrow { view-transition-name: none; }
+.menu-open .menu .home-name .menu-arrow { view-transition-name: site-arrow; }
 .menu-open .bg-video, .menu-open .bio-photo,
 .vt-contract .bg-video, .vt-contract .bio-photo { view-transition-name: none; }
 .bg-video, .bio-photo { view-transition-name: stage; }
@@ -582,8 +592,16 @@ main {
 /* From the home page or the open menu: the old view shrinks into the corner on top of
    the new page, which is already in place underneath */
 .vt-contract::view-transition-group(*) { animation-duration: var(--menu-out); animation-timing-function: var(--ease-in-out); }
-.vt-contract::view-transition-old(site-name),
-.vt-contract::view-transition-new(site-name) { animation-duration: var(--menu-out); }
+/* One name, never two: the big name shrinks into the header's place as one picture, and
+   the small one replaces it only at the very end, where they match exactly. The arrow
+   fades out on the way and the new one fades in as the name lands. */
+.vt-contract::view-transition-image-pair(site-name) { isolation: auto; }
+.vt-contract::view-transition-old(site-name) { animation: none; mix-blend-mode: normal; }
+.vt-contract::view-transition-new(site-name) { animation: show-at-end var(--menu-out) linear both; mix-blend-mode: normal; }
+.vt-contract::view-transition-old(site-arrow) { animation: fade-out calc(var(--menu-out) * .4) var(--ease) both; }
+.vt-contract::view-transition-new(site-arrow) { animation: rise-fade calc(var(--menu-out) * .4) var(--ease) calc(var(--menu-out) * .6) both; }
+@keyframes show-at-end { 0%, 99% { opacity: 0; } 100% { opacity: 1; } }
+@keyframes rise-fade { from { opacity: 0; } }
 .vt-contract::view-transition-new(root) { animation: none; }
 .vt-contract::view-transition-old(root) {
   z-index: 1;
