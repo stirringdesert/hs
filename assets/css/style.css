@@ -76,7 +76,7 @@ picture { display: contents; }   /* only wraps an <img> with a smaller AVIF copy
 .site-header > .name, .site-header .menu { pointer-events: auto; }
 .site-header::before {
   content: "";
-  position: absolute;
+  position: fixed;   /* fixed, so that when the menu scales it up it never makes the page wider */
   left: 0;
   top: 0;
   z-index: -1;
@@ -84,7 +84,7 @@ picture { display: contents; }   /* only wraps an <img> with a smaller AVIF copy
   height: 230px;
   /* a shadow corner: darkest in the very top-left corner, still dark behind the name,
      fading out over a long way to the right and down */
-  background: radial-gradient(ellipse 460px 220px at 0 0,
+  background: radial-gradient(farthest-side at 0 0,
     color-mix(in srgb, var(--color-bg) 88%, transparent),
     color-mix(in srgb, var(--color-bg) 74%, transparent) 30%,
     color-mix(in srgb, var(--color-bg) 45%, transparent) 55%,
@@ -150,13 +150,13 @@ picture { display: contents; }   /* only wraps an <img> with a smaller AVIF copy
    aren't affected, and nothing clips them, so they also reach behind the address bar. */
 .site-header::after {
   content: "";
-  position: absolute;
+  position: fixed;
   left: 0;
   top: 0;
   z-index: 49;
   width: min(100vw, 640px);
   height: 230px;
-  background: radial-gradient(ellipse 460px 220px at 0 0, var(--color-bg) 15%,
+  background: radial-gradient(farthest-side at 0 0, var(--color-bg) 15%,
     color-mix(in srgb, var(--color-bg) 88%, transparent) 30%,
     color-mix(in srgb, var(--color-bg) 62%, transparent) 50%,
     color-mix(in srgb, var(--color-bg) 32%, transparent) 70%,
@@ -166,10 +166,10 @@ picture { display: contents; }   /* only wraps an <img> with a smaller AVIF copy
   transform: scale(var(--sh, 1));
   opacity: 0;
   visibility: hidden;
-  transition: transform var(--menu-out) var(--ease-in-out), opacity calc(var(--menu-out) * .6) var(--ease) calc(var(--menu-out) * .4), visibility 0s var(--menu-out);
+  transition: transform var(--menu-out) var(--ease-in-out), opacity calc(var(--menu-out) * .2) var(--ease) calc(var(--menu-out) * .8), visibility 0s var(--menu-out);
   pointer-events: none;
 }
-.menu-open .site-header::after { opacity: 1; visibility: visible; transition: transform var(--menu-in) var(--ease-in-out), opacity calc(var(--menu-in) * .6) var(--ease); }
+.menu-open .site-header::after { opacity: 1; visibility: visible; transition: transform var(--menu-in) var(--ease-in-out), opacity calc(var(--menu-in) * .2) var(--ease); }
 .menu-open .site-header::before { transition: opacity var(--page-in) var(--ease-out), transform var(--menu-in) var(--ease-in-out); }
 .sh-snap::before, .sh-snap::after { transition: none !important; }
 /* The menu words are revealed by the shadow itself: each one shows only where the black
@@ -451,9 +451,9 @@ main {
   pointer-events: none;
   animation: stage-in var(--bg-video-fade) var(--ease-out) both;
 }
-/* Background media lights up slowly, like a stage: from dark and slightly closer.
+/* Background media lights up slowly, like a stage: it only fades in from dark.
    When the next page shows the same picture, it stays lit instead (main.js adds .stage-lit). */
-@keyframes stage-in { from { opacity: 0; transform: scale(1.03); } }
+@keyframes stage-in { from { opacity: 0; } }   /* only a fade: nothing changes size */
 .stage-lit .bg-video, .stage-lit .bio-photo { animation: none; }
 /* Media fade-in: the slow light-up waits until the photo or video has actually arrived
    (the "loaded" class comes from a tiny script in <head>), so on a slow connection it

@@ -34,18 +34,32 @@
     var turn = [{ transform: 'rotate(0deg)' }, { transform: 'rotate(180deg)' }];
     if (!on) { name.reverse(); size.reverse(); turn.reverse(); }
     var mine = anim = [close.animate(name, t), box.animate(size, t), svg.animate(turn, t)];
-    // The menu words are cut to an oval that grows exactly with the shadow's solid middle,
-    // so they appear where the black arrives and disappear as it shrinks past them.
-    var hs = open.parentNode.style, o = open.parentNode.getBoundingClientRect();
+    // The menu words show through a soft oval that grows exactly with the shadow: fully
+    // there inside its solid middle, fading out across its soft edge, so they appear and
+    // disappear with the black instead of being cut by a hard line.
+    var hs = open.parentNode.style;
     var s0 = parseFloat(hs.getPropertyValue('--sh0')) || 0, s1 = parseFloat(hs.getPropertyValue('--sh-end'));
-    function oval(k, q) { return 'ellipse(' + 460 * k * .13 + 'px ' + 220 * k * .13 + 'px at ' + (o.left - q.left) + 'px ' + (o.top - q.top) + 'px)'; }
+    var bw = parseFloat(hs.getPropertyValue('--sh-w')) || 640, bh = parseFloat(hs.getPropertyValue('--sh-h')) || 230;
+    var soft = 'radial-gradient(closest-side, #000 50%, transparent)';
+    function oval(k, q) {
+      var W = 2 * .3 * bw * k, H = 2 * .3 * bh * k;   // fades out by 30% of the shadow's radius, where it is still nearly black
+      var size = W + 'px ' + H + 'px', pos = (-q.left - W / 2) + 'px ' + (-q.top - H / 2) + 'px';
+      return { maskSize: size, webkitMaskSize: size, maskPosition: pos, webkitMaskPosition: pos };
+    }
+    var masked = [];
     menu.querySelectorAll('.home-nav, .home-foot, .home-top .clock').forEach(function (el) {
       var q = el.getBoundingClientRect();
       if (!q.width) return;
-      var clip = [{ clipPath: oval(s0, q) }, { clipPath: oval(s1, q) }];
-      if (!on) clip.reverse();
-      mine.push(el.animate(clip, t));
+      el.style.maskImage = el.style.webkitMaskImage = soft;
+      el.style.maskRepeat = el.style.webkitMaskRepeat = 'no-repeat';
+      masked.push(el);
+      var kf = [oval(s0, q), oval(s1, q)];
+      if (!on) kf.reverse();
+      mine.push(el.animate(kf, t));
     });
+    mine[0].finished.then(function () {
+      masked.forEach(function (el) { el.style.maskImage = el.style.webkitMaskImage = el.style.maskRepeat = el.style.webkitMaskRepeat = ''; });
+    }).catch(function () {});
     mine[0].finished.then(function () {
       if (anim !== mine) return;
       done();
@@ -70,8 +84,11 @@
     // measured past the visible page, since on phones the page also shows behind the bars.
     var de = document.documentElement, bleed = 160;
     var w = Math.max(innerWidth, de.clientWidth) + bleed, h = Math.max(innerHeight, de.clientHeight, screen.height || 0) + bleed;
-    var end = Math.hypot(w / 460, h / 220) / .15 + .5;
-    var head = open.parentNode;
+    var head = open.parentNode, box = getComputedStyle(head, '::after');
+    var bw = parseFloat(box.width) || 640, bh = parseFloat(box.height) || 230;   // the shadow's oval fills this box
+    var end = Math.hypot(w / bw, h / bh) / .15 + .5;
+    head.style.setProperty('--sh-w', bw);
+    head.style.setProperty('--sh-h', bh);
     // It starts from the shadow as it is now: full size once scrolled, otherwise nothing
     var s0 = de.classList.contains('scrolled') ? 1 : 0;
     head.style.setProperty('--sh0', s0);
