@@ -130,7 +130,7 @@
       var far = Math.hypot(w, h) + 80;
       root.style.setProperty('--tx', x + 'px');
       root.style.setProperty('--ty', y + 'px');
-      root.style.setProperty('--td', (far / .15).toFixed(0) + 'px');   // solid middle (30% of the radius) reaches the far corner
+      root.style.setProperty('--td', (far / .075).toFixed(0) + 'px');   // solid middle (15% of the radius) reaches the far corner
       // Safari colours its bars from the page colour: keep the old one until the end
       root.style.backgroundColor = getComputedStyle(root).backgroundColor;
       root.classList.add('theme-switching', on ? 'theme-on' : 'theme-off');

@@ -34,16 +34,15 @@
     var turn = [{ transform: 'rotate(0deg)' }, { transform: 'rotate(180deg)' }];
     if (!on) { name.reverse(); size.reverse(); turn.reverse(); }
     var mine = anim = [close.animate(name, t), box.animate(size, t), svg.animate(turn, t)];
-    // The menu words are cut to a circle around the name that grows exactly with the
-    // shadow, a little inside its solid black, so they appear where the black arrives.
-    var head = open.parentNode.style;
-    var mx = parseFloat(head.getPropertyValue('--mx')), my = parseFloat(head.getPropertyValue('--my'));
-    var R = 27 * parseFloat(head.getPropertyValue('--grow'));
+    // The menu words are cut to an oval that grows exactly with the shadow's solid middle,
+    // so they appear where the black arrives and disappear as it shrinks past them.
+    var hs = open.parentNode.style, o = open.parentNode.getBoundingClientRect();
+    var s0 = parseFloat(hs.getPropertyValue('--sh0')) || 0, s1 = parseFloat(hs.getPropertyValue('--sh-end'));
+    function oval(k, q) { return 'ellipse(' + 460 * k * .13 + 'px ' + 220 * k * .13 + 'px at ' + (o.left - q.left) + 'px ' + (o.top - q.top) + 'px)'; }
     menu.querySelectorAll('.home-nav, .home-foot, .home-top .clock').forEach(function (el) {
       var q = el.getBoundingClientRect();
       if (!q.width) return;
-      var at = ' at ' + (mx - q.left) + 'px ' + (my - q.top) + 'px)';
-      var clip = [{ clipPath: 'circle(0px' + at }, { clipPath: 'circle(' + R + 'px' + at }];
+      var clip = [{ clipPath: oval(s0, q) }, { clipPath: oval(s1, q) }];
       if (!on) clip.reverse();
       mine.push(el.animate(clip, t));
     });
@@ -66,26 +65,39 @@
   window.addEventListener('resize', matchTracking);
   var keyboard = false;   // move focus only for keyboard users (a tap must not leave a ring)
   function set(on) {
-    // The shadow grows from the very corner of the screen, where the name's own corner
-    // shadow already sits (style.css, .site-header::before), so it reads as that shadow growing.
-    var x = 0, y = 0;
-    // Measure past the visible page: on phones the page also shows through behind the
-    // browser's address bar, so the shadow must reach under it too.
+    // The name's corner shadow (style.css, .site-header::before) grows from the very
+    // top-left corner until its solid middle covers the farthest corner of the screen,
+    // measured past the visible page, since on phones the page also shows behind the bars.
     var de = document.documentElement, bleed = 160;
-    var w = Math.max(innerWidth, de.clientWidth), h = Math.max(innerHeight, de.clientHeight, screen.height || 0);
-    var far = Math.hypot(w + bleed, h + bleed);
-    var head = open.parentNode;   // the shadow is the header's ::after (style.css)
-    head.style.setProperty('--mx', x + 'px');
-    head.style.setProperty('--my', y + 'px');
-    head.style.setProperty('--grow', (far / 30 + .5).toFixed(2));   // solid black reaches 30 px of the 100 px radius (the rest is the soft tail)
+    var w = Math.max(innerWidth, de.clientWidth) + bleed, h = Math.max(innerHeight, de.clientHeight, screen.height || 0) + bleed;
+    var end = Math.hypot(w / 460, h / 220) / .15 + .5;
+    var head = open.parentNode;
+    // It starts from the shadow as it is now: full size once scrolled, otherwise nothing
+    var s0 = de.classList.contains('scrolled') ? 1 : 0;
+    head.style.setProperty('--sh0', s0);
+    head.style.setProperty('--sh-end', end.toFixed(2));
     var body = document.body;
     // The menu exists only while it is open or closing (display: none otherwise). It is
     // shown first and measured once, so the shadow still grows from zero.
-    if (on && !body.classList.contains('menu-shown')) { body.classList.add('menu-shown'); void menu.offsetWidth; getComputedStyle(head, '::after').transform; }
+    if (on && !body.classList.contains('menu-shown')) {
+      body.classList.add('menu-shown');
+      head.classList.add('sh-snap');
+      head.style.setProperty('--sh', s0);
+      void menu.offsetWidth; getComputedStyle(head, '::after').transform; getComputedStyle(head, '::before').transform;
+      head.classList.remove('sh-snap');
+      void head.offsetWidth;
+    }
+    head.style.setProperty('--sh', on ? end.toFixed(2) : s0);
     body.classList.toggle('menu-open', on);
     body.classList.toggle('menu-closing', !on);
     open.setAttribute('aria-expanded', on ? 'true' : 'false');
-    grow(on, function () { if (!on) body.classList.remove('menu-closing', 'menu-shown'); });
+    grow(on, function () {
+      if (on) return;
+      body.classList.remove('menu-closing', 'menu-shown');
+      // back to the shadow's normal size, without animating
+      head.classList.add('sh-snap'); head.style.removeProperty('--sh');
+      getComputedStyle(head, '::before').transform; head.classList.remove('sh-snap');
+    });
     if (keyboard) setTimeout(function () { (on ? close || menu : open).focus({ preventScroll: true }); }, 0);
   }
   function plainClick(e) { return !(e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button); }

@@ -75,8 +75,8 @@ body { transition: color var(--page-in) var(--ease); }
 .theme-switching::view-transition-old(root), .theme-switching::view-transition-new(root) { animation: none; mix-blend-mode: normal; }
 .theme-switching.theme-on::view-transition-new(root),
 .theme-switching.theme-off::view-transition-old(root) {
-  -webkit-mask-image: radial-gradient(closest-side, #000 30%, rgba(0, 0, 0, .86) 46%, rgba(0, 0, 0, .55) 64%, rgba(0, 0, 0, .22) 82%, transparent);
-  mask-image: radial-gradient(closest-side, #000 30%, rgba(0, 0, 0, .86) 46%, rgba(0, 0, 0, .55) 64%, rgba(0, 0, 0, .22) 82%, transparent);
+  -webkit-mask-image: radial-gradient(closest-side, #000 15%, rgba(0, 0, 0, .88) 30%, rgba(0, 0, 0, .62) 50%, rgba(0, 0, 0, .32) 70%, rgba(0, 0, 0, .1) 88%, transparent);
+  mask-image: radial-gradient(closest-side, #000 15%, rgba(0, 0, 0, .88) 30%, rgba(0, 0, 0, .62) 50%, rgba(0, 0, 0, .32) 70%, rgba(0, 0, 0, .1) 88%, transparent);
   -webkit-mask-repeat: no-repeat;
   mask-repeat: no-repeat;
 }
