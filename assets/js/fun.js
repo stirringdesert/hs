@@ -124,19 +124,23 @@
       var on = root.getAttribute('data-theme') !== 'light';
       try { localStorage.setItem('hs-reading-lights', on ? 'on' : 'off'); } catch (e) {}
       if (!document.startViewTransition || matchMedia('(prefers-reduced-motion: reduce)').matches) { apply(on); return; }
-      var r = btn.getBoundingClientRect();
-      var x = r.left + r.width / 2, y = r.top + r.height / 2;
+      // from the very bottom-right corner of the screen, where the button sits
+      var x = innerWidth, y = innerHeight;
       var w = Math.max(innerWidth, root.clientWidth), h = Math.max(innerHeight, root.clientHeight, screen.height || 0);
-      var soft = Math.max(w, h) * .35;   // the soft edge, as wide as the menu's
-      var far = Math.hypot(Math.max(x, w - x), Math.max(y, h - y));
+      var far = Math.hypot(w, h) + 80;
       root.style.setProperty('--tx', x + 'px');
       root.style.setProperty('--ty', y + 'px');
-      root.style.setProperty('--tsoft', soft + 'px');
-      root.style.setProperty('--tend', (far + soft + 40) + 'px');
+      root.style.setProperty('--td', (far / .15).toFixed(0) + 'px');   // solid middle (30% of the radius) reaches the far corner
+      // Safari colours its bars from the page colour: keep the old one until the end
+      root.style.backgroundColor = getComputedStyle(root).backgroundColor;
       root.classList.add('theme-switching', on ? 'theme-on' : 'theme-off');
       var t = document.startViewTransition(function () { apply(on); });
       t.ready.catch(function () {});
-      t.finished.finally(function () { root.classList.remove('theme-switching', 'theme-on', 'theme-off'); });
+      t.finished.finally(function () {
+        root.style.removeProperty('background-color');
+        getComputedStyle(root).backgroundColor;   // settle the new colour before transitions come back
+        root.classList.remove('theme-switching', 'theme-on', 'theme-off');
+      });
     });
     label();
     document.body.appendChild(sw);

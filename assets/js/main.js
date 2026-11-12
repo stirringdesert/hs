@@ -38,7 +38,7 @@
     // shadow, a little inside its solid black, so they appear where the black arrives.
     var head = open.parentNode.style;
     var mx = parseFloat(head.getPropertyValue('--mx')), my = parseFloat(head.getPropertyValue('--my'));
-    var R = 60 * parseFloat(head.getPropertyValue('--grow'));
+    var R = 27 * parseFloat(head.getPropertyValue('--grow'));
     menu.querySelectorAll('.home-nav, .home-foot, .home-top .clock').forEach(function (el) {
       var q = el.getBoundingClientRect();
       if (!q.width) return;
@@ -66,17 +66,18 @@
   window.addEventListener('resize', matchTracking);
   var keyboard = false;   // move focus only for keyboard users (a tap must not leave a ring)
   function set(on) {
-    var r = open.getBoundingClientRect();
-    var x = r.left + r.width / 2, y = r.top + r.height / 2;
+    // The shadow grows from the very corner of the screen, where the name's own corner
+    // shadow already sits (style.css, .site-header::before), so it reads as that shadow growing.
+    var x = 0, y = 0;
     // Measure past the visible page: on phones the page also shows through behind the
     // browser's address bar, so the shadow must reach under it too.
     var de = document.documentElement, bleed = 160;
     var w = Math.max(innerWidth, de.clientWidth), h = Math.max(innerHeight, de.clientHeight, screen.height || 0);
-    var far = Math.hypot(Math.max(x, w - x) + bleed, Math.max(y, h - y) + bleed);
+    var far = Math.hypot(w + bleed, h + bleed);
     var head = open.parentNode;   // the shadow is the header's ::after (style.css)
     head.style.setProperty('--mx', x + 'px');
     head.style.setProperty('--my', y + 'px');
-    head.style.setProperty('--grow', (far / 65 + .5).toFixed(2));   // solid black reaches 65 px of the 100 px radius
+    head.style.setProperty('--grow', (far / 30 + .5).toFixed(2));   // solid black reaches 30 px of the 100 px radius (the rest is the soft tail)
     var body = document.body;
     // The menu exists only while it is open or closing (display: none otherwise). It is
     // shown first and measured once, so the shadow still grows from zero.

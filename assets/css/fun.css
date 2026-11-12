@@ -61,24 +61,35 @@
 html { transition: background-color var(--page-in) var(--ease); }
 body { transition: color var(--page-in) var(--ease); }
 
-/* Turning the lights on or off: the other mode spreads from the button as a soft round
-   shadow, the same gesture as the menu, and shrinks back the other way the same.
-   The page is switched in one go underneath (no colour fades), and its picture is
-   revealed through the growing circle (fun.js). */
-@property --treveal { syntax: "<length>"; inherits: false; initial-value: 0px; }
+/* Turning the lights on or off: the light page grows out of the bottom-right corner,
+   where the button and its corner shadow sit, as a soft circle with a long gradual edge,
+   and shrinks back into it when the lights go off. The page is switched in one go
+   underneath (no colour fades) and its picture is revealed through the circle (fun.js).
+   The circle is a mask whose size grows (no animated custom property), which iPhone
+   Safari handles reliably. While it runs, the page colour that Safari paints its bars
+   from stays the old one (fun.js holds it on <html> and the new colour is on <body>),
+   so the bars change once, at the end, instead of flashing at the start. */
 .theme-switching, .theme-switching *, .theme-switching *::before, .theme-switching *::after { transition: none !important; }
+.theme-switching body { background-color: var(--color-bg); }
 .theme-switching body, .theme-switching body * { view-transition-name: none !important; }
-/* Lights on: the light page spreads out of the button. Lights off: the light page
-   shrinks back into the button, as if the light goes back in, uncovering the dark. */
 .theme-switching::view-transition-old(root), .theme-switching::view-transition-new(root) { animation: none; mix-blend-mode: normal; }
 .theme-switching.theme-on::view-transition-new(root),
 .theme-switching.theme-off::view-transition-old(root) {
-  -webkit-mask-image: radial-gradient(circle at var(--tx) var(--ty), #000 calc(var(--treveal) - var(--tsoft)), transparent var(--treveal));
-  mask-image: radial-gradient(circle at var(--tx) var(--ty), #000 calc(var(--treveal) - var(--tsoft)), transparent var(--treveal));
+  -webkit-mask-image: radial-gradient(closest-side, #000 30%, rgba(0, 0, 0, .86) 46%, rgba(0, 0, 0, .55) 64%, rgba(0, 0, 0, .22) 82%, transparent);
+  mask-image: radial-gradient(closest-side, #000 30%, rgba(0, 0, 0, .86) 46%, rgba(0, 0, 0, .55) 64%, rgba(0, 0, 0, .22) 82%, transparent);
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
 }
 .theme-switching.theme-on::view-transition-new(root) { animation: theme-reveal var(--menu-in) var(--ease-in-out) both; }
 .theme-switching.theme-off::view-transition-old(root) { z-index: 1; animation: theme-reveal var(--menu-out) var(--ease-in-out) reverse both; }
-@keyframes theme-reveal { from { --treveal: 0px; } to { --treveal: var(--tend); } }
+@keyframes theme-reveal {
+  from { -webkit-mask-size: 0 0; mask-size: 0 0; -webkit-mask-position: var(--tx) var(--ty); mask-position: var(--tx) var(--ty); }
+  to {
+    -webkit-mask-size: var(--td) var(--td); mask-size: var(--td) var(--td);
+    -webkit-mask-position: calc(var(--tx) - var(--td) / 2) calc(var(--ty) - var(--td) / 2);
+    mask-position: calc(var(--tx) - var(--td) / 2) calc(var(--ty) - var(--td) / 2);
+  }
+}
 
 /* ---------- Play page: "turn lights on / off" in the bottom-right corner ----------
    Shown from where the photo has faded out until the second chapter begins. */
@@ -142,18 +153,19 @@ body { transition: color var(--page-in) var(--ease); }
 .spotlight::before {
   content: "";
   position: absolute;
-  left: -280px;
-  top: -280px;
-  width: 560px;
-  height: 560px;
+  left: -420px;
+  top: -420px;
+  width: 840px;
+  height: 840px;
   border-radius: 50%;
-  background: radial-gradient(closest-side, rgba(255, 255, 255, .12), rgba(255, 255, 255, .05) 55%, transparent);
+  /* a wide, gradual pool: brightest in the middle, fading out slowly with no visible rim */
+  background: radial-gradient(closest-side, rgba(255, 255, 255, .12), rgba(255, 255, 255, .075) 25%, rgba(255, 255, 255, .04) 50%, rgba(255, 255, 255, .015) 75%, transparent);
 }
 .spotlight.on { opacity: 1; }
 /* The open menu covers the page with black, so the light moves on top of it there.
    "screen" only brightens, so the white menu words stay as they are. */
 .menu-open .spotlight { z-index: 70; mix-blend-mode: screen; }
-:root[data-theme="light"] .spotlight::before { background: radial-gradient(closest-side, rgba(0, 0, 0, .05), rgba(0, 0, 0, .02) 55%, transparent); }
+:root[data-theme="light"] .spotlight::before { background: radial-gradient(closest-side, rgba(0, 0, 0, .05), rgba(0, 0, 0, .032) 25%, rgba(0, 0, 0, .017) 50%, rgba(0, 0, 0, .006) 75%, transparent); }
 
 /* ---------- Links that leave the site: white, underlined, with a small arrow ----------
    The same pattern marks the email button (copy icon) and downloads (arrow down). */
