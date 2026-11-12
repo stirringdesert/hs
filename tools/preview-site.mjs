@@ -59,13 +59,13 @@ function lock(html) {
   const data = Buffer.concat([c.update(html, 'utf8'), c.final(), c.getAuthTag()]);
   const b = (x) => x.toString('base64');
   return `<!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="robots" content="noindex, nofollow"><title>preview</title>
+<html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow"><title>превью</title>
 <style>html,body{margin:0;height:100%;background:#000;color:#f2f2f2;font:16px/1.4 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
 form{display:none;position:absolute;inset:0;margin:auto;width:min(280px,calc(100% - 32px));height:max-content}
 form.show{display:block}input,button{font:inherit;box-sizing:border-box;width:100%;padding:10px 12px;border-radius:8px;border:1px solid #333;background:#111;color:#fff;margin-top:8px}
 button{background:#f2f2f2;color:#000;border:0;cursor:pointer}.err{color:#ff8a8a;min-height:1.4em;font-size:14px}</style></head>
-<body><form id="f"><div>preview · password</div><input id="p" type="password" autocomplete="current-password" autofocus><button>open</button><div class="err" id="e"></div></form>
+<body><form id="f"><div>превью · пароль</div><input id="p" type="password" autocomplete="current-password" autofocus><button>открыть</button><div class="err" id="e"></div></form>
 <script>
 (function () {
   var S = "${b(SALT)}", IV = "${b(iv)}", D = "${b(data)}", N = ${ITER};
@@ -83,7 +83,7 @@ button{background:#f2f2f2;color:#000;border:0;cursor:pointer}.err{color:#ff8a8a;
   }
   var f = document.getElementById('f');
   function ask(msg) { document.getElementById('e').textContent = msg || ''; f.className = 'show'; document.getElementById('p').focus(); }
-  f.onsubmit = function (ev) { ev.preventDefault(); open(document.getElementById('p').value).catch(function () { ask('wrong password'); }); };
+  f.onsubmit = function (ev) { ev.preventDefault(); open(document.getElementById('p').value).catch(function () { ask('неверный пароль'); }); };
   var saved = null; try { saved = localStorage.getItem('preview-pw'); } catch (e) {}
   if (saved) open(saved).catch(function () { ask(); }); else ask();
 })();
@@ -123,6 +123,7 @@ function tagScript(data) {
   return `(function () {
   var D = ${JSON.stringify(data)};
   var n = D.included.length;
+  function plural(k) { var a = k % 10, b = k % 100; return a === 1 && b !== 11 ? 'изменение' : a >= 2 && a <= 4 && (b < 12 || b > 14) ? 'изменения' : 'изменений'; }
   var css = '#pv-tag{position:fixed;right:12px;top:12px;z-index:2147483646;font:12px/1.3 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:#fff}'
     + '#pv-tag button{font:inherit;color:#000;background:#ffd84d;border:0;border-radius:999px;padding:6px 11px;cursor:pointer;box-shadow:0 2px 10px rgba(0,0,0,.35)}'
     + '#pv-tag .pv-panel{position:absolute;right:0;top:36px;width:min(320px,calc(100vw - 24px));box-sizing:border-box;background:#1b1b1b;border:1px solid #333;border-radius:10px;padding:12px 14px;display:none}'
@@ -134,11 +135,11 @@ function tagScript(data) {
   function list(items) { return '<ul>' + items.map(function (c) { return '<li>' + esc(c.title) + (c.author ? ' <span class="pv-muted">(' + esc(c.author) + ')</span>' : '') + '</li>'; }).join('') + '</ul>'; }
   var live = '${LIVE}' + location.pathname + location.hash;
   var html = '<div class="pv-panel">'
-    + '<p><b>Preview, not live.</b> The live site plus ' + (n ? n + ' waiting change' + (n > 1 ? 's' : '') + ':' : 'nothing waiting right now.') + '</p>'
+    + '<p><b>Превью, ещё не на сайте.</b> ' + (n ? 'Сайт плюс ' + n + ' ' + plural(n) + ', ' + (n === 1 ? 'которое ждёт' : 'которые ждут') + ' публикации:' : 'Сейчас ничего не ждёт публикации, всё как на сайте.') + '</p>'
     + (n ? list(D.included) : '')
-    + (D.skipped.length ? '<p class="pv-muted">Not shown yet (clashes with another change, being fixed):</p>' + list(D.skipped) : '')
-    + '<a href="' + esc(live) + '">open this page on the live site &rarr;</a></div>'
-    + '<button type="button" aria-expanded="false">preview' + (n ? ' · ' + n : '') + '</button>';
+    + (D.skipped.length ? '<p class="pv-muted">Пока не показано (конфликтует с другим изменением, исправляется):</p>' + list(D.skipped) : '')
+    + '<a href="' + esc(live) + '">открыть эту страницу на сайте &rarr;</a></div>'
+    + '<button type="button" aria-expanded="false">превью' + (n ? ' · ' + n : '') + '</button>';
   var tag = document.createElement('div'); tag.id = 'pv-tag'; tag.innerHTML = html;
   document.body.appendChild(tag);
   var btn = tag.querySelector('button');
