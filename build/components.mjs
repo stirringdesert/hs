@@ -19,7 +19,33 @@ function v(url) {
 // Every picture, video, audio file and PDF on a page gets the same ?v=, so a replaced
 // file shows at once instead of an old copy from the browser's cache. (Fonts are left
 // as they are: they never change, and their preload must match the CSS exactly.)
-export const versionAssets = (html) => html.replace(/\b(src|href|data-src|poster)="(\/assets\/(?!fonts\/)[^"?#]+)"/g, (_, a, u) => `${a}="${v(u)}"`);
+export const versionAssets = (html) => html
+  .replace(/\b(src|href|data-src|poster)="(\/assets\/(?!fonts\/)[^"?#]+)"/g, (_, a, u) => `${a}="${v(u)}"`)
+  .replace(/\bsrcset="([^"]+)"/g, (_, list) => `srcset="${list.replace(/\/assets\/[^\s,?#]+/g, (u) => v(u))}"`);
+
+// A photo in modern formats with the original as fallback. Next to the fallback
+// (e.g. /assets/img/bio-1134.jpg) the build looks for smaller and newer copies named
+// <name>-<width>.avif / .webp / .jpg, so phones download a small file and browsers
+// that can show AVIF or WebP get one about half the size.
+export function picture(src, { alt = '', width, height, sizes = '100vw', attrs = '' } = {}) {
+  const m = src.match(/^(.*\/)([^/]+)-\d+\.jpe?g$/);
+  let sources = '';
+  if (m) {
+    const dir = new URL('.' + m[1], ROOT);
+    const files = fs.existsSync(dir) ? fs.readdirSync(dir) : [];
+    const set = (ext) => files
+      .map((f) => f.match(new RegExp(`^${m[2]}-(\\d+)\\.${ext}$`)))
+      .filter(Boolean)
+      .sort((a, b) => a[1] - b[1])
+      .map((f) => `${m[1]}${f[0]} ${f[1]}w`).join(', ');
+    sources = ['avif', 'webp']
+      .map((ext) => set(ext) && `<source type="image/${ext}" srcset="${set(ext)}" sizes="${attr(sizes)}">`)
+      .join('');
+    const jpg = set('jpe?g');
+    if (jpg) attrs += ` srcset="${jpg}" sizes="${attr(sizes)}"`;
+  }
+  return `<picture>${sources}<img src="${attr(src)}"${attrs} alt="${attr(alt)}"${width ? ` width="${width}" height="${height}"` : ''}></picture>`;
+}
 
 const PLAY_ICON = 'M5.379 1.292C4.968 1.033 4.449 1.017 4.023 1.251 3.598 1.486 3.334 1.933 3.333 2.419V13.581C3.334 14.067 3.598 14.514 4.023 14.749 4.449 14.983 4.968 14.967 5.379 14.708L14.215 9.127C14.602 8.883 14.836 8.457 14.836 8 14.836 7.543 14.602 7.117 14.215 6.873Z';
 
@@ -98,7 +124,7 @@ const MEDIA_BOOT = `<script>(function(d){d.documentElement.classList.add('js');f
 // When the previous page showed the same background photo or video (e.g. switching
 // language), it stays lit instead of fading in again. Runs before the first paint.
 function stageBoot(html) {
-  const m = html.match(/class="(?:bg-video[^"]*|bio-photo)"[^>]*>\s*<(?:video|img) src="([^"]+)"/);
+  const m = html.match(/class="(?:bg-video[^"]*|bio-photo)"[^>]*>\s*(?:<picture>(?:<source[^>]*>)*)?<(?:video|img) src="([^"]+)"/);
   if (!m) return '';
   return `\n  <script>try{if(sessionStorage.getItem('stage')===${JSON.stringify(m[1].replace(/^\//, '')).replace(/</g, '\\u003c')})document.documentElement.classList.add('stage-lit')}catch(e){}</script>`;
 }

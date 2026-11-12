@@ -261,35 +261,37 @@ main {
   gap: 20px;
 }
 .bio-text .page-title { margin-bottom: 16px; }
-/* The portrait is a fixed background, like the videos on production pages: it never
-   scrolls and never makes the page longer. It fades in slowly, and its left and bottom
-   edges dissolve into the black so no cut edge shows. Only the text scrolls over it. */
+/* The portrait (a cut-out on pure black, so it melts into the page with no edge) never
+   scrolls and never makes the page longer. It lights up slowly like the videos.
+   Desktop: in the right column, its top on the top of the title's letters, and as tall as
+   the screen allows, ending just above the bottom edge (svh: the visible screen, so it
+   fits even with browser bars). If the screen is too narrow for the whole photo, his legs
+   are cut off at the edge of the text column, softly, so the text stays clear.
+   Phones: see the responsive layout below. */
 .bio-photo {
+  --photo-top: calc(var(--header-height) + 44px + var(--type-title) * .16);   /* top of the title's letters */
   position: fixed;
-  inset: 0 0 auto auto;
-  height: 100vh;
-  height: 100lvh;   /* behind the browser bars too, without jumping */
+  top: var(--photo-top);
+  right: var(--gutter);
+  width: calc(50vw - var(--gutter) - var(--col-gap) / 2);
+  height: calc(100vh - var(--photo-top) - 24px);
+  height: calc(100svh - var(--photo-top) - 24px);
+  -webkit-mask-image: linear-gradient(to right, transparent, #000 15%);
+  mask-image: linear-gradient(to right, transparent, #000 15%);
   z-index: -1;
-  width: 58vw;
   overflow: hidden;
   pointer-events: none;
   opacity: var(--bio-photo-opacity);
   animation: stage-in var(--bg-video-fade) var(--ease-out) both;
 }
-/* Desktop: the top of his head lines up with the first paragraph.
-   The hood starts 32% down the photo, and the photo is 1.5 times as tall as it is wide. */
 .bio-photo img {
   position: absolute;
-  left: 0;
-  width: 100%;
+  top: 0;
+  right: 0;
+  width: auto;
+  height: 100%;
   max-width: none;
-  height: auto;
-  top: calc(var(--header-height) + 44px + var(--type-title) * 1.03 + 36px - 58vw * .48);
-  -webkit-mask-image: linear-gradient(to right, transparent, #000 38%), linear-gradient(to bottom, #000 70%, transparent);
-  -webkit-mask-composite: source-in;
-  mask-image: linear-gradient(to right, transparent, #000 38%), linear-gradient(to bottom, #000 70%, transparent);
-  mask-composite: intersect;
-  opacity: var(--fade, 1);   /* fades away while scrolling, like the play page photo (main.js) */
+  opacity: var(--fade, 1);   /* phones: fades away while scrolling (main.js) */
 }
 
 /* ---------- Audio player ----------
@@ -451,7 +453,7 @@ main {
 /* Media fade-in: the slow light-up waits until the photo or video has actually arrived
    (the "loaded" class comes from a tiny script in <head>), so on a slow connection it
    doesn't pop in half-way through. Without JavaScript there is no .js and nothing waits. */
-.js .bg-video:not(:has(> .loaded)), .js .bio-photo:not(:has(> .loaded)) { animation-play-state: paused; }
+.js .bg-video:not(:has(> .loaded)), .js .bio-photo:not(:has(.loaded)) { animation-play-state: paused; }
 .js .work img { transition: opacity var(--page-in) var(--ease); }
 .js .work img:not(.loaded) { opacity: 0; }
 .bg-video video { width: 100%; height: 100%; object-fit: cover; }
@@ -523,6 +525,11 @@ main {
 
 /* ---------- Desktop layout ---------- */
 
+/* About: the text keeps the left half, the photo has the right */
+@media (min-width: 901px) {
+  .bio-text { max-width: calc(50% - var(--col-gap) / 2); }
+}
+
 @media (min-width: 1200px) {
 
   /* theater / playwriting */
@@ -530,8 +537,6 @@ main {
   .nav-list a { line-height: 42px; }
   .nav-list .summary { margin-top: 0; padding: 10px 0 140px; }
 
-  /* bio */
-  .bio-text { max-width: calc(50% - var(--col-gap) / 2); }
 
   /* voice */
   /* the demo keeps the left half */
@@ -553,25 +558,22 @@ main {
 
 @media (max-width: 900px) {
   .split { grid-template-columns: 1fr; row-gap: 40px; }
-  /* About page on phones and tablets: a close crop of the face that bleeds off the right
-     edge, with the title and text running over it. */
-  .bio { --u: min(1vw, 5.2px); }   /* photo unit: 1% of a phone screen, capped on tablets */
-  .bio-photo { width: calc(var(--u) * 100); height: calc(var(--u) * 112); bottom: auto; }
-  /* Face center sits at about 63% across and 48% down the photo */
-  .bio-photo img {
-    width: calc(var(--u) * 150);
-    left: calc(var(--u) * -28);
-    top: calc(var(--u) * -56);
-    -webkit-mask-image: none;
-    mask-image: none;
-  }
+  /* About page on phones and tablets: the photo starts at the very top and hangs from the
+     top-right corner, down to where the running text begins, with the title over its lower
+     part. Wider than the screen, so his legs run off the left edge. It dissolves into the
+     black at the bottom and fades away as the text scrolls up (main.js). */
+  .bio { --u: min(1vw, 5.2px); }   /* 1% of a phone screen, capped on tablets */
+  .bio-text { padding-top: calc(var(--u) * 59); }
   .bio-photo {
-    -webkit-mask-image: linear-gradient(to bottom, #000 62%, transparent), linear-gradient(to right, transparent, #000 50%);
-    -webkit-mask-composite: source-in;
-    mask-image: linear-gradient(to bottom, #000 62%, transparent), linear-gradient(to right, transparent, #000 50%);
-    mask-composite: intersect;
+    top: 0;
+    right: 0;
+    width: 100%;
+    /* header + space above the title + text padding + title + space under it */
+    height: calc(var(--header-height) + 44px + var(--u) * 59 + var(--type-title) * var(--type-title-lh) + 36px);
+    -webkit-mask-image: linear-gradient(to bottom, #000 60%, transparent);
+    mask-image: linear-gradient(to bottom, #000 60%, transparent);
   }
-  .bio-text { padding-top: calc(var(--u) * 62); }
+  .bio-photo img { width: auto; }
 }
 
 @media (max-width: 640px) {

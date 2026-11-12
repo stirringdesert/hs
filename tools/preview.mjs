@@ -75,7 +75,8 @@ function walk(dir) {
       const depth = rel.split(path.sep).length - 1;
       let html = fs.readFileSync(abs, 'utf8').replace(
         /\b(href|src|data-src|poster)="(\/(?!\/)[^"]*)"/g,
-        (_, a, url) => `${a}="${relLink(url, depth)}"`);
+        (_, a, url) => `${a}="${relLink(url, depth)}"`)
+        .replace(/\bsrcset="([^"]+)"/g, (_, list) => `srcset="${list.replace(/(^|,\s*)(\/(?!\/)[^\s,]+)/g, (__, sep, url) => sep + relLink(url, depth))}"`);
       // The remembered-language redirect on the home page uses root paths ("/de/"),
       // which would leave the preview. Make them relative and compare full URLs.
       html = html.replace(/m = (\{[^}]*\});/, (_, json) => {
