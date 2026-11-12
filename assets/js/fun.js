@@ -112,8 +112,8 @@
     sw.innerHTML = '<button type="button" class="theme-toggle-text"></button>';
     var btn = sw.firstChild;
     function label() { btn.textContent = root.getAttribute('data-theme') === 'light' ? (T.toDark || 'turn lights off') : (T.toLight || 'turn lights on'); }
-    // The other mode spreads over the page from the button as a soft round shadow, like
-    // the menu (fun.css, .theme-switching). The browser takes a picture of the page, switches
+    // Lights on: the light mode spreads over the page from the button as a soft round shadow,
+    // like the menu; lights off: it shrinks back into the button (fun.css, .theme-switching). The browser takes a picture of the page, switches
     // the mode, and the new look is revealed through a growing circle. Instant for
     // "reduce motion" and in browsers without view transitions.
     function apply(on) {
@@ -133,10 +133,10 @@
       root.style.setProperty('--ty', y + 'px');
       root.style.setProperty('--tsoft', soft + 'px');
       root.style.setProperty('--tend', (far + soft + 40) + 'px');
-      root.classList.add('theme-switching');
+      root.classList.add('theme-switching', on ? 'theme-on' : 'theme-off');
       var t = document.startViewTransition(function () { apply(on); });
       t.ready.catch(function () {});
-      t.finished.finally(function () { root.classList.remove('theme-switching'); });
+      t.finished.finally(function () { root.classList.remove('theme-switching', 'theme-on', 'theme-off'); });
     });
     label();
     document.body.appendChild(sw);

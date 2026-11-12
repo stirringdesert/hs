@@ -65,12 +65,16 @@ body { transition: background-color var(--page-in) var(--ease), color var(--page
 @property --treveal { syntax: "<length>"; inherits: false; initial-value: 0px; }
 .theme-switching *, .theme-switching *::before, .theme-switching *::after { transition: none !important; }
 .theme-switching body, .theme-switching body * { view-transition-name: none !important; }
-.theme-switching::view-transition-old(root) { animation: none; }
-.theme-switching::view-transition-new(root) {
-  animation: theme-reveal var(--menu-in) var(--ease-in-out) both;
+/* Lights on: the light page spreads out of the button. Lights off: the light page
+   shrinks back into the button, as if the light goes back in, uncovering the dark. */
+.theme-switching::view-transition-old(root), .theme-switching::view-transition-new(root) { animation: none; mix-blend-mode: normal; }
+.theme-switching.theme-on::view-transition-new(root),
+.theme-switching.theme-off::view-transition-old(root) {
   -webkit-mask-image: radial-gradient(circle at var(--tx) var(--ty), #000 calc(var(--treveal) - var(--tsoft)), transparent var(--treveal));
   mask-image: radial-gradient(circle at var(--tx) var(--ty), #000 calc(var(--treveal) - var(--tsoft)), transparent var(--treveal));
 }
+.theme-switching.theme-on::view-transition-new(root) { animation: theme-reveal var(--menu-in) var(--ease-in-out) both; }
+.theme-switching.theme-off::view-transition-old(root) { z-index: 1; animation: theme-reveal var(--menu-out) var(--ease-in-out) reverse both; }
 @keyframes theme-reveal { from { --treveal: 0px; } to { --treveal: var(--tend); } }
 
 /* ---------- Play page: "turn lights on / off" in the bottom-right corner ----------
