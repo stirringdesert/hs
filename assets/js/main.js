@@ -55,7 +55,11 @@
   function set(on) {
     var r = open.getBoundingClientRect();
     var x = r.left + r.width / 2, y = r.top + r.height / 2;
-    var far = Math.hypot(Math.max(x, innerWidth - x), Math.max(y, innerHeight - y));
+    // Measure past the visible page: on phones the page also shows through behind the
+    // browser's address bar, so the shadow must reach under it too.
+    var de = document.documentElement, bleed = 160;
+    var w = Math.max(innerWidth, de.clientWidth), h = Math.max(innerHeight, de.clientHeight, screen.height || 0);
+    var far = Math.hypot(Math.max(x, w - x) + bleed, Math.max(y, h - y) + bleed);
     menu.style.setProperty('--mx', x + 'px');
     menu.style.setProperty('--my', y + 'px');
     menu.style.setProperty('--grow', (far / 65 + .5).toFixed(2));   // solid black reaches 65 px of the 100 px radius
@@ -85,16 +89,7 @@ window.addEventListener('pageswap', function (e) {
   var from = document.body.classList.contains('home') || document.body.classList.contains('menu-open');
   try { sessionStorage.setItem('vt', from ? 'contract' : ''); } catch (x) {}
 });
-window.addEventListener('pagereveal', function (e) {
-  var v = '';
-  try { v = sessionStorage.getItem('vt'); sessionStorage.removeItem('vt'); } catch (x) {}
-  if (!e.viewTransition) return;
-  // Only the menu animation plays between pages; every other page change is instant
-  if (v !== 'contract' || document.body.classList.contains('home')) { e.viewTransition.skipTransition(); return; }
-  var root = document.documentElement;
-  root.classList.add('vt-contract');
-  e.viewTransition.finished.finally(function () { root.classList.remove('vt-contract'); });
-});
+// (The new page's side, 'pagereveal', is an inline script in <head>: see VT_BOOT in components.mjs.)
 
 // Scrolled pages: the sticky name gets its soft shadow (style.css, .scrolled). On
 // phones the About photo stays until the text reaches the top, then fades away.

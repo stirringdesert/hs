@@ -62,7 +62,8 @@ ${FONT_PRELOADS}
   ${MEDIA_BOOT}${stageBoot(before + main)}
   <script src="${v('/assets/js/main.js')}" defer></script>
   <script src="${v('/assets/js/fun.js')}" defer></script>
-  ${PREFETCH}${head ? '\n' + indent(head, 2) : ''}
+  ${PREFETCH}
+  ${VT_BOOT}${head ? '\n' + indent(head, 2) : ''}
 </head>
 <body class="${bodyClass}">
 ${before ? before + '\n' : ''}${chrome ? header(site, menuAlternates || alternates) + '\n' : ''}  <main${mainClass ? ` class="${mainClass}"` : ''}>
@@ -77,6 +78,12 @@ ${indent(main, 4)}
 // so text appears in the right font straight away (no flash of a fallback font).
 const FONT_PRELOADS = ['regular', 'demibold']
   .map((w) => `  <link rel="preload" href="/assets/fonts/tt-firs-neue-${w}.woff2" as="font" type="font/woff2" crossorigin>`).join('\n');
+
+// Arriving from the home page or the open menu: play the shrinking menu animation
+// (style.css, .vt-contract); every other page change is instant. It sits inline in <head>
+// so it is ready before the first frame even when the page is long or the network slow
+// (in main.js it sometimes came too late, and the default animation played instead).
+const VT_BOOT = `<script>addEventListener('pagereveal',function(e){var v='';try{v=sessionStorage.getItem('vt');sessionStorage.removeItem('vt')}catch(x){}if(!e.viewTransition)return;e.viewTransition.ready.catch(function(){});var b=document.body;if(v!=='contract'||(b&&b.classList.contains('home'))){e.viewTransition.skipTransition();return}var r=document.documentElement;r.classList.add('vt-contract');e.viewTransition.finished.finally(function(){r.classList.remove('vt-contract')})})</script>`;
 
 // Chrome and Edge fetch a page in the background while the pointer rests on its link,
 // so the click opens it at once. Files (PDFs, audio, video) are never fetched early.

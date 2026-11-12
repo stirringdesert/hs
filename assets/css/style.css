@@ -128,6 +128,14 @@ img, video { display: block; max-width: 100%; }
   visibility: hidden;
 }
 .menu-open .menu, .menu-closing .menu { visibility: visible; }
+/* Once the shadow has covered everything, the menu turns solid black itself, reaching
+   far past the screen edges (behind the address bar too), so nothing shows through when
+   the browser bars move. It's already black there, so the switch can't be seen. */
+.menu-open .menu {
+  background-color: var(--color-bg);
+  box-shadow: 0 0 0 100vmax var(--color-bg);
+  transition: background-color 0s linear var(--menu-in), box-shadow 0s linear var(--menu-in);
+}
 /* The black: a soft round shadow centred on the name that grows over the whole screen
    (and shrinks back on closing). Only its scale changes, so phones animate it smoothly
    on the graphics chip. main.js sets --grow so it just covers the farthest corner. */
