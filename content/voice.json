@@ -1,8 +1,8 @@
 {
-  "cta": "for voiceover bookings and inquiries, please [contact](/contact/)",
   "demo": {
-    "title": "Demo",
+    "title": "Listen",
     "file": "/assets/media/demo.wav",
+    "download_name": "igor sergeev - voice",
     "stream": "/assets/media/demo.mp3"
   },
   "works_title": "Works",

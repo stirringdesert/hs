@@ -58,7 +58,7 @@ ${colors.map(([v, n]) => `  <div class="sg-swatch"><i style="background:var(${v}
     }).join('\n')),
     section('Links', [
       row('Link in text (white, underlined, arrow)', '.link', '<p>More on <a class="link" href="https://example.com" target="_blank" rel="noopener">Wikipedia (RU)</a></p>'),
-      row('Call to action', '.accent', '<p>for voiceover bookings and inquiries, please <a class="accent" href="#">contact</a></p>'),
+      row('Link in text', '.accent', '<p>Read more on the <a class="accent" href="#">contact</a> page</p>'),
       row('Email (copies the address)', '.copy-email', C.copyEmail('name@example.com', { label: 'e-mail', ui: site.ui })),
       row('Download', 'a[download]', '<a href="#" download>download pdf</a>'),
     ].join('\n')),

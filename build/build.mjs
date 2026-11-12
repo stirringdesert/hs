@@ -52,6 +52,12 @@ const site = readJson('site.json');
 const LANGS = site.languages?.length ? site.languages : [{ code: 'en', label: 'EN' }];
 const DEFAULT = LANGS[0].code;
 const prefix = (lang) => (lang === DEFAULT ? '' : `/${lang}`);
+// A language marked "hidden": true in site.json is switched off for now: no language
+// switch or first-visit picker, and its addresses forward to the English page (hidden
+// from search engines). Its translation files stay, so removing the flag brings it back.
+// Exception: the play reading pages keep every language (linked from the play page).
+const PUBLIC = LANGS.filter((l) => l.code === DEFAULT || !l.hidden);
+const isHidden = (lang) => !PUBLIC.some((l) => l.code === lang);
 const untranslated = [];
 
 const isObj = (x) => x && typeof x === 'object' && !Array.isArray(x);
@@ -114,7 +120,7 @@ const localUrl = (url, lang) => {
 const localizeLinks = (html, lang) =>
   lang === DEFAULT ? html : html.replace(/href="(\/[^"]*)"/g, (_, u) => `href="${attr(localUrl(u.replace(/&amp;/g, '&'), lang))}"`);
 // The same page in every language, for the language switch and hreflang tags.
-const alternatesOf = (p) => LANGS.map((l) => ({ code: l.code, label: l.label, href: prefix(l.code) + p }));
+const alternatesOf = (p) => PUBLIC.map((l) => ({ code: l.code, label: l.label, href: prefix(l.code) + p }));
 
 // ---------- Theater + playwriting ----------
 function loadSection(dir, lang) {
@@ -160,7 +166,9 @@ const sectionItems = {};
 function buildLanguage(lang) {
   const s = siteIn(lang);
   const ui = s.ui;
-  const page = (p, opts) => emit(prefix(lang) + p, C.layout(s, {
+  const page = (p, opts) => isHidden(lang)
+    ? emit(prefix(lang) + p, C.redirectPage(site.url, p))
+    : emit(prefix(lang) + p, C.layout(s, {
     ...opts, path: prefix(lang) + p, lang, alternates: alternatesOf(p), main: localizeLinks(opts.main, lang),
   }));
 
@@ -168,8 +176,8 @@ function buildLanguage(lang) {
   page('/', {
     bodyClass: 'home',
     chrome: false,
-    before: lang === DEFAULT ? C.langPicker(alternatesOf('/')) : '',
-    head: lang === DEFAULT ? C.langPickerHead(alternatesOf('/')) : '',
+    before: lang === DEFAULT && PUBLIC.length > 1 ? C.langPicker(alternatesOf('/')) : '',
+    head: lang === DEFAULT && PUBLIC.length > 1 ? C.langPickerHead(alternatesOf('/')) : '',
     mainClass: 'home-page',
     main: C.homeView(s, alternatesOf('/')),
   });
@@ -207,12 +215,10 @@ ${markdown(body).map((b) => '  ' + b).join('\n')}
       need(r.image, 'image', `${where} role #${i + 1}`);
       needAsset(r.image, `${where} role #${i + 1} (${r.character})`);
     });
-    const cta = inline(v.cta, { linkClass: 'accent' });
     const parts = [
       `<section class="demo">
-${C.demoHead(v.demo.title, v.demo.file, ui)}
+${C.demoHead(v.demo.title, v.demo.file, ui, v.demo.download_name)}
 ${C.player(v.demo.stream || v.demo.file, ui)}
-  <p class="bookings">${cta}</p>
 </section>`,
       '',
       C.pageTitle(v.works_title, 'works-title'),
@@ -227,7 +233,6 @@ ${v.audiobooks.text.map((t) => `    <p>${inline(t, { linkClass: 'accent' })}</p>
   </div>
 </section>`);
     }
-    parts.push('', `<p class="bookings bottom-cta">${cta}</p>`);   // same paragraph style as the line under the player
     page('/voice/', { title: ui.titles.voice, bodyClass: 'voice', main: parts.join('\n') });
   }
 
@@ -255,7 +260,7 @@ ${v.audiobooks.text.map((t) => `    <p>${inline(t, { linkClass: 'accent' })}</p>
   // ---------- Contact ----------
   page('/contact/', {
     title: ui.titles.contact, bodyClass: 'contact',
-    main: `${C.label(esc(s.contact.label), { tag: 'h1' })}
+    main: `${C.pageTitle(ui.titles.contact)}
 <div class="contact-list">
 ${s.contact.links.map((l) => {
       if (l.copy) return '  ' + C.copyEmail(l.copy, { label: l.short || 'E-mail', ui });
@@ -286,7 +291,8 @@ for (const { f, slug, data, body: raw } of freePages) {
   let before = '';
   const lang = data.lang || DEFAULT;
   const isReading = Boolean(data.play);
-  const s = isReading && LANGS.some((l) => l.code === lang) ? siteIn(lang) : siteIn(DEFAULT);
+  // Reading pages in a hidden language keep their text but use the English menu
+  const s = isReading && PUBLIC.some((l) => l.code === lang) ? siteIn(lang) : siteIn(DEFAULT);
   let alternates = null;
   if (isReading) {
     const siblings = freePages.filter((p) => p.data.play === data.play);
@@ -306,7 +312,7 @@ for (const { f, slug, data, body: raw } of freePages) {
       const tFile = path.join(CONTENT, dir, `${playSlug}.${lang}.md`);
       const t = fs.existsSync(tFile) ? parseFrontMatter(fs.readFileSync(tFile, 'utf8'), tFile) : null;
       const items = (sectionItems[dir] || []).map((it) => {
-        if (it.slug !== playSlug) return { ...it, url: localUrl(it.url, lang) };
+        if (it.slug !== playSlug) return { ...it, url: localUrl(it.url, isHidden(lang) ? DEFAULT : lang) };
         const tr = t ? {
           title: t.data.title || it.title,
           summaryHtml: (t.data.summary || []).map((x) => inline(String(x))),
@@ -329,22 +335,35 @@ for (const { f, slug, data, body: raw } of freePages) {
     }
   }
   // 404.html: GitHub Pages shows it (black, with the menu) for any address that doesn't exist
-  const out = slug === '404' ? { url: '/404.html', file: '404.html' } : { url: `/${slug}/` };
+  // 404.html: GitHub Pages shows it for any address that doesn't exist; it forwards to the home page
+  if (slug === '404') { pages.set('404.html', C.redirectPage(site.url, '/')); continue; }
+  const out = { url: `/${slug}/` };
+  // Only the public languages are linked to each other for search engines and the menu
+  const shown = alternates?.filter((a) => !isHidden(a.code));
   const html = C.layout(s, {
-    path: out.url, title: data.title, lang, bodyClass, alternates, before, noindex: data.noindex === true,
+    path: out.url, title: data.title, lang, bodyClass, alternates: shown?.length > 1 ? shown : null, before,
+    noindex: data.noindex === true || isHidden(lang),
     // Pages in one language only (legal pages): the menu's languages lead to the home pages
-    menuAlternates: alternates?.length > 1 ? null : alternatesOf('/'),
+    menuAlternates: shown?.length > 1 ? null : alternatesOf('/'),
     description: data.description,
     // Reading pages remember "lights on" before anything is drawn, so the page doesn't flash black
     head: bodyClass === 'theater reading' ? C.READ_LIGHT_BOOT : '',
     // mailto links become copy-to-clipboard buttons (keeps the address away from spam bots)
     main: body.replace(/\s+$/, '').replace(/<a [^>]*href="mailto:([^"]+)"[^>]*>[^<]*<\/a>/g, (_, a) => C.copyEmail(a, { extraClass: 'link', ui: s.ui })),
   });
-  if (out.file) pages.set(out.file, html); else emit(out.url, html);
+  emit(out.url, html);
 }
 
 // ---------- Style guide (not linked from the menu, hidden from search engines) ----------
 emit('/styleguide/', styleguide(siteIn(DEFAULT), C));
+
+// ---------- Sitemap + robots.txt: every page search engines may show ----------
+{
+  const urls = [...pages].filter(([rel, html]) => rel.endsWith('index.html') && !/<meta name="robots" content="noindex">/.test(html))
+    .map(([rel]) => `  <url><loc>${site.url}/${rel.replace(/index\.html$/, '')}</loc></url>`).sort();
+  pages.set('sitemap.xml', `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls.join('\n')}\n</urlset>\n`);
+  pages.set('robots.txt', `User-agent: *\nAllow: /\n\nSitemap: ${site.url}/sitemap.xml\n`);
+}
 
 // ---------- Write ----------
 if (problems.length) {
