@@ -93,7 +93,7 @@ picture { display: contents; }   /* only wraps an <img> with a smaller AVIF copy
   opacity: 0;
   transform-origin: 0 0;
   transform: scale(var(--sh, 1));   /* the menu grows this shadow over the whole screen (below) */
-  transition: opacity var(--page-in) var(--ease-out), transform var(--menu-out) var(--ease-in-out);
+  transition: opacity var(--page-in) var(--ease-out);
   pointer-events: none;
 }
 .scrolled .site-header::before { opacity: 1; }
@@ -166,11 +166,12 @@ picture { display: contents; }   /* only wraps an <img> with a smaller AVIF copy
   transform: scale(var(--sh, 1));
   opacity: 0;
   visibility: hidden;
-  transition: transform var(--menu-out) var(--ease-in-out), opacity calc(var(--menu-out) * .2) var(--ease) calc(var(--menu-out) * .8), visibility 0s var(--menu-out);
   pointer-events: none;
 }
-.menu-open .site-header::after { opacity: 1; visibility: visible; transition: transform var(--menu-in) var(--ease-in-out), opacity calc(var(--menu-in) * .2) var(--ease); }
-.menu-open .site-header::before { transition: opacity var(--page-in) var(--ease-out), transform var(--menu-in) var(--ease-in-out); }
+/* While the menu is shown, main.js moves the shadow (size and fade) on the same clock as
+   the name and the menu words, so all three stay exactly together. These are the end states. */
+.menu-shown .site-header::after { visibility: visible; }
+.menu-open .site-header::after { opacity: 1; }
 .sh-snap::before, .sh-snap::after { transition: none !important; }
 /* The menu words are revealed by the shadow itself: each one shows only where the black
    has already reached (main.js cuts them to a circle that grows with it), and closing
@@ -655,7 +656,5 @@ main {
 
 @media (prefers-reduced-motion: reduce) {
   @view-transition { navigation: none; }
-  .site-header::after, .menu-open .site-header::after, .menu-open .site-header::before { transition: none !important; }
-  .site-header::before { transition: opacity var(--page-in) var(--ease-out); }
   .bg-video, .bio-photo { animation: none; }
 }
