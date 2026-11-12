@@ -58,7 +58,8 @@ ${FONT_PRELOADS}
   <link rel="stylesheet" href="${v('/assets/css/tokens.css')}">
   <link rel="stylesheet" href="${v('/assets/css/style.css')}">
   <link rel="stylesheet" href="${v('/assets/css/type.css')}">
-  <link rel="stylesheet" href="${v('/assets/css/fun.css')}">${extraCss.map((h) => `\n  <link rel="stylesheet" href="${v(h)}">`).join('')}${stageBoot(before + main)}
+  <link rel="stylesheet" href="${v('/assets/css/fun.css')}">${extraCss.map((h) => `\n  <link rel="stylesheet" href="${v(h)}">`).join('')}
+  ${MEDIA_BOOT}${stageBoot(before + main)}
   <script src="${v('/assets/js/main.js')}" defer></script>
   <script src="${v('/assets/js/fun.js')}" defer></script>
   ${PREFETCH}
@@ -87,6 +88,12 @@ const VT_BOOT = `<script>addEventListener('pagereveal',function(e){var v='';try{
 // Chrome and Edge fetch a page in the background while the pointer rests on its link,
 // so the click opens it at once. Files (PDFs, audio, video) are never fetched early.
 const PREFETCH = `<script type="speculationrules">{"prefetch":[{"where":{"and":[{"href_matches":"/*"},{"not":{"href_matches":"/assets/*"}}]},"eagerness":"moderate"}]}</script>`;
+
+// Pictures and videos fade in once they have arrived, instead of popping in half-drawn.
+// This runs before the page is drawn: it marks the page as having JavaScript (only then
+// does the CSS hide media until it's ready, so without JavaScript they simply show) and
+// marks each picture or video "loaded" the moment it is (style.css, "Media fade-in").
+const MEDIA_BOOT = `<script>(function(d){d.documentElement.classList.add('js');function m(e){var t=e.target;if(t.tagName==='IMG'||t.tagName==='VIDEO')t.classList.add('loaded')}['load','loadeddata','error'].forEach(function(n){d.addEventListener(n,m,true)})})(document)</script>`;
 
 // When the previous page showed the same background photo or video (e.g. switching
 // language), it stays lit instead of fading in again. Runs before the first paint.
@@ -203,8 +210,10 @@ export function trailer({ embed, image, url, label = 'Trailer', duration = '' })
 
 // Fixed full-screen photo behind a page, styled like the background videos
 // (same dimming and fade-in, plus a slow drift so it feels alive).
-export function bgImage(src, alt = '') {
-  return `  <div class="bg-video bg-image"><img src="${attr(src)}" alt="${attr(alt)}" fetchpriority="high"></div>`;
+// `scrollFade`: the photo fades out with scrolling (play reading pages, fun.js). The class
+// is in the page from the start, so light mode draws the dark stage right away.
+export function bgImage(src, alt = '', { scrollFade = false } = {}) {
+  return `  <div class="bg-video bg-image${scrollFade ? ' scroll-fade' : ''}"><img src="${attr(src)}" alt="${attr(alt)}" fetchpriority="high"></div>`;
 }
 
 // List of productions on the left of theater/playwriting pages. The current one opens
@@ -235,7 +244,8 @@ export function detail(blocks) {
 // Audio player: play/pause, seek bar (click or drag), time, volume and download.
 // Every control has a click area of at least 44 px. Wired up in main.js.
 // Reading pages: turn the lights on before the page is drawn if the reader left them on.
-export const READ_LIGHT_BOOT = `<script>try{if(localStorage.getItem('hs-reading-lights')==='on')document.documentElement.setAttribute('data-theme','light')}catch(e){}</script>`;
+// The top of the page starts as the dark stage (read-top, kept up to date by fun.js).
+export const READ_LIGHT_BOOT = `<script>try{if(localStorage.getItem('hs-reading-lights')==='on'){document.documentElement.setAttribute('data-theme','light');document.documentElement.classList.add('read-top')}}catch(e){}</script>`;
 
 // The demo's title with its download link on the same line, on the right.
 // `name` is the file name visitors get (the extension is added from the file).

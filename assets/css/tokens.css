@@ -2,19 +2,22 @@
    Every color, font size and key spacing on the site comes from here.
    Change a value once and it updates on every page. See /styleguide/ for a live preview. */
 
+/* "block": while the font is still arriving the text waits (a fraction of a second), instead of
+   showing in a system font first and then jumping into TT Firs Neue, which made the whole
+   (long) play page flicker. */
 @font-face {
   font-family: "TT Firs Neue";
   src: url("../fonts/tt-firs-neue-regular.woff2") format("woff2");
   font-weight: 400;
   font-style: normal;
-  font-display: swap;
+  font-display: block;
 }
 @font-face {
   font-family: "TT Firs Neue";
   src: url("../fonts/tt-firs-neue-demibold.woff2") format("woff2");
   font-weight: 600;
   font-style: normal;
-  font-display: swap;
+  font-display: block;
 }
 
 :root {

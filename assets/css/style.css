@@ -438,6 +438,12 @@ main {
    When the next page shows the same picture, it stays lit instead (main.js adds .stage-lit). */
 @keyframes stage-in { from { opacity: 0; transform: scale(1.03); } }
 .stage-lit .bg-video, .stage-lit .bio-photo { animation: none; }
+/* Media fade-in: the slow light-up waits until the photo or video has actually arrived
+   (the "loaded" class comes from a tiny script in <head>), so on a slow connection it
+   doesn't pop in half-way through. Without JavaScript there is no .js and nothing waits. */
+.js .bg-video:not(:has(> .loaded)), .js .bio-photo:not(:has(> .loaded)) { animation-play-state: paused; }
+.js .work img { transition: opacity var(--page-in) var(--ease); }
+.js .work img:not(.loaded) { opacity: 0; }
 .bg-video video { width: 100%; height: 100%; object-fit: cover; }
 
 /* ---------- Play text (open-relationship-ru) ---------- */
