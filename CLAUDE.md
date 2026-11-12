@@ -12,10 +12,32 @@ Before any visual decision (layout, type, color, motion, a new block), read `DES
 2. Make the change on a new branch.
 3. Run `node build/build.mjs`. It rebuilds every page and stops with a clear message if something is wrong. Fix what it reports. Commit the content change together with the rebuilt pages.
 4. Open a pull request to `main` with a one-line plain-language summary of what changes on the site.
-5. Tell the person what you changed, in words they understand. Don't talk about branches, commits, or pull requests: they don't know git. Nothing is live until they say to publish ("опубликуй", "publish", "выложи"). Then merge the pull request yourself.
+5. Tell the person what you changed, in words they understand. Don't talk about branches, commits, or pull requests: they don't know git. Say every time whether the change is **live** (on harrysergeev.com) or **in preview** (on preview.harrysergeev.com, waiting for "publish" / "опубликуй" / "выложи"). When to publish without waiting is in "Two editors" below. To publish, merge the pull request yourself.
 6. After the merge, the site updates in one or two minutes (the "Deploy to GitHub Pages" action). If they say it hasn't changed, check that the action finished, then suggest a hard refresh.
 
 Keep each pull request to one request, so a change can be undone on its own. If they ask to undo a published change ("верни как было"), revert that pull request the same way and publish the revert.
+
+## Two editors
+
+Two people edit this site, each with their own Claude project. Who is who and what each prefers is in `team/people.md`. Read it at the start of a session, and follow the preferences of the person you are talking to.
+
+**Live and preview.** Live is `main`, deployed to the real site. The preview is a second, password-protected website (preview.harrysergeev.com) that the "Update preview site" action rebuilds by itself about two minutes after anything changes: it always shows the live site plus every open pull request from this repository. Nobody builds or uploads previews by hand. A draft pull request is left out of the preview, and one that clashes with another change is listed as "not shown yet" in the yellow preview tag; fix the clash on that branch (merge `main` or the other change into it). Before you start a change, update from the latest `main` so you build on the live version.
+
+**Publishing.**
+- Each person publishes only their own changes (pull requests their Claude opened). Never merge the other person's pull request.
+- Fixes, small changes and content (text, a new production, a new voice role, photos) are published right away, after checking.
+- Bigger visual changes or redesigns go to the preview first and wait for "publish".
+- If the owner wants to publish something drastic (removing or restructuring a page, a new look), first ask whether they want to check with the art director. If yes, open an inbox issue (below) and keep the change in preview.
+
+**Inbox for the art director.** GitHub issues with the label `inbox`, assigned to the art director (`team/people.md`). The owner never deals with bugs or technical problems. Open an issue, without asking the owner for details first, when:
+- something looks or behaves wrong and you can't find or fix the cause, even if no error shows (offer this to the owner whenever they describe something odd);
+- the owner chose to check a drastic change with the art director;
+- the owner changes how the projects work (see below).
+Write the issue in English: what the owner said (quote it), which page, what you checked, the link to the pull request if there is one. Then tell the owner in one line that it's passed on. The art director's Claude reads open `inbox` issues at the start of each session and asks what to do.
+
+**Rules and preferences.** Shared rules live in this file, so both projects follow the same ones. A personal preference ("stop asking me about X") goes into that person's section of `team/people.md` and applies right away. A change to how things work for both (publishing, preview, inbox, this file) is proposed in an `inbox` issue, and only changed here once the other person agrees.
+
+**Session log.** At the end of a longer session (several changes, or a decision about how things work), add a short entry to `team/log.md`: date, who, what changed on the site and why, anything left open. Not after every small change. At the start of a session, read the entries since your own last one, so you know what the other person did.
 
 ## Rules
 
