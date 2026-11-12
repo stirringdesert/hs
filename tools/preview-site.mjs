@@ -168,12 +168,12 @@ function tagScript(data) {
   });
 
   // Status: is a newer preview being built, or already built? Asks GitHub (public, no
-  // login) for the latest preview run every 15 s while the tab is visible. Requests are
+  // login) for the latest preview run while the tab is visible (see schedule() below). Requests are
   // conditional ("no-cache" revalidates with the ETag), and an unchanged answer (304)
   // doesn't count toward GitHub's limit of 60 requests an hour; if the limit is hit
   // anyway, it waits a few minutes before asking again.
   var built = 'Эта версия собрана в ' + time(B.at) + '.';
-  function short(t, k) { return t.length > k ? t.slice(0, k - 1).replace(/\\s+\\S*$/, '') + '…' : t; }
+  function short(t, k) { return t.length > k ? t.slice(0, k - 1).replace(/\\s+\\S*$/, '').replace(/[\\s,.;:]+$/, '') + '…' : t; }
   // What the running update is about: the waiting change's title, or for a
   // publication the title of the published change (second paragraph of the merge commit).
   function what(run) {
@@ -199,9 +199,9 @@ function tagScript(data) {
       if (!run) return show('unknown', built);
       var w = what(run), q = '«' + esc(w) + '»';
       if (run.status !== 'completed') {
-        var secs = Math.max(0, Math.round((Date.now() - new Date(run.run_started_at || run.created_at)) / 1000));
-        return show('busy', '<b>Обновляется:</b> ' + q + '. Идёт ' + (secs < 60 ? secs + ' сек' : Math.floor(secs / 60) + ' мин ' + (secs % 60) + ' сек') + '. ' + built,
-          'обновляется: ' + short(w, 28));
+        startedAt = new Date(run.run_started_at || run.created_at).getTime();
+        show('busy', '<b>Обновляется:</b> ' + q + '. Идёт <span class="pv-elapsed"></span>. ' + built, 'обновляется: ' + short(w, 28));
+        return tick();
       }
       if (run.id === B.run || run.conclusion !== 'success' || new Date(run.updated_at) < new Date(B.at))
         return show('ok', '<b>Актуально.</b> ' + built);
@@ -211,12 +211,22 @@ function tagScript(data) {
           show('new', '<b>Готово:</b> ' + q + '. <a href="javascript:location.reload()">Обновите страницу</a>, чтобы увидеть.', 'готово · обновить');
         else
           show('busy', '<b>Публикуется:</b> ' + q + '. Собрано, превью вот-вот обновится. ' + built, 'публикуется: ' + short(w, 28));
+        schedule();
       }).catch(function () {});
     }).catch(function () { show('unknown', built); });
   }
-  var pause = 0;
+  // The elapsed time ticks every second on its own (no requests). GitHub is asked every
+  // 5 s while an update is running and every 15 s otherwise.
+  var pause = 0, startedAt = 0, timer = 0;
+  function tick() {
+    var el = stateEl.querySelector('.pv-elapsed');
+    if (el && startedAt) { var secs = Math.max(0, Math.round((Date.now() - startedAt) / 1000));
+      el.textContent = secs < 60 ? secs + ' сек' : Math.floor(secs / 60) + ' мин ' + (secs % 60) + ' сек'; }
+  }
+  setInterval(function () { if (tag.getAttribute('data-s') === 'busy') tick(); }, 1000);
+  function schedule() { clearTimeout(timer); timer = setTimeout(function () { check(); schedule(); }, tag.getAttribute('data-s') === 'busy' ? 5000 : 15000); }
   check();
-  setInterval(check, 15000);
+  schedule();
   document.addEventListener('visibilitychange', function () { if (!document.hidden) check(); });
 })();
 `;
