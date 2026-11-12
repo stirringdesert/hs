@@ -3,6 +3,18 @@ name: Deploy to GitHub Pages
 on:
   push:
     branches: [main]
+    # Changes that never alter what the site shows don't rebuild it, so the preview tag
+    # only says "публикуется" when the real site changes. These files are also left out
+    # of the site below. Everything else (content, build, assets, pages) still deploys.
+    paths:
+      - '**'
+      - '!tools/**'
+      - '!team/**'
+      - '!.claude/**'
+      - '!README.md'
+      - '!CLAUDE.md'
+      - '!DESIGN-PHILOSOPHY.md'
+      - '!.github/workflows/preview.yml'
   workflow_dispatch:
 
 permissions:
