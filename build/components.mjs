@@ -112,7 +112,7 @@ export function homeView(site, alternates = null, { inMenu = false } = {}) {
   return `<div class="home-main">
   <div class="home-top">${inMenu
     ? `<a class="home-name menu-toggle is-close" href="${attr(site.home || '/')}" aria-label="${attr((site.ui || {}).close || 'Close')}">${esc(site.name)}${ARROW}</a>`
-    : `<a class="home-name" href="${attr(site.home || '/')}">${esc(site.name)}</a>`}
+    : `<a class="home-name" href="${attr(site.home || '/')}">${esc(site.name)}${ARROW}</a>`}
     ${clock(site)}
   </div>
   <nav class="home-nav" aria-label="${attr((site.ui || {}).main_menu || 'Main')}">
