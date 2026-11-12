@@ -67,7 +67,8 @@
     body.classList.toggle('menu-open', on);
     body.classList.toggle('menu-closing', !on);
     open.setAttribute('aria-expanded', on ? 'true' : 'false');
-    grow(on, function () { if (!on) body.classList.remove('menu-closing'); });
+    body.classList.remove('menu-settled');
+    grow(on, function () { body.classList.toggle('menu-settled', on); if (!on) body.classList.remove('menu-closing'); });
     if (keyboard) setTimeout(function () { (on ? close || menu : open).focus({ preventScroll: true }); }, 0);
   }
   function plainClick(e) { return !(e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button); }
@@ -78,7 +79,7 @@
   });
   // Coming back with the Back button can restore the page with the menu still open
   window.addEventListener('pageshow', function (e) {
-    if (e.persisted) { document.body.classList.remove('menu-open', 'menu-closing'); open.setAttribute('aria-expanded', 'false'); }
+    if (e.persisted) { document.body.classList.remove('menu-open', 'menu-closing', 'menu-settled'); open.setAttribute('aria-expanded', 'false'); }
   });
 })();
 
