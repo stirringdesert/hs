@@ -128,6 +128,7 @@ function tagScript(data) {
     + '#pv-tag button{font:inherit;color:#000;background:#ffd84d;border:0;border-radius:999px;padding:6px 11px;cursor:pointer;box-shadow:0 2px 10px rgba(0,0,0,.35)}'
     + '#pv-tag .pv-panel{position:absolute;right:0;top:36px;width:min(320px,calc(100vw - 24px));box-sizing:border-box;background:#1b1b1b;border:1px solid #333;border-radius:10px;padding:12px 14px;display:none}'
     + '#pv-tag.open .pv-panel{display:block}'
+    + '@media (min-width:700px){#pv-tag{right:76px}}'
     + '#pv-tag p{margin:0 0 8px}#pv-tag ul{margin:0 0 10px;padding-left:18px}#pv-tag li{margin:3px 0}'
     + '#pv-tag .pv-muted{color:#9a9a9a}#pv-tag a{color:#ffd84d}';
   var st = document.createElement('style'); st.textContent = css; document.head.appendChild(st);
