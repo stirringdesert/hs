@@ -74,10 +74,12 @@ jobs:
             --jq '[.[] | select(.isDraft | not) | select(.isCrossRepository | not)] | sort_by(.number) | .[] | [.number, .headRefName, .author.login, .title] | @tsv' > "$RUNNER_TEMP/prs.tsv"
           C="$RUNNER_TEMP/changes.json"
           echo '{"included":[],"skipped":[]}' > "$C"
-          add() { jq --arg k "$1" --argjson n "$2" --arg a "$3" --arg t "$4" '.[$k] += [{number:$n, author:$a, title:$t}]' "$C" > "$C.tmp" && mv "$C.tmp" "$C"; }
+          add() { jq --arg k "$1" --argjson n "$2" --arg a "$3" --arg t "$4" --arg w "${WHEN:-}" '.[$k] += [{number:$n, author:$a, title:$t, when:$w}]' "$C" > "$C.tmp" && mv "$C.tmp" "$C"; }
           while IFS=$'\t' read -r num branch author title; do
             [ -n "$num" ] || continue
+            WHEN=""
             if ! git fetch -q origin "refs/heads/$branch"; then add skipped "$num" "$author" "$title"; continue; fi
+            WHEN=$(git log -1 --format=%cI FETCH_HEAD)
             if ! git merge -q --no-edit FETCH_HEAD > /dev/null 2>&1; then
               conflicted=$(git diff --name-only --diff-filter=U)
               # Clashes that don't change what the preview shows are fine: generated pages
@@ -107,6 +109,7 @@ jobs:
         if: steps.setup.outputs.ready == 'yes'
         env:
           PREVIEW_PASSWORD: ${{ secrets.PREVIEW_PASSWORD }}
+          PREVIEW_RUN_ID: ${{ github.run_id }}
         run: |
           node build/build.mjs
           node "$RUNNER_TEMP/preview-site.mjs" . "$RUNNER_TEMP/out" "$RUNNER_TEMP/changes.json"
