@@ -58,14 +58,15 @@
 .bg-video ~ main, .bg-video ~ .site-header { text-shadow: 0 0 24px rgba(0, 0, 0, .3); }
 :root[data-theme="light"] .bg-video ~ main, :root[data-theme="light"] .bg-video ~ .site-header { text-shadow: none; }
 .bg-video ~ main .trailer { text-shadow: none; }
-body { transition: background-color var(--page-in) var(--ease), color var(--page-in) var(--ease); }
+html { transition: background-color var(--page-in) var(--ease); }
+body { transition: color var(--page-in) var(--ease); }
 
 /* Turning the lights on or off: the other mode spreads from the button as a soft round
    shadow, the same gesture as the menu, and shrinks back the other way the same.
    The page is switched in one go underneath (no colour fades), and its picture is
    revealed through the growing circle (fun.js). */
 @property --treveal { syntax: "<length>"; inherits: false; initial-value: 0px; }
-.theme-switching *, .theme-switching *::before, .theme-switching *::after { transition: none !important; }
+.theme-switching, .theme-switching *, .theme-switching *::before, .theme-switching *::after { transition: none !important; }
 .theme-switching body, .theme-switching body * { view-transition-name: none !important; }
 /* Lights on: the light page spreads out of the button. Lights off: the light page
    shrinks back into the button, as if the light goes back in, uncovering the dark. */
