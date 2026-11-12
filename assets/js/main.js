@@ -55,7 +55,11 @@
   function set(on) {
     var r = open.getBoundingClientRect();
     var x = r.left + r.width / 2, y = r.top + r.height / 2;
-    var far = Math.hypot(Math.max(x, innerWidth - x), Math.max(y, innerHeight - y));
+    // Measure past the visible page: on phones the page also shows through behind the
+    // browser's address bar, so the shadow must reach under it too.
+    var de = document.documentElement, bleed = 160;
+    var w = Math.max(innerWidth, de.clientWidth), h = Math.max(innerHeight, de.clientHeight, screen.height || 0);
+    var far = Math.hypot(Math.max(x, w - x) + bleed, Math.max(y, h - y) + bleed);
     menu.style.setProperty('--mx', x + 'px');
     menu.style.setProperty('--my', y + 'px');
     menu.style.setProperty('--grow', (far / 65 + .5).toFixed(2));   // solid black reaches 65 px of the 100 px radius
