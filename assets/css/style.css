@@ -93,7 +93,7 @@ picture { display: contents; }   /* only wraps an <img> with a smaller AVIF copy
   opacity: 0;
   transform-origin: 0 0;
   transform: scale(var(--sh, 1));   /* the menu grows this shadow over the whole screen (below) */
-  transition: opacity var(--page-in) var(--ease-out);
+  transition: opacity var(--page-in) var(--ease);   /* fades in and out like the lights button */
   pointer-events: none;
 }
 .scrolled .site-header::before { opacity: 1; }
