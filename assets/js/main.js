@@ -13,21 +13,44 @@
   var ease = 'cubic-bezier(.6, 0, .25, 1)';
   var anim = null;
 
-  // The big name starts exactly on top of the small one, then grows into place
+  // One name that grows and shrinks: the header's name is lifted above the menu and
+  // animated (size, place, arrow) into the exact shape of the menu's big name, which then
+  // takes over. Closing runs the same in reverse. Font size is animated, not scaled, so
+  // the letters stay sharp the whole way.
+  function shape(el) {
+    var r = el.getBoundingClientRect(), cs = getComputedStyle(el);
+    var arrow = el.querySelector('.menu-arrow').getBoundingClientRect();
+    return {
+      left: r.left + 'px', top: r.top + 'px', fontSize: cs.fontSize, lineHeight: cs.lineHeight,
+      letterSpacing: cs.letterSpacing, columnGap: cs.columnGap,
+      paddingTop: cs.paddingTop, paddingBottom: cs.paddingBottom, arrow: arrow.width + 'px'
+    };
+  }
   function grow(on) {
-    if (!close || reduce.matches || !close.animate) return;
     if (anim) { anim.forEach(function (x) { x.cancel(); }); anim = null; }
-    var a = open.getBoundingClientRect(), b = close.getBoundingClientRect();
-    if (!b.width) return;
-    var k = a.width / b.width;   // centers lined up, so the name doesn't jump at either end
-    var from = 'translate(' + (a.left - b.left) + 'px,' + (a.top + a.height / 2 - b.top - b.height * k / 2) + 'px) scale(' + k + ')';
-    var arrow = close.querySelector('svg');
-    var t = { duration: ms(on ? '--menu-in' : '--menu-out'), easing: ease, fill: 'both' };
-    var frames = [{ transform: from }, { transform: 'none' }];
+    open.classList.remove('moving');
+    document.body.classList.remove('name-moving');
+    if (!close || reduce.matches || !open.animate) return;
+    var small = shape(open), big = shape(close);
+    if (big.fontSize === '0px' || !close.getBoundingClientRect().width) return;
+    function frame(x) {
+      return { left: x.left, top: x.top, fontSize: x.fontSize, lineHeight: x.lineHeight, letterSpacing: x.letterSpacing,
+        columnGap: x.columnGap, paddingTop: x.paddingTop, paddingBottom: x.paddingBottom };
+    }
+    var t = { duration: ms(on ? '--menu-in' : '--menu-out'), easing: ease };
+    var arrow = open.querySelector('.menu-arrow'), svg = arrow.querySelector('svg');
+    var frames = [frame(small), frame(big)], size = [{ width: small.arrow, height: small.arrow }, { width: big.arrow, height: big.arrow }];
     var turn = [{ transform: 'rotate(0deg)' }, { transform: 'rotate(180deg)' }];
-    if (!on) { frames.reverse(); turn.reverse(); }
-    anim = [close.animate(frames, t), arrow.animate(turn, t)];
-    if (on) anim[0].finished.then(function () { anim.forEach(function (x) { x.cancel(); }); anim = null; }).catch(function () {});
+    if (!on) { frames.reverse(); size.reverse(); turn.reverse(); }
+    open.classList.add('moving');
+    document.body.classList.add('name-moving');
+    anim = [open.animate(frames, t), arrow.animate(size, t), svg.animate(turn, t)];
+    anim[0].finished.then(function () {
+      anim.forEach(function (x) { x.cancel(); });
+      anim = null;
+      open.classList.remove('moving');
+      document.body.classList.remove('name-moving');
+    }).catch(function () {});
   }
   var keyboard = false;   // move focus only for keyboard users (a tap must not leave a ring)
   function set(on) {
@@ -103,7 +126,7 @@ window.addEventListener('pagereveal', function (e) {
 (function () {
   var stage = document.querySelector('.bg-video video, .bg-video img, .bio-photo img');
   window.addEventListener('pagehide', function () {
-    try { var src = stage ? stage.getAttribute('src') : ''; sessionStorage.setItem('stage', src.slice(src.indexOf('assets/'))); } catch (e) {}
+    try { var src = stage ? stage.getAttribute('src') : ''; sessionStorage.setItem('stage', src.slice(src.indexOf('assets/')).split('?')[0]); } catch (e) {}
   });
 })();
 

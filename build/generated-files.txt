@@ -20,6 +20,7 @@ open-relationship-de/index.html
 open-relationship-en/index.html
 open-relationship-ru/index.html
 playwriting/open-relationship/index.html
+robots.txt
 ru/bio/index.html
 ru/contact/index.html
 ru/index.html
@@ -32,6 +33,7 @@ ru/theater/maria-stuart/index.html
 ru/theater/sasha-why/index.html
 ru/theater/the-charlie-gordon-effect/index.html
 ru/voice/index.html
+sitemap.xml
 styleguide/index.html
 theater/billy-milligan/index.html
 theater/bumerit/index.html

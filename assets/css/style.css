@@ -97,8 +97,8 @@ img, video { display: block; max-width: 100%; }
 }
 
 /* Name + arrow: one button. The whole thing dims on hover; nothing moves. */
-.menu-toggle { display: inline-flex; align-items: center; gap: .3em; cursor: pointer; }
-.menu-toggle:hover { color: var(--color-muted); }
+.menu-toggle { display: inline-flex; align-items: center; gap: .3em; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+@media (hover: hover) { .menu-toggle:hover { color: var(--color-muted); } }   /* a tap on a phone must not leave it grey */
 .menu-toggle:focus:not(:focus-visible) { outline: none; }
 .menu-arrow { display: inline-flex; width: .62em; height: .62em; flex: none; }
 .menu-arrow svg {
@@ -137,7 +137,12 @@ img, video { display: block; max-width: 100%; }
 }
 .menu-open { overflow: hidden; }
 .menu-open .site-header { z-index: 60; }   /* above the sound button and other fixed extras */
-.menu-open .site-header::before { opacity: 0; transition-duration: var(--menu-in); }
+.menu-open .site-header::before { opacity: 1; }   /* the name's shadow stays until the menu's black covers it (no flicker) */
+/* One name, never two: the header's own name grows into the menu's big name and shrinks
+   back (main.js). It moves above the menu's spreading black, which would otherwise hide
+   it, and the big name takes over only when they line up exactly. */
+.site-header > .name.moving { position: fixed; z-index: 51; margin: 0; white-space: nowrap; }
+.name-moving .menu .home-name { visibility: hidden; }
 
 /* ---------- Main + footer ---------- */
 
@@ -160,7 +165,7 @@ main {
   min-height: 100vh;
   min-height: 100svh;
 }
-/* Phones: the time sits under the name. Wider screens: in the top-right corner. */
+/* Wider screens: the time in the top-right corner. Phones: see .home-foot .clock below. */
 .home-top { display: flex; flex-direction: column; align-items: flex-start; gap: 14px; }
 @media (min-width: 641px) {
   .home-top { flex-direction: row; justify-content: space-between; gap: 24px; }
@@ -195,6 +200,11 @@ main {
 .legal-links a:hover { color: var(--color-fg); }
 .home-top .clock { font-size: var(--type-small); line-height: 13px; }
 .clock { margin: 0; white-space: nowrap; }
+/* Phones: the time sits at the bottom left, where the language switch was.
+   Wider screens: in the top-right corner. */
+.home-foot .clock { font-size: var(--type-small); line-height: 13px; }
+@media (max-width: 640px) { .home-main:has(.foot-clock) .home-top .clock { display: none; } }
+@media (min-width: 641px) { .home-foot .clock { visibility: hidden; } }   /* keeps the legal links on the right */
 .clock b { font-weight: var(--weight-bold); margin-left: 4px; }
 
 /* ---------- Bio ---------- */
@@ -331,10 +341,8 @@ main {
 /* The demo title is as far from the player as "works" is from "official russian dubs".
    The player's 44 px click areas reach above the visible line, hence the smaller margin. */
 .voice .demo-head + .player { margin-top: 2px; }
-.voice .bookings { margin-top: 40px; }   /* phones: right after the player */
 .audiobooks { margin-top: 46px; }
 .audiobooks .text { max-width: 827px; margin-top: 34px; display: flex; flex-direction: column; gap: 20px; }
-.voice .bottom-cta { margin-top: 100px; text-align: center; }
 
 /* ---------- Theater / playwriting: list + detail ---------- */
 
@@ -409,7 +417,8 @@ main {
 
 /* ---------- Contact ---------- */
 
-.contact-list { display: flex; flex-direction: column; gap: 8px; margin-top: 40px; }
+/* Heading, then the links under it on the left, at the same distance as on the theater pages */
+.contact-list { display: flex; flex-direction: column; gap: 8px; margin-top: 35px; }
 .contact-list > * { font-size: var(--type-contact); line-height: var(--type-contact-lh); width: fit-content; }
 .contact-list > *:hover { color: var(--color-muted); }
 
@@ -471,29 +480,15 @@ main {
   .bio-text { max-width: calc(50% - var(--col-gap) / 2); }
 
   /* voice */
-  /* the bookings line sits in the right half, on the same line as the volume slider */
+  /* the demo keeps the left half */
   .voice .demo { display: grid; grid-template-columns: 1fr 1fr; column-gap: var(--col-gap); }
   .voice .demo > .demo-head, .voice .demo > .player { grid-column: 1; }
   .voice .demo-head + .player { margin-top: 8px; }
-  .voice .demo > .bookings {
-    grid-column: 2; grid-row: 1 / span 2; align-self: end; text-align: right;
-    margin: 0 0 calc((var(--type-time-lh) - 1.25em) / 2 + 3px);   /* centred on the time row */
-  }
   .voice .works-title { margin-top: 88px; }
   .works { grid-template-columns: repeat(4, 1fr); gap: 68px 26px; }
   .audiobooks { margin-top: 48px; }
   .audiobooks .text { max-width: 691px; }
-  .voice .bottom-cta { text-align: center; }
 
-  /* contact */
-  .contact main {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    column-gap: var(--col-gap);
-    align-items: start;
-    padding-top: 195px;
-  }
-  .contact-list { margin-top: 0; gap: 0; align-items: flex-end; text-align: right; }
 
   /* play text */
   .play-scene p { text-align: justify; }
