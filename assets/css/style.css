@@ -16,7 +16,7 @@ body {
   min-height: 100svh;
   display: flex;
   flex-direction: column;
-  background: var(--color-bg);
+  /* the page colour is on <html> (above): a background here would cover the fixed background photos and videos */
   color: var(--color-fg);
   font-family: var(--font);
   font-weight: var(--weight-regular);
