@@ -112,11 +112,31 @@
     sw.innerHTML = '<button type="button" class="theme-toggle-text"></button>';
     var btn = sw.firstChild;
     function label() { btn.textContent = root.getAttribute('data-theme') === 'light' ? (T.toDark || 'turn lights off') : (T.toLight || 'turn lights on'); }
+    // The other mode spreads over the page from the button as a soft round shadow, like
+    // the menu (fun.css, .theme-switching). The browser takes a picture of the page, switches
+    // the mode, and the new look is revealed through a growing circle. Instant for
+    // "reduce motion" and in browsers without view transitions.
+    function apply(on) {
+      if (on) root.setAttribute('data-theme', 'light'); else root.removeAttribute('data-theme');
+      label();
+    }
     btn.addEventListener('click', function () {
       var on = root.getAttribute('data-theme') !== 'light';
-      if (on) root.setAttribute('data-theme', 'light'); else root.removeAttribute('data-theme');
       try { localStorage.setItem('hs-reading-lights', on ? 'on' : 'off'); } catch (e) {}
-      label();
+      if (!document.startViewTransition || matchMedia('(prefers-reduced-motion: reduce)').matches) { apply(on); return; }
+      var r = btn.getBoundingClientRect();
+      var x = r.left + r.width / 2, y = r.top + r.height / 2;
+      var w = Math.max(innerWidth, root.clientWidth), h = Math.max(innerHeight, root.clientHeight, screen.height || 0);
+      var soft = Math.max(w, h) * .35;   // the soft edge, as wide as the menu's
+      var far = Math.hypot(Math.max(x, w - x), Math.max(y, h - y));
+      root.style.setProperty('--tx', x + 'px');
+      root.style.setProperty('--ty', y + 'px');
+      root.style.setProperty('--tsoft', soft + 'px');
+      root.style.setProperty('--tend', (far + soft + 40) + 'px');
+      root.classList.add('theme-switching');
+      var t = document.startViewTransition(function () { apply(on); });
+      t.ready.catch(function () {});
+      t.finished.finally(function () { root.classList.remove('theme-switching'); });
     });
     label();
     document.body.appendChild(sw);
