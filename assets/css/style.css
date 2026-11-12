@@ -266,7 +266,7 @@ main {
    Desktop: in the right column, its top on the top of the title's letters, and as tall as
    the screen allows, ending just above the bottom edge (svh: the visible screen, so it
    fits even with browser bars). If the screen is too narrow for the whole photo, his legs
-   are cut off at the edge of the text column, softly, so the text stays clear.
+   are cut off at the edge of the text column, so the text stays clear.
    Phones: see the responsive layout below. */
 .bio-photo {
   --photo-top: calc(var(--header-height) + 44px + var(--type-title) * .16);   /* top of the title's letters */
@@ -276,8 +276,6 @@ main {
   width: calc(50vw - var(--gutter) - var(--col-gap) / 2);
   height: calc(100vh - var(--photo-top) - 24px);
   height: calc(100svh - var(--photo-top) - 24px);
-  -webkit-mask-image: linear-gradient(to right, transparent, #000 15%);
-  mask-image: linear-gradient(to right, transparent, #000 15%);
   z-index: -1;
   overflow: hidden;
   pointer-events: none;
@@ -558,20 +556,18 @@ main {
 
 @media (max-width: 900px) {
   .split { grid-template-columns: 1fr; row-gap: 40px; }
-  /* About page on phones and tablets: the photo starts at the very top and hangs from the
+  /* About page on phones and tablets: the photo starts at the top and hangs from the
      top-right corner, down to where the running text begins, with the title over its lower
-     part. Wider than the screen, so his legs run off the left edge. It dissolves into the
-     black at the bottom and fades away as the text scrolls up (main.js). */
+     part. Wider than the screen, so his legs run off the left edge. No edge fades: the black
+     background already melts into the page. It fades away as the text scrolls up (main.js). */
   .bio { --u: min(1vw, 5.2px); }   /* 1% of a phone screen, capped on tablets */
-  .bio-text { padding-top: calc(var(--u) * 59); }
+  .bio-text { padding-top: calc(var(--u) * 59 + 18px); }
   .bio-photo {
-    top: 0;
+    top: 18px;   /* the top of his head lines up with the top of the name in the header */
     right: 0;
     width: 100%;
     /* header + space above the title + text padding + title + space under it */
     height: calc(var(--header-height) + 44px + var(--u) * 59 + var(--type-title) * var(--type-title-lh) + 36px);
-    -webkit-mask-image: linear-gradient(to bottom, #000 60%, transparent);
-    mask-image: linear-gradient(to bottom, #000 60%, transparent);
   }
   .bio-photo img { width: auto; }
 }
