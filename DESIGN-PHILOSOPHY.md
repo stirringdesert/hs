@@ -57,7 +57,7 @@ The logic:
 - Lines: a single 2 px white rule under the selected item. No boxes, card borders, shadows, gradients or rounded corners.
 - Text sizes grow and shrink smoothly with the screen (CSS `clamp()`), never in jumps.
 
-**Images and video.** Full-bleed, dimmed to about 50%, fading in slowly (3 s), behind the text like stage projections. Crop with intent: the bio portrait is a whole figure on black that keeps the face and sweater and lets the legs go first (#94). Every new media type (the photo on the play page, sound) gets this same treatment rather than a new one.
+**Images and video.** Full-bleed, dimmed to about 50%, fading in slowly (3 s), behind the text like stage projections. Crop with intent: the bio portrait is a whole figure on black that keeps the face and sweater and lets the legs go first (#98). Every new media type (the photo on the play page, sound) gets this same treatment rather than a new one.
 
 **Motion.** Slow fades and soft ease-out (quick start, gentle landing). The name stays put or morphs between pages, so you never lose your place. Hover means white turns grey, and nothing shifts the layout. Everything respects "reduce motion".
 
