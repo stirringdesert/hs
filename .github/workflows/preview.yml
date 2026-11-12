@@ -59,9 +59,8 @@ jobs:
 
       # Merge every open pull request from this repository on top of main (drafts
       # are left out, so marking a change as draft hides it from the preview). A
-      # change that clashes with another one or doesn't build is skipped and shown
-      # as "not shown yet". Clashes only in generated pages are fine: those are
-      # rebuilt anyway.
+      # change that clashes with another one in what the site shows, or doesn't
+      # build, is skipped and listed as "not shown yet".
       - name: Combine live site + waiting changes
         if: steps.setup.outputs.ready == 'yes'
         env:
@@ -81,9 +80,13 @@ jobs:
             if ! git fetch -q origin "refs/heads/$branch"; then add skipped "$num" "$author" "$title"; continue; fi
             if ! git merge -q --no-edit FETCH_HEAD > /dev/null 2>&1; then
               conflicted=$(git diff --name-only --diff-filter=U)
-              bad=$(printf '%s\n' "$conflicted" | grep -vxF -f <(cat build/generated-files.txt; echo build/generated-files.txt) || true)
+              # Clashes that don't change what the preview shows are fine: generated pages
+              # (rebuilt below), and files the preview doesn't publish (docs, tools, workflows).
+              bad=$(printf '%s\n' "$conflicted" | grep -vxF -f <(cat build/generated-files.txt; echo build/generated-files.txt) \
+                | grep -vE '\.md$|^tools/|^team/|^\.github/' || true)
               if [ -z "$bad" ]; then
-                git checkout --ours -- $conflicted && git add -- $conflicted && git commit -q --no-edit
+                for f in $conflicted; do git checkout --ours -- "$f" 2>/dev/null || git rm -q -- "$f"; done
+                git add -A && git commit -q --no-edit
               else
                 git merge --abort
                 echo "PR #$num not shown: it clashes with another change in: $bad"
