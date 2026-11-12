@@ -436,7 +436,7 @@ main {
   text-underline-offset: 3px;
 }
 /* Reading pages: the play text starts below the playwriting section */
-.reading .split + .play-body { margin-top: 120px; }
+.reading .split ~ .play-body { margin-top: 120px; }   /* "~", since a tiny script sits right after the block (components.mjs, split) */
 
 /* Background video on production pages */
 .bg-video {
