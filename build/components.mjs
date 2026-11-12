@@ -19,7 +19,18 @@ function v(url) {
 // Every picture, video, audio file and PDF on a page gets the same ?v=, so a replaced
 // file shows at once instead of an old copy from the browser's cache. (Fonts are left
 // as they are: they never change, and their preload must match the CSS exactly.)
-export const versionAssets = (html) => html.replace(/\b(src|href|data-src|poster)="(\/assets\/(?!fonts\/)[^"?#]+)"/g, (_, a, u) => `${a}="${v(u)}"`);
+export const versionAssets = (html) => html.replace(/\b(src|srcset|href|data-src|poster)="(\/assets\/(?!fonts\/)[^"?#]+)"/g, (_, a, u) => `${a}="${v(u)}"`);
+
+// A picture with a smaller AVIF copy (made by tools/make-avif.py) offered first, when
+// there is one. Browsers without AVIF take the JPG. <picture> has display: contents in
+// style.css, so the layout is exactly that of the bare <img>.
+function pic(src, imgAttrs) {
+  const avif = src.replace(/\.jpe?g$/i, '.avif');
+  let has = false;
+  try { has = avif !== src && fs.existsSync(new URL('.' + avif, ROOT)); } catch {}
+  const img = `<img src="${attr(src)}" ${imgAttrs}>`;
+  return has ? `<picture><source srcset="${attr(avif)}" type="image/avif">${img}</picture>` : img;
+}
 
 const PLAY_ICON = 'M5.379 1.292C4.968 1.033 4.449 1.017 4.023 1.251 3.598 1.486 3.334 1.933 3.333 2.419V13.581C3.334 14.067 3.598 14.514 4.023 14.749 4.449 14.983 4.968 14.967 5.379 14.708L14.215 9.127C14.602 8.883 14.836 8.457 14.836 8 14.836 7.543 14.602 7.117 14.215 6.873Z';
 
@@ -203,7 +214,7 @@ export function bgVideo(src, { sound = false } = {}) {
 // width of the page content (fun.js); without JavaScript it is a normal link.
 export function trailer({ embed, image, url, label = 'Trailer', duration = '' }) {
   return `<a class="trailer" href="${attr(url || embed)}" data-embed="${attr(embed)}" aria-label="${attr(label)}" target="_blank" rel="noopener">
-  <img src="${attr(image)}" alt="" loading="lazy">
+  ${pic(image, 'alt="" loading="lazy" decoding="async"')}
   <span class="trailer-play"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="${PLAY_ICON}"/></svg>${esc(label)}${duration ? ` <span class="trailer-time">${esc(duration)}</span>` : ''}</span>
 </a>`;
 }
@@ -283,7 +294,7 @@ export function player(src, ui = {}) {
 // One voice role card: still image, character name, title of the film/game.
 export function workCard(role) {
   return `<article class="work">
-  <img src="${attr(role.image)}" alt="${attr(`${role.character} — ${role.title}`)}" loading="lazy" width="1170" height="324">
+  ${pic(role.image, `alt="${attr(`${role.character} — ${role.title}`)}" loading="lazy" decoding="async" width="1170" height="324"`)}
   <h3>${esc(role.character)}</h3>
   <p>${esc(role.title)}</p>
 </article>`;
