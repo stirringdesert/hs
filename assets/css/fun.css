@@ -120,7 +120,7 @@ body { transition: color var(--page-in) var(--ease); }
 .read-mode.on button { opacity: 1; }
 .read-mode.on.dim button { opacity: .4; }
 .read-mode button:hover { color: var(--color-muted); }
-.read-mode.on.dim button:hover { opacity: 1; color: var(--color-fg); }
+.read-mode.on.dim:hover button { opacity: 1; color: var(--color-fg); }
 /* On phones it sits over the text, so it gets the name's corner shadow (style.css,
    .site-header::before), mirrored into the bottom-right corner: same shape, same fade */
 @media (max-width: 900px) {
@@ -143,6 +143,28 @@ body { transition: color var(--page-in) var(--ease); }
     pointer-events: none;
   }
   .read-mode.on::before { opacity: 1; }
+  /* Dimmed (after chapter 2): the big shadow gives way to a small, denser one hugging the
+     words, so it covers as little of the play as possible; it deepens on hover. */
+  .read-mode::after {
+    content: "";
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    z-index: -1;
+    width: 280px;
+    height: 120px;
+    background: radial-gradient(130px 52px at calc(100% - var(--gutter) - 55px) calc(100% - 32px),
+      var(--color-bg),
+      color-mix(in srgb, var(--color-bg) 96%, transparent) 45%,
+      color-mix(in srgb, var(--color-bg) 55%, transparent) 75%,
+      transparent);
+    opacity: 0;
+    transition: opacity var(--page-in) var(--ease);
+    pointer-events: none;
+  }
+  .read-mode.on.dim::before { opacity: 0; }
+  .read-mode.on.dim::after { opacity: .9; }
+  .read-mode.on.dim:hover::after { opacity: 1; }
 }
 .menu-open .read-mode { visibility: hidden; }
 
