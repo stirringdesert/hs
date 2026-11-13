@@ -68,7 +68,7 @@
   --type-play-lh: clamp(23px, 22.63px + .095vw, 24px);      /* play paragraphs */
   --play-para-gap: clamp(12px, 9.03px + .762vw, 20px);      /* between paragraphs */
   --play-chapter-gap: clamp(8px, 3.54px + 1.143vw, 20px);   /* extra space under a chapter number */
-  --play-title-space: clamp(160px, 108px + 13.33vw, 300px);  /* above and below the title screen */
+  --play-note-bottom: max(32px, env(safe-area-inset-bottom));   /* the note under the play title, from the bottom of the screen */
 
   /* ---- Layout ---- */
   --gutter: max(24px, env(safe-area-inset-left), env(safe-area-inset-right));   /* space at the left/right edge of the page (more beside a phone's notch in landscape) */
