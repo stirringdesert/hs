@@ -95,8 +95,9 @@
   // ---- Play page: photo that fades out, then a light/dark switch for reading ----
   // The photo is fixed at the top like the videos and is fully gone when the first
   // chapter number is as far from the top of the screen as from its first paragraph.
-  // At that point a "turn lights on" button appears in the bottom-right corner. It
-  // goes away when the second chapter begins and comes back when scrolling up. Light mode only lives
+  // A "turn lights on" button appears in the bottom-right corner as soon as the play's
+  // description has scrolled away. When the second chapter begins it dims and stays dimmed
+  // to the end of the page; scrolling back up brings it back to full. Light mode only lives
   // on the reading pages: the choice is remembered for them, every other page (and the menu) stays black.
   (function () {
     var first = document.querySelector('.play-scene h2');
@@ -105,7 +106,8 @@
     var para = first.nextElementSibling;
     // the second chapter: the next heading that is a number, like "2."
     var second = [].filter.call(document.querySelectorAll('.play-scene h2'), function (h) { return h !== first && /^\s*\d+\.?\s*$/.test(h.textContent); })[0];
-    var end = 1, stop = 1, queued = false;
+    var desc = document.querySelector('.split'), head = document.querySelector('.site-header');
+    var end = 1, start = 1, stop = 1, queued = false;
 
     var sw = document.createElement('div');
     sw.className = 'read-mode';
@@ -149,7 +151,9 @@
       var h = first.getBoundingClientRect();
       var gap = para ? para.getBoundingClientRect().top - h.bottom : 20;
       end = Math.max(1, h.top + window.scrollY - gap);   // scroll position where the photo is gone
-      // the switch leaves when the second chapter number reaches the top of the screen
+      // the switch appears once the description has gone under the header
+      start = desc ? Math.max(1, desc.getBoundingClientRect().bottom + window.scrollY - (head ? head.offsetHeight : 0)) : end;
+      // the switch dims when the second chapter number reaches the top of the screen
       stop = second ? second.getBoundingClientRect().top + window.scrollY : end + window.innerHeight;
       update();
     }
@@ -159,8 +163,9 @@
       // light mode: the play text stays white until the first chapter number reaches the middle of the screen
       root.classList.toggle('read-top', first.getBoundingClientRect().top > window.innerHeight / 2);
       if (bg) bg.style.setProperty('--fade', (1 - Math.min(1, Math.max(0, y / end))).toFixed(3));
-      // shown from where the photo is gone until the second chapter begins; back again when scrolling up
-      sw.classList.toggle('on', y >= end - 2 && y < stop);
+      // shown once the description is gone; dimmed from the second chapter to the end
+      sw.classList.toggle('on', y >= start - 2);
+      sw.classList.toggle('dim', y >= stop);
     }
     if (bg) bg.classList.add('scroll-fade');
     window.addEventListener('scroll', function () { if (!queued) { queued = true; requestAnimationFrame(update); } }, { passive: true });
