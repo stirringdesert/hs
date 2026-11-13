@@ -92,19 +92,19 @@ body { transition: color var(--page-in) var(--ease); }
 }
 
 /* ---------- Play page: "turn lights on / off" in the bottom-right corner ----------
-   Shown from where the photo has faded out until the second chapter begins. */
+   Appears as soon as the play's description has scrolled away, stays fully visible until
+   the second chapter begins, then stays dimmed until the end of the page (full again on
+   hover). It fades in and out exactly like the name's corner shadow at the top. */
 .read-mode {
   position: fixed;
   right: 0;
   bottom: 0;
   z-index: 25;
   padding: 0 var(--gutter) 18px;
-  opacity: 0;
   visibility: hidden;
-  transform: translateY(6px);
-  transition: opacity var(--page-in) var(--ease), transform var(--page-in) var(--ease), visibility 0s var(--page-in);
+  transition: visibility 0s var(--page-in);
 }
-.read-mode.on { opacity: 1; visibility: visible; transform: none; transition: opacity var(--page-in) var(--ease), transform var(--page-in) var(--ease); }
+.read-mode.on { visibility: visible; transition: none; }
 .read-mode button {
   font: inherit;
   font-size: var(--type-small);
@@ -114,22 +114,35 @@ body { transition: color var(--page-in) var(--ease); }
   background: none;
   color: var(--color-fg);
   cursor: pointer;
-  transition: color var(--fast) var(--ease);
+  opacity: 0;
+  transition: opacity var(--page-in) var(--ease), color var(--fast) var(--ease);
 }
+.read-mode.on button { opacity: 1; }
+.read-mode.on.dim button { opacity: .4; }
 .read-mode button:hover { color: var(--color-muted); }
-/* On phones it sits over the text, so it gets a soft shadowy corner behind it */
+.read-mode.on.dim button:hover { opacity: 1; color: var(--color-fg); }
+/* On phones it sits over the text, so it gets the name's corner shadow (style.css,
+   .site-header::before), mirrored into the bottom-right corner: same shape, same fade */
 @media (max-width: 900px) {
   .read-mode::before {
     content: "";
     position: absolute;
-    right: -60px;
-    bottom: -60px;
+    right: 0;
+    bottom: 0;
     z-index: -1;
-    width: 340px;
-    height: 200px;
-    background: radial-gradient(48% 52% at 66% 62%, color-mix(in srgb, var(--color-bg) 94%, transparent), color-mix(in srgb, var(--color-bg) 78%, transparent) 50%, transparent 100%);
+    width: min(100vw, 640px);
+    height: 230px;
+    background: radial-gradient(farthest-side at 100% 100%,
+      color-mix(in srgb, var(--color-bg) 88%, transparent),
+      color-mix(in srgb, var(--color-bg) 74%, transparent) 30%,
+      color-mix(in srgb, var(--color-bg) 45%, transparent) 55%,
+      color-mix(in srgb, var(--color-bg) 18%, transparent) 78%,
+      transparent);
+    opacity: 0;
+    transition: opacity var(--page-in) var(--ease);
     pointer-events: none;
   }
+  .read-mode.on::before { opacity: 1; }
 }
 .menu-open .read-mode { visibility: hidden; }
 
