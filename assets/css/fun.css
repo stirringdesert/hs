@@ -139,32 +139,14 @@ body { transition: color var(--page-in) var(--ease); }
       color-mix(in srgb, var(--color-bg) 18%, transparent) 78%,
       transparent);
     opacity: 0;
-    transition: opacity var(--page-in) var(--ease);
+    transform-origin: 100% 100%;
+    transition: opacity var(--page-in) var(--ease), transform var(--page-in) var(--ease);
     pointer-events: none;
   }
   .read-mode.on::before { opacity: 1; }
-  /* Dimmed (after chapter 2): the big shadow gives way to a small, denser one hugging the
-     words, so it covers as little of the play as possible; it deepens on hover. */
-  .read-mode::after {
-    content: "";
-    position: absolute;
-    right: 0;
-    bottom: 0;
-    z-index: -1;
-    width: 280px;
-    height: 120px;
-    background: radial-gradient(130px 52px at calc(100% - var(--gutter) - 55px) calc(100% - 32px),
-      var(--color-bg),
-      color-mix(in srgb, var(--color-bg) 96%, transparent) 45%,
-      color-mix(in srgb, var(--color-bg) 55%, transparent) 75%,
-      transparent);
-    opacity: 0;
-    transition: opacity var(--page-in) var(--ease);
-    pointer-events: none;
-  }
-  .read-mode.on.dim::before { opacity: 0; }
-  .read-mode.on.dim::after { opacity: .9; }
-  .read-mode.on.dim:hover::after { opacity: 1; }
+  /* Dimmed (after chapter 2): the same shadow, same strength, shrinks into the corner to
+     half its size, so it covers less of the play. */
+  .read-mode.on.dim::before { transform: scale(.5); }
 }
 .menu-open .read-mode { visibility: hidden; }
 
